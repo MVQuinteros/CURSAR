@@ -6,6 +6,8 @@ import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/test_vocacional_screen.dart';
+import 'screens/test_resultados_screen.dart';
 import 'seed_data.dart';
 
 void main() async {
@@ -38,6 +40,8 @@ class MyApp extends StatelessWidget {
         '/register': (context) => const RegisterScreen(),
         '/forgot-password': (context) => const ForgotPasswordScreen(),
         '/profile': (context) => const ProfileScreen(),
+        '/test': (context) => const TestVocacionalScreen(),
+        '/test-resultados': (context) => const TestResultadosScreen(),
       },
     );
   }

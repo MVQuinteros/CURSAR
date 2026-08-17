@@ -1,3 +1,79 @@
+import 'package:flutter/material.dart';
+
+enum AreaInteres {
+  tecnologia,
+  salud,
+  educacion,
+  creativa,
+}
+
+extension AreaInteresExtension on AreaInteres {
+  String get nombre {
+    switch (this) {
+      case AreaInteres.tecnologia:
+        return 'Tecnología';
+      case AreaInteres.salud:
+        return 'Salud';
+      case AreaInteres.educacion:
+        return 'Educación';
+      case AreaInteres.creativa:
+        return 'Creativa';
+    }
+  }
+
+  String get descripcion {
+    switch (this) {
+      case AreaInteres.tecnologia:
+        return 'Te apasiona resolver problemas lógicos, la tecnología y los sistemas.';
+      case AreaInteres.salud:
+        return 'Te interesan las ciencias de la salud y ayudar a las personas.';
+      case AreaInteres.educacion:
+        return 'Disfrutás enseñar, liderar y organizar equipos.';
+      case AreaInteres.creativa:
+        return 'Sos creativo/a, te gusta diseñar y expresarte.';
+    }
+  }
+
+  IconData get icono {
+    switch (this) {
+      case AreaInteres.tecnologia:
+        return Icons.computer;
+      case AreaInteres.salud:
+        return Icons.local_hospital;
+      case AreaInteres.educacion:
+        return Icons.school;
+      case AreaInteres.creativa:
+        return Icons.palette;
+    }
+  }
+
+  Color get color {
+    switch (this) {
+      case AreaInteres.tecnologia:
+        return const Color(0xFF2196F3);
+      case AreaInteres.salud:
+        return const Color(0xFF4CAF50);
+      case AreaInteres.educacion:
+        return const Color(0xFFFF9800);
+      case AreaInteres.creativa:
+        return const Color(0xFF9C27B0);
+    }
+  }
+
+  String get imagen {
+    switch (this) {
+      case AreaInteres.tecnologia:
+        return '💻';
+      case AreaInteres.salud:
+        return '🏥';
+      case AreaInteres.educacion:
+        return '📚';
+      case AreaInteres.creativa:
+        return '🎨';
+    }
+  }
+}
+
 class PreguntaModel {
   final String preguntaId;
   final String texto;

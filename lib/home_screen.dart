@@ -62,6 +62,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onItemTapped(int index) {
+    if (index == 1) {
+      Navigator.pushNamed(context, '/test');
+      return;
+    }
     if (index == 3) {
       Navigator.pushNamed(context, '/profile');
       return;
