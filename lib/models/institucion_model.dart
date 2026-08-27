@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class InstitucionModel {
   final String institucionUid;
   final String nombre;
@@ -62,6 +64,9 @@ class InstitucionModel {
       'email': email,
       'sitioWeb': sitioWeb,
       'logoURL': logoURL,
+      'ubicacion': (latitud != null && longitud != null)
+          ? GeoPoint(latitud!, longitud!)
+          : null,
       'estado': estado,
       'createdAt': createdAt,
     };

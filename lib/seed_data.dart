@@ -7,19 +7,23 @@ Future<void> seedData() async {
 
   final batch = firestore.batch();
 
+  // --- UTN ---
   batch.set(
     firestore.collection('instituciones').doc('utn'),
     InstitucionModel(
       institucionUid: 'utn',
       nombre: 'UTN',
-      descripcion: 'Universidad Tecnológica Nacional',
-      direccion: 'Av. Mitre 750',
-      ciudad: 'Buenos Aires',
+      descripcion:
+          'La Universidad Tecnológica Nacional es una institución pública de educación superior dedicada a la formación de profesionales en ingeniería y afines.',
+      direccion: 'Av. Madero 399',
+      ciudad: 'Ciudad Autónoma de Buenos Aires',
       provincia: 'CABA',
-      telefono: '011-4867-7500',
-      email: 'info@utn.edu.ar',
-      sitioWeb: 'https://www.utn.edu.ar',
+      telefono: '(011) 4867-7500',
+      email: 'info@frba.utn.edu.ar',
+      sitioWeb: 'https://frba.utn.edu.ar',
       logoURL: '',
+      latitud: -34.6037,
+      longitud: -58.3683,
       estado: 'aprobada',
       createdAt: DateTime(2025, 1, 15),
     ).toMap(),
@@ -64,7 +68,7 @@ Future<void> seedData() async {
       institucionUid: 'utn',
       nombre: 'Tecnicatura en Programación',
       descripcion:
-          'Nueva carrera 2026. Formación rápida en desarrollo de software, bases de datos y aplicaciones web. 100% orientada a la inserción laboral.',
+          'Carrera de formación rápida en desarrollo de software, bases de datos y aplicaciones web. 100% orientada a la inserción laboral.',
       area: 'Tecnología',
       nivel: 'Terciario',
       duracionAnios: 2,
@@ -101,7 +105,8 @@ Future<void> seedData() async {
       nivel: 'Universitario',
       duracionAnios: 5,
       modalidad: 'Presencial',
-      salidaLaboral: 'Ingeniero electrónico, automatizador, diseñador de hardware',
+      salidaLaboral:
+          'Ingeniero electrónico, automatizador, diseñador de hardware',
       requisitos: 'Secundario completo',
       tag: 'BECAS',
       aprobada: true,
@@ -123,23 +128,877 @@ Future<void> seedData() async {
       aprobada: true,
       createdAt: DateTime(2026, 5, 3),
     ),
-    OfertaModel(
-      ofertaId: 'oferta_utn_7',
-      institucionUid: 'utn',
-      nombre: 'Desarrollo Web Full Stack',
+  ];
+
+  // --- UNLP ---
+  batch.set(
+    firestore.collection('instituciones').doc('unlp'),
+    InstitucionModel(
+      institucionUid: 'unlp',
+      nombre: 'UNLP',
       descripcion:
-          'Curso de extensión universitaria. Aprendé HTML, CSS, JavaScript, React y Node.js. Proyecto final integrador con certificación UTN.',
+          'La Universidad Nacional de La Plata es una de las principales universidades públicas de Argentina, fundada en 1905.',
+      direccion: 'Av. 7 N° 776',
+      ciudad: 'La Plata',
+      provincia: 'Buenos Aires',
+      telefono: '(0221) 423-6800',
+      email: 'info@unlp.edu.ar',
+      sitioWeb: 'https://www.unlp.edu.ar',
+      logoURL: '',
+      latitud: -34.9186,
+      longitud: -57.9561,
+      estado: 'aprobada',
+      createdAt: DateTime(2025, 2, 1),
+    ).toMap(),
+    SetOptions(merge: false),
+  );
+
+  ofertas.addAll([
+    OfertaModel(
+      ofertaId: 'oferta_unlp_1',
+      institucionUid: 'unlp',
+      nombre: 'Licenciatura en Sistemas de Información',
+      descripcion:
+          'Formación en análisis, diseño y gestión de sistemas de información. Enfoque en ingeniería de software y tecnologías emergentes.',
       area: 'Tecnología',
-      nivel: 'Terciario',
-      duracionAnios: 1,
-      modalidad: 'Virtual',
-      salidaLaboral: 'Desarrollador full stack, freelancer, emprendedor digital',
-      requisitos: 'Mayor de 18 años. Conocimientos básicos de computación.',
+      nivel: 'Universitario',
+      duracionAnios: 5,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Licenciado en Sistemas, analista senior, tech lead',
+      requisitos: 'Secundario completo.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 20),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unlp_2',
+      institucionUid: 'unlp',
+      nombre: 'Abogacía',
+      descripcion:
+          'Carrera clásica de la UNLP con orientación en derecho público y privado. Clínicas jurídicas para práctica profesional.',
+      area: 'Derecho',
+      nivel: 'Universitario',
+      duracionAnios: 5,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Abogado, procurador, mediador, asesor legal',
+      requisitos: 'Secundario completo. Ingreso libre.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 18),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unlp_3',
+      institucionUid: 'unlp',
+      nombre: 'Medicina',
+      descripcion:
+          'Formación médica con énfasis en salud pública y atención primaria. Hospital escuela con residencias propias.',
+      area: 'Salud',
+      nivel: 'Universitario',
+      duracionAnios: 6,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Médico general, especialista, investigador',
+      requisitos: 'Secundario completo. Examen de admisión.',
+      tag: 'FECHAS IMPORTANTES',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 15),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unlp_4',
+      institucionUid: 'unlp',
+      nombre: 'Licenciatura en Economía',
+      descripcion:
+          'Análisis económico con base matemática sólida. Perspectiva de economía política y desarrollo regional.',
+      area: 'Economía',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Economista, analista financiero, investigador',
+      requisitos: 'Secundario completo',
+      tag: 'BECAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 12),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unlp_5',
+      institucionUid: 'unlp',
+      nombre: 'Arquitectura',
+      descripcion:
+          'Diseño arquitectónico con enfoque sustentable. Taller de diseño y госудancies con proyectos reales.',
+      area: 'Creativa',
+      nivel: 'Universitario',
+      duracionAnios: 5,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Arquitecto, urbanista, paisajista, consultor',
+      requisitos: 'Secundario completo. Examen de aptitud.',
       tag: 'NUEVO',
       aprobada: true,
-      createdAt: DateTime(2026, 5, 1),
+      createdAt: DateTime(2026, 4, 10),
     ),
-  ];
+    OfertaModel(
+      ofertaId: 'oferta_unlp_6',
+      institucionUid: 'unlp',
+      nombre: 'Licenciatura en Periodismo',
+      descripcion:
+          'Formación en periodismo escrito, audiovisual y digital. Taller de noticias y prácticas en medios.',
+      area: 'Creativa',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Periodista, community manager, editor, corresponsal',
+      requisitos: 'Secundario completo. Ingreso libre.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 8),
+    ),
+  ]);
+
+  // --- UNSAM ---
+  batch.set(
+    firestore.collection('instituciones').doc('unsam'),
+    InstitucionModel(
+      institucionUid: 'unsam',
+      nombre: 'UNSAM',
+      descripcion:
+          'La Universidad Nacional de San Martín, fundada en 2009, se destaca por su enfoque interdisciplinario y producción de conocimiento.',
+      direccion: '25 de Mayo y Francia',
+      ciudad: 'San Martín',
+      provincia: 'Buenos Aires',
+      telefono: '(011) 4006-1500',
+      email: 'rrectorado@unsam.edu.ar',
+      sitioWeb: 'https://www.unsam.edu.ar',
+      logoURL: '',
+      latitud: -34.5746,
+      longitud: -58.5144,
+      estado: 'aprobada',
+      createdAt: DateTime(2025, 2, 15),
+    ).toMap(),
+    SetOptions(merge: false),
+  );
+
+  ofertas.addAll([
+    OfertaModel(
+      ofertaId: 'oferta_unsam_1',
+      institucionUid: 'unsam',
+      nombre: 'Tecnicatura en Producción Audiovisual',
+      descripcion:
+          'Formación en cine, televisión y producción digital. Equipamiento profesional y profesores del sector.',
+      area: 'Creativa',
+      nivel: 'Terciario',
+      duracionAnios: 3,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Director, productor, editor, camarógrafo, sonidista',
+      requisitos: 'Secundario completo. Portafolio recomendado.',
+      tag: 'NUEVO',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 25),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unsam_2',
+      institucionUid: 'unsam',
+      nombre: 'Licenciatura en Biotecnología',
+      descripcion:
+          'Carrera interdisciplinaria que combina biología molecular, química y bioinformática. Laboratorios de última generación.',
+      area: 'Salud',
+      nivel: 'Universitario',
+      duracionAnios: 5,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Biotecnólogo, investigador, analista en laboratorio',
+      requisitos: 'Secundario completo. Orientación en ciencias naturales.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 20),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unsam_3',
+      institucionUid: 'unsam',
+      nombre: 'Tecnicatura en Programación',
+      descripcion:
+          'Desarrollo de software con foco en buenas prácticas, testing y metodologías ágiles. Proyectos grupales reales.',
+      area: 'Tecnología',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Programador, desarrollador web y móvil',
+      requisitos: 'Secundario completo',
+      tag: 'BECAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 18),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unsam_4',
+      institucionUid: 'unsam',
+      nombre: 'Licenciatura en Relaciones Internacionales',
+      descripcion:
+          'Análisis de la política internacional, diplomacia y comercio exterior. Simulaciones de negociación y Model ONU.',
+      area: 'Ciencias Sociales',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Relacionista internacional, diplomático, analista político',
+      requisitos: 'Secundario completo',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 15),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unsam_5',
+      institucionUid: 'unsam',
+      nombre: 'Licenciatura en Sociología',
+      descripcion:
+          'Estudio de la sociedad contemporánea, procesos sociales y metodología de investigación cualitativa y cuantitativa.',
+      area: 'Ciencias Sociales',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Sociólogo, investigador, consultor social',
+      requisitos: 'Secundario completo',
+      tag: 'FECHAS IMPORTANTES',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 12),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unsam_6',
+      institucionUid: 'unsam',
+      nombre: 'Tecnicatura en Energías Renovables',
+      descripcion:
+          'Formación en instalación y mantenimiento de sistemas de energía solar, eólica y biomasa. Prácticas en plantas piloto.',
+      area: 'Ingeniería',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Técnico en energías renovables, instalador solar, consultor energético',
+      requisitos: 'Secundario completo',
+      tag: 'NUEVO',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 10),
+    ),
+  ]);
+
+  // --- UNQ ---
+  batch.set(
+    firestore.collection('instituciones').doc('unq'),
+    InstitucionModel(
+      institucionUid: 'unq',
+      nombre: 'UNQ',
+      descripcion:
+          'La Universidad Nacional de Quilmes es una universidad pública que se destaca por su compromiso con la inclusión social y la innovación pedagógica.',
+      direccion: 'Roque Sáenz Peña 352',
+      ciudad: 'Bernal',
+      provincia: 'Buenos Aires',
+      telefono: '(011) 4365-7100',
+      email: 'info@unq.edu.ar',
+      sitioWeb: 'https://www.unq.edu.ar',
+      logoURL: '',
+      latitud: -34.7078,
+      longitud: -58.2811,
+      estado: 'aprobada',
+      createdAt: DateTime(2025, 3, 1),
+    ).toMap(),
+    SetOptions(merge: false),
+  );
+
+  ofertas.addAll([
+    OfertaModel(
+      ofertaId: 'oferta_unq_1',
+      institucionUid: 'unq',
+      nombre: 'Licenciatura en Sociología',
+      descripcion:
+          'Carrera de referencia en sociología con énfasis en estudios urbanos y políticas públicas. Investigación aplicada.',
+      area: 'Ciencias Sociales',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Sociólogo, analista de políticas públicas',
+      requisitos: 'Secundario completo. Ingreso libre.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unq_2',
+      institucionUid: 'unq',
+      nombre: 'Tecnicatura en Regulación y Gestión de Servicios Públicos',
+      descripcion:
+          'Formación única en regulación de servicios públicos: agua, energía, transporte y telecomunicaciones.',
+      area: 'Administración',
+      nivel: 'Terciario',
+      duracionAnios: 3,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Técnico regulador, consultor en servicios públicos',
+      requisitos: 'Secundario completo',
+      tag: 'NUEVO',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 3),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unq_3',
+      institucionUid: 'unq',
+      nombre: 'Licenciatura en Economía',
+      descripcion:
+          'Economía con perspectiva crítica y enfoque en desarrollo productivo regional. Seminarios con especialistas.',
+      area: 'Economía',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Economista, analista de riesgo, funcionario público',
+      requisitos: 'Secundario completo',
+      tag: 'BECAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 1),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unq_4',
+      institucionUid: 'unq',
+      nombre: 'Licenciatura en Diseño',
+      descripcion:
+          'Diseño gráfico, industrial y de interacción. Taller con proyectos reales para empresas y organismos públicos.',
+      area: 'Creativa',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Diseñador gráfico, UX designer, director de arte',
+      requisitos: 'Secundario completo. Muestra de trabajos.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 28),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unq_5',
+      institucionUid: 'unq',
+      nombre: 'Tecnicatura en Producción Musical y Sonido',
+      descripcion:
+          'Formación en grabación, mezcla y producción musical. Estudio de grabación con equipamiento profesional.',
+      area: 'Creativa',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Productor musical, ingeniero de sonido, sonidista',
+      requisitos: 'Secundario completo. Entrevista motivacional.',
+      tag: 'NUEVO',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 25),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unq_6',
+      institucionUid: 'unq',
+      nombre: 'Licenciatura en Política y Gestión Deportiva',
+      descripcion:
+          'Gestión de organizaciones deportivas, marketing deportivo y políticas públicas del deporte. Prácticas en clubes y federaciones.',
+      area: 'Administración',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Gestor deportivo, director de.entidades, asesor de políticas deportivas',
+      requisitos: 'Secundario completo',
+      tag: 'FECHAS IMPORTANTES',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 22),
+    ),
+  ]);
+
+  // --- UNICEN ---
+  batch.set(
+    firestore.collection('instituciones').doc('unicen'),
+    InstitucionModel(
+      institucionUid: 'unicen',
+      nombre: 'UNICEN',
+      descripcion:
+          'La Universidad Nacional del Centro de la Provincia de Buenos Aires, con sedes en Tandil, Azul y Olavarría, ofrece formación de calidad.',
+      direccion: 'Gral. Pinto 399',
+      ciudad: 'Tandil',
+      provincia: 'Buenos Aires',
+      telefono: '(0249) 438-5600',
+      email: 'info@unicen.edu.ar',
+      sitioWeb: 'https://www.unicen.edu.ar',
+      logoURL: '',
+      latitud: -37.3217,
+      longitud: -59.1332,
+      estado: 'aprobada',
+      createdAt: DateTime(2025, 3, 15),
+    ).toMap(),
+    SetOptions(merge: false),
+  );
+
+  ofertas.addAll([
+    OfertaModel(
+      ofertaId: 'oferta_unicen_1',
+      institucionUid: 'unicen',
+      nombre: 'Licenciatura en Ciencias de la Computación',
+      descripcion:
+          'Formación teórica y práctica en computación. Algoritmos, inteligencia artificial y ciencia de datos.',
+      area: 'Tecnología',
+      nivel: 'Universitario',
+      duracionAnios: 5,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Científico de datos, desarrollador, investigador',
+      requisitos: 'Secundario completo. Examen de ingreso en exactas.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 30),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unicen_2',
+      institucionUid: 'unicen',
+      nombre: 'Tecnicatura en Instrumentación y Control',
+      descripcion:
+          'Medición, instrumentación y control de procesos industriales. Laboratorios con equipamiento industrial real.',
+      area: 'Ingeniería',
+      nivel: 'Terciario',
+      duracionAnios: 3,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Técnico en instrumentación, control de procesos, automatización',
+      requisitos: 'Secundario completo. Orientación técnica.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 28),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unicen_3',
+      institucionUid: 'unicen',
+      nombre: 'Licenciatura en Historia',
+      descripcion:
+          'Estudio de procesos históricos argentinos, latinoamericanos y mundiales. Archivos y fuentes primarias.',
+      area: 'Humanidades',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Historiador, docente, archivista, investigador',
+      requisitos: 'Secundario completo',
+      tag: 'BECAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 25),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unicen_4',
+      institucionUid: 'unicen',
+      nombre: 'Tecnicatura en Gestión Ambiental',
+      descripcion:
+          'Gestión de residuos, auditoría ambiental y desarrollo sustentable. Trabajo de campo en parques naturales.',
+      area: 'Ciencias Ambientales',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Técnico ambiental, auditor, gestor de residuos',
+      requisitos: 'Secundario completo',
+      tag: 'NUEVO',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 22),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unicen_5',
+      institucionUid: 'unicen',
+      nombre: 'Licenciatura en Turismo',
+      descripcion:
+          'Gestión turística, hotelería y desarrollo de destinos. Prácticas en hoteles y agencias de viajes de Tandil.',
+      area: 'Administración',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Gestor turístico, recepcionista, guía, emprendedor turístico',
+      requisitos: 'Secundario completo',
+      tag: 'FECHAS IMPORTANTES',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 20),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unicen_6',
+      institucionUid: 'unicen',
+      nombre: 'Ingeniería en Electrónica',
+      descripcion:
+          'Diseño de circuitos, sistemas embebidos y robótica. Electrónica aplicada a la industria y la salud.',
+      area: 'Ingeniería',
+      nivel: 'Universitario',
+      duracionAnios: 5,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Ingeniero electrónico, diseñador de hardware, investigador',
+      requisitos: 'Secundario completo con orientación en exactas',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 18),
+    ),
+  ]);
+
+  // --- UNMDP ---
+  batch.set(
+    firestore.collection('instituciones').doc('unmdp'),
+    InstitucionModel(
+      institucionUid: 'unmdp',
+      nombre: 'UNMDP',
+      descripcion:
+          'La Universidad Nacional de Mar del Plata es referente en estudios marinos, turismo y ciencias del mar.',
+      direccion: 'Diagonal J. B. Alberdi 2695',
+      ciudad: 'Mar del Plata',
+      provincia: 'Buenos Aires',
+      telefono: '(0223) 492-1705',
+      email: 'info@mdp.edu.ar',
+      sitioWeb: 'https://www.mdp.edu.ar',
+      logoURL: '',
+      latitud: -38.0055,
+      longitud: -57.5426,
+      estado: 'aprobada',
+      createdAt: DateTime(2025, 4, 1),
+    ).toMap(),
+    SetOptions(merge: false),
+  );
+
+  ofertas.addAll([
+    OfertaModel(
+      ofertaId: 'oferta_unmdp_1',
+      institucionUid: 'unmdp',
+      nombre: 'Licenciatura en Ciencias del Mar',
+      descripcion:
+          'Formación en biología marina, oceanografía y gestión de recursos acuáticos. Prácticas en el Instituto de Biología Marina.',
+      area: 'Ciencias Ambientales',
+      nivel: 'Universitario',
+      duracionAnios: 5,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Científico marino, biólogo pesquero, gestor ambiental',
+      requisitos: 'Secundario completo. Orientación en ciencias naturales.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 10),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unmdp_2',
+      institucionUid: 'unmdp',
+      nombre: 'Tecnicatura en Enfermería',
+      descripcion:
+          'Formación en cuidados enfermeros con rotaciones en hospitales públicos. Enfoque en salud comunitaria.',
+      area: 'Salud',
+      nivel: 'Terciario',
+      duracionAnios: 3,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Enfermero, enfermero jefe, gestor de salud',
+      requisitos: 'Secundario completo. Examen de ingreso.',
+      tag: 'FECHAS IMPORTANTES',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 8),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unmdp_3',
+      institucionUid: 'unmdp',
+      nombre: 'Licenciatura en Geografía',
+      descripcion:
+          'Estudio del territorio, SIG y cartografía. Trabajo de campo en la costa atlántica y regiones pampeanas.',
+      area: 'Ciencias Sociales',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Geógrafo, analista SIG, planificador territorial',
+      requisitos: 'Secundario completo',
+      tag: 'BECAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unmdp_4',
+      institucionUid: 'unmdp',
+      nombre: 'Tecnicatura en Gastronomía',
+      descripcion:
+          'Cocina argentina e internacional, pastelería y gestión de gastronomía. Prácticas en restaurantes de Mar del Plata.',
+      area: 'Creativa',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Chef, pastelero, consultor gastronómico',
+      requisitos: 'Secundario completo. Entrevista personal.',
+      tag: 'NUEVO',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 3),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unmdp_5',
+      institucionUid: 'unmdp',
+      nombre: 'Licenciatura en Comunicación',
+      descripcion:
+          'Comunicación social, periodismo digital y producción de contenidos. Laboratorio de medios digitales.',
+      area: 'Creativa',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Comunicador, periodista, productor de medios',
+      requisitos: 'Secundario completo',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 1),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unmdp_6',
+      institucionUid: 'unmdp',
+      nombre: 'Licenciatura en Economía',
+      descripcion:
+          'Economía con foco en recursos naturales y turismo. Análisis económico regional.',
+      area: 'Economía',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Economista, analista, funcionario público',
+      requisitos: 'Secundario completo',
+      tag: 'BECAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 3, 28),
+    ),
+  ]);
+
+  // --- UNGS ---
+  batch.set(
+    firestore.collection('instituciones').doc('ungs'),
+    InstitucionModel(
+      institucionUid: 'ungs',
+      nombre: 'UNGS',
+      descripcion:
+          'La Universidad Nacional de General Sarmiento, en Los Polvorines, se especializa en ciencias sociales, tecnología y formación docente.',
+      direccion: 'Juan María Gutiérrez 1150',
+      ciudad: 'Los Polvorines',
+      provincia: 'Buenos Aires',
+      telefono: '(011) 4469-7500',
+      email: 'info@campus.ungs.edu.ar',
+      sitioWeb: 'https://www.ungs.edu.ar',
+      logoURL: '',
+      latitud: -34.5267,
+      longitud: -58.6988,
+      estado: 'aprobada',
+      createdAt: DateTime(2025, 4, 15),
+    ).toMap(),
+    SetOptions(merge: false),
+  );
+
+  ofertas.addAll([
+    OfertaModel(
+      ofertaId: 'oferta_ungs_1',
+      institucionUid: 'ungs',
+      nombre: 'Licenciatura en Urbanismo',
+      descripcion:
+          'Planificación urbana, diseño de espacios públicos y gestión municipal. Taller con proyectos para el GCBA.',
+      area: 'Ciencias Sociales',
+      nivel: 'Universitario',
+      duracionAnios: 5,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Urbanista, planificador, asesor municipal',
+      requisitos: 'Secundario completo',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 12),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_ungs_2',
+      institucionUid: 'ungs',
+      nombre: 'Tecnicatura en Mecatrónica',
+      descripcion:
+          'Automatización, robótica y sistemas mecatrónicos. Laboratorio con robots industriales y PLCs.',
+      area: 'Ingeniería',
+      nivel: 'Terciario',
+      duracionAnios: 3,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Técnico mecatrónico, automatizador, programador de PLCs',
+      requisitos: 'Secundario completo. Orientación técnica.',
+      tag: 'NUEVO',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 10),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_ungs_3',
+      institucionUid: 'ungs',
+      nombre: 'Licenciatura en Trabajo Social',
+      descripcion:
+          'Formación en intervención social, políticas públicas y trabajo comunitario. Prácticas en organizaciones sociales.',
+      area: 'Ciencias Sociales',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Trabajador social, asistente social, gestor de políticas',
+      requisitos: 'Secundario completo',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 8),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_ungs_4',
+      institucionUid: 'ungs',
+      nombre: 'Licenciatura en Ciencias Políticas',
+      descripcion:
+          'Análisis político, gobierno y gestión pública. Simulaciones de debate y Model ONU.',
+      area: 'Ciencias Sociales',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Cientista político, funcionario, asesor legislativo',
+      requisitos: 'Secundario completo',
+      tag: 'FECHAS IMPORTANTES',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_ungs_5',
+      institucionUid: 'ungs',
+      nombre: 'Tecnicatura en Programación',
+      descripcion:
+          'Desarrollo de software con metodologías ágiles. Frameworks modernos y buenas prácticas.',
+      area: 'Tecnología',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Programador, desarrollador web y móvil',
+      requisitos: 'Secundario completo',
+      tag: 'BECAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 3),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_ungs_6',
+      institucionUid: 'ungs',
+      nombre: 'Licenciatura en Diseño Industrial',
+      descripcion:
+          'Diseño de productos industriales con enfoque en sustentabilidad. Taller con prototipado digital.',
+      area: 'Creativa',
+      nivel: 'Universitario',
+      duracionAnios: 5,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Diseñador industrial, prototipador, consultor',
+      requisitos: 'Secundario completo. Examen de aptitud.',
+      tag: 'NUEVO',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 1),
+    ),
+  ]);
+
+  // --- UNLZ (Universidad Nacional de Lomas de Zamora) ---
+  batch.set(
+    firestore.collection('instituciones').doc('unlz'),
+    InstitucionModel(
+      institucionUid: 'unlz',
+      nombre: 'UNLZ',
+      descripcion:
+          'La Universidad Nacional de Lomas de Zamora, en el sur del Gran Buenos Aires, ofrece carreras con fuerte compromiso social.',
+      direccion: 'Camino de Cintura y Juan XXIII',
+      ciudad: 'Lomas de Zamora',
+      provincia: 'Buenos Aires',
+      telefono: '(011) 4282-8045',
+      email: 'info@unlz.edu.ar',
+      sitioWeb: 'https://www.unlz.edu.ar',
+      logoURL: '',
+      latitud: -34.7649,
+      longitud: -58.3963,
+      estado: 'aprobada',
+      createdAt: DateTime(2025, 5, 1),
+    ).toMap(),
+    SetOptions(merge: false),
+  );
+
+  ofertas.addAll([
+    OfertaModel(
+      ofertaId: 'oferta_unlz_1',
+      institucionUid: 'unlz',
+      nombre: 'Abogacía',
+      descripcion:
+          'Formación en derecho con énfasis en derechos humanos y justicia social. Clínicas jurídicas en zonas vulnerables.',
+      area: 'Derecho',
+      nivel: 'Universitario',
+      duracionAnios: 5,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Abogado, defensor, mediador',
+      requisitos: 'Secundario completo. Ingreso libre.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 15),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unlz_2',
+      institucionUid: 'unlz',
+      nombre: 'Licenciatura en Ciencias Económicas',
+      descripcion:
+          'Economía, contabilidad y finanzas públicas. Enfoque en economía social y solidaria.',
+      area: 'Economía',
+      nivel: 'Universitario',
+      duracionAnios: 5,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Economista, contador, auditor financiero',
+      requisitos: 'Secundario completo',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 12),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unlz_3',
+      institucionUid: 'unlz',
+      nombre: 'Licenciatura en Comunicación Social',
+      descripcion:
+          'Periodismo, comunicación institucional y medios digitales. Producción de contenido en la FM de la universidad.',
+      area: 'Creativa',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Periodista, comunicador, productor de medios',
+      requisitos: 'Secundario completo',
+      tag: 'NUEVO',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 10),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unlz_4',
+      institucionUid: 'unlz',
+      nombre: 'Tecnicatura en Recursos Humanos',
+      descripcion:
+          'Gestión de personal, reclutamiento, capacitación y legislación laboral. Prácticas en empresas del sur del GBA.',
+      area: 'Administración',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Técnico en RRHH, selector de personal, capacitador',
+      requisitos: 'Secundario completo',
+      tag: 'FECHAS IMPORTANTES',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 8),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unlz_5',
+      institucionUid: 'unlz',
+      nombre: 'Licenciatura en Educación',
+      descripcion:
+          'Formación docente con enfoque en tecnología educativa y pedagogía crítica. Prácticas en escuelas del conurbano.',
+      area: 'Educación',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Docente, pedagogo, diseñador curricular',
+      requisitos: 'Secundario completo',
+      tag: 'BECAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unlz_6',
+      institucionUid: 'unlz',
+      nombre: 'Tecnicatura en Desarrollo de Software',
+      descripcion:
+          'Programación web, móvil y bases de datos. Proyecto integrador con empresa real en el último semestre.',
+      area: 'Tecnología',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Desarrollador, programador, tester',
+      requisitos: 'Secundario completo. Examen de ingreso en lógica.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 4, 3),
+    ),
+  ]);
 
   for (final oferta in ofertas) {
     batch.set(
@@ -148,6 +1007,12 @@ Future<void> seedData() async {
       SetOptions(merge: false),
     );
   }
+
+  batch.set(
+    firestore.collection('ofertas').doc('oferta_seed_v3_map'),
+    {'trigger': true, 'createdAt': DateTime.now()},
+    SetOptions(merge: false),
+  );
 
   await batch.commit();
 }

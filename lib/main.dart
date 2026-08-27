@@ -8,6 +8,8 @@ import 'screens/forgot_password_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/test_vocacional_screen.dart';
 import 'screens/test_resultados_screen.dart';
+import 'screens/map_screen.dart';
+import 'screens/institucion_detail_screen.dart';
 import 'seed_data.dart';
 
 void main() async {
@@ -16,7 +18,7 @@ void main() async {
 
   final ofertaDoc = await FirebaseFirestore.instance
       .collection('ofertas')
-      .doc('oferta_utn_1')
+      .doc('oferta_seed_v3_map')
       .get();
   if (!ofertaDoc.exists) {
     await seedData();
@@ -42,6 +44,11 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => const ProfileScreen(),
         '/test': (context) => const TestVocacionalScreen(),
         '/test-resultados': (context) => const TestResultadosScreen(),
+        '/map': (context) => const MapScreen(),
+        '/institucion': (context) {
+          final uid = ModalRoute.of(context)!.settings.arguments as String;
+          return InstitucionDetailScreen(institucionUid: uid);
+        },
       },
     );
   }

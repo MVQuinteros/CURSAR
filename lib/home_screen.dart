@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:geolocator/geolocator.dart';
 import 'models/oferta_model.dart';
 import 'models/institucion_model.dart';
 
@@ -14,11 +17,68 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   String _userName = 'Usuario';
+  Position? _userPosition;
+  List<InstitucionModel>? _institucionesCache;
 
   @override
   void initState() {
     super.initState();
     _cargarNombreUsuario();
+    _cargarUbicacion();
+  }
+
+  Future<void> _cargarUbicacion() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.deniedForever) {
+        if (mounted) _mostrarDialogoPermisoUbicacion();
+        return;
+      }
+      if (permission == LocationPermission.always ||
+          permission == LocationPermission.whileInUse) {
+        final pos = await Geolocator.getCurrentPosition(
+            locationSettings:
+                const LocationSettings(accuracy: LocationAccuracy.high));
+        setState(() => _userPosition = pos);
+      }
+    } catch (_) {}
+  }
+
+  void _mostrarDialogoPermisoUbicacion() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Permiso de ubicación'),
+        content: const Text(
+          'Para mostrarte tu ubicación en el mapa, necesitamos acceso a tu ubicación. '
+          'Por favor, activá el permiso desde la configuración de la app.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Ahora no'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Geolocator.openAppSettings();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1A237E),
+            ),
+            child: const Text(
+              'Abrir configuración',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _cargarNombreUsuario() async {
@@ -54,11 +114,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<List<InstitucionModel>> _cargarInstituciones() async {
+    if (_institucionesCache != null) return _institucionesCache!;
     final snapshot =
         await FirebaseFirestore.instance.collection('instituciones').get();
-    return snapshot.docs
+    _institucionesCache = snapshot.docs
         .map((doc) => InstitucionModel.fromMap(doc.id, doc.data()))
         .toList();
+    return _institucionesCache!;
   }
 
   void _onItemTapped(int index) {
@@ -377,7 +439,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemCount: instituciones.length,
                           itemBuilder: (context, index) {
                             final institucion = instituciones[index];
-                            return Container(
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  '/institucion',
+                                  arguments: institucion.institucionUid,
+                                );
+                              },
+                              child: Container(
                               width: 130,
                               margin: const EdgeInsets.only(right: 16),
                               decoration: BoxDecoration(
@@ -455,6 +525,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ],
                                 ),
+                               ),
                               ),
                             );
                           },
@@ -479,7 +550,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/map');
+                          },
                           child: const Text(
                             'Ver mapa completo',
                             style: TextStyle(
@@ -497,26 +570,91 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: FutureBuilder<List<InstitucionModel>>(
                       future: _cargarInstituciones(),
                       builder: (context, snapshot) {
-                        final inst = (snapshot.hasData && snapshot.data!.isNotEmpty)
-                            ? snapshot.data!.first
+                        final instituciones = snapshot.data ?? [];
+                        final institucionesConCoords = instituciones
+                            .where((i) => i.latitud != null && i.longitud != null)
+                            .toList();
+                        final primera = institucionesConCoords.isNotEmpty
+                            ? institucionesConCoords.first
                             : null;
+
                         return Stack(
                           children: [
-                            Container(
-                              height: 200,
-                              decoration: BoxDecoration(
-                                color: Colors.green[50],
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.map,
-                                  size: 50,
-                                  color: Colors.grey,
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: SizedBox(
+                                height: 200,
+                                child: FlutterMap(
+                                  options: MapOptions(
+                                    initialCenter: _userPosition != null
+                                        ? LatLng(_userPosition!.latitude,
+                                            _userPosition!.longitude)
+                                        : (primera != null
+                                            ? LatLng(primera.latitud!,
+                                                primera.longitud!)
+                                            : const LatLng(-34.6037, -58.3683)),
+                                    initialZoom: 11,
+                                    interactionOptions:
+                                        const InteractionOptions(
+                                      flags: InteractiveFlag.all &
+                                          ~InteractiveFlag.rotate,
+                                    ),
+                                  ),
+                                  children: [
+                                    TileLayer(
+                                      urlTemplate:
+                                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                      userAgentPackageName: 'proyecto.app',
+                                    ),
+                                    MarkerLayer(
+                                      markers: [
+                                        ...institucionesConCoords.map(
+                                          (inst) => Marker(
+                                            point: LatLng(inst.latitud!,
+                                                inst.longitud!),
+                                            width: 32,
+                                            height: 32,
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                Navigator.pushNamed(
+                                                  context,
+                                                  '/institucion',
+                                                  arguments:
+                                                      inst.institucionUid,
+                                                );
+                                              },
+                                              child: const Icon(
+                                                Icons.location_pin,
+                                                color: Color(0xFF1A237E),
+                                                size: 32,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        if (_userPosition != null)
+                                          Marker(
+                                            point: LatLng(
+                                                _userPosition!.latitude,
+                                                _userPosition!.longitude),
+                                            width: 16,
+                                            height: 16,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                    color: Colors.white,
+                                                    width: 2),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                            if (inst != null)
+                            if (primera != null)
                               Positioned(
                                 bottom: 16,
                                 left: 16,
@@ -528,60 +666,73 @@ class _HomeScreenState extends State<HomeScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.1),
+                                        color: Colors.black
+                                            .withValues(alpha: 0.1),
                                         blurRadius: 4,
                                         offset: const Offset(0, 2),
                                       ),
                                     ],
                                   ),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                  inst.nombre,
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16,
-                                                  ),
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                                Text(
-                                                  inst.descripcion,
-                                                  style: const TextStyle(
-                                                    color: Colors.grey,
-                                                    fontSize: 11,
-                                                  ),
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          ElevatedButton(
-                                            onPressed: () {},
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.blue,
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 12,
-                                                vertical: 6,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              primera.nombre,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
                                               ),
-                                              minimumSize: Size.zero,
+                                              overflow:
+                                                  TextOverflow.ellipsis,
                                             ),
-                                            child: const Text(
-                                              'Ver detalles',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
+                                            Text(
+                                              primera.descripcion,
+                                              style: const TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 11,
                                               ),
+                                              maxLines: 1,
+                                              overflow:
+                                                  TextOverflow.ellipsis,
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
+                                      const SizedBox(width: 8),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                            context,
+                                            '/institucion',
+                                            arguments:
+                                                primera.institucionUid,
+                                          );
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              const Color(0xFF1A237E),
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 6,
+                                          ),
+                                          minimumSize: Size.zero,
+                                        ),
+                                        child: const Text(
+                                          'Ver detalles',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                           ],
