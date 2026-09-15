@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/institucion_model.dart';
 import '../models/oferta_model.dart';
+import '../services/historial_service.dart';
 
 class InstitucionDetailScreen extends StatefulWidget {
   final String institucionUid;
@@ -52,7 +54,36 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
           return b.createdAt!.compareTo(a.createdAt!);
         });
       _loading = false;
+
+      _registrarHistorial(_institucion, _ofertas);
     });
+  }
+
+  Future<void> _registrarHistorial(
+    InstitucionModel? inst,
+    List<OfertaModel> ofertas,
+  ) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || inst == null) return;
+    try {
+      final service = HistorialService();
+      await service.registrar(
+        uid: user.uid,
+        tipo: 'institucion',
+        id: inst.institucionUid,
+        nombre: inst.nombre,
+      );
+      for (final oferta in ofertas) {
+        await service.registrar(
+          uid: user.uid,
+          tipo: 'carrera',
+          id: oferta.ofertaId,
+          nombre: oferta.nombre,
+          institucionUid: inst.institucionUid,
+          institucionNombre: inst.nombre,
+        );
+      }
+    } catch (_) {}
   }
 
   Future<void> _abrirEnGoogleMaps() async {
@@ -183,6 +214,28 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (inst.logoURL.isNotEmpty) ...[
+                    Center(
+                      child: CircleAvatar(
+                        radius: 45,
+                        backgroundColor: Colors.white,
+                        child: ClipOval(
+                          child: Image.network(
+                            inst.logoURL,
+                            width: 90,
+                            height: 90,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) => const Icon(
+                              Icons.school,
+                              size: 45,
+                              color: Color(0xFF1A237E),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                   Text(
                     inst.nombre,
                     style: const TextStyle(
