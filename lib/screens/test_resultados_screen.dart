@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/test_vocacional_model.dart';
 import '../models/oferta_model.dart';
 import '../services/test_service.dart';
+import '../theme/app_theme.dart';
 
 class TestResultadosScreen extends StatefulWidget {
   const TestResultadosScreen({super.key});
@@ -11,11 +12,6 @@ class TestResultadosScreen extends StatefulWidget {
 }
 
 class _TestResultadosScreenState extends State<TestResultadosScreen> {
-  static const Color _azulPrimario = Color(0xFF1877F2);
-  static const Color _grisClaro = Color(0xFFE0E0E0);
-  static const Color _grisMedio = Color(0xFF9E9E9E);
-  static const Color _fondoPantalla = Color(0xFFF8F9FA);
-
   final TestService _testService = TestService();
 
   AreaInteres? _areaInteres;
@@ -68,7 +64,7 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
   Widget build(BuildContext context) {
     if (_cargando) {
       return Scaffold(
-        backgroundColor: _fondoPantalla,
+        backgroundColor: context.colors.bgMain,
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -81,7 +77,7 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
         : 0;
 
     return Scaffold(
-      backgroundColor: _fondoPantalla,
+      backgroundColor: context.colors.bgMain,
       body: Column(
         children: [
           _buildEncabezado(area),
@@ -108,8 +104,6 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
         currentIndex: 1,
         onTap: _navegar,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: _azulPrimario,
-        unselectedItemColor: _grisMedio,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -199,8 +193,9 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: context.colors.borderSubtle),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -228,7 +223,7 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
           Text(
             'Tu área es',
             style: TextStyle(
-              color: Colors.grey[600],
+              color: context.colors.textSecondary,
               fontSize: 14,
             ),
           ),
@@ -261,7 +256,7 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
             area.descripcion,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.grey[600],
+              color: context.colors.textSecondary,
               fontSize: 14,
             ),
           ),
@@ -285,8 +280,9 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.colors.bgSurface,
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: context.colors.borderSubtle),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.04),
@@ -324,7 +320,7 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
                         Text(
                           '$conteo',
                           style: TextStyle(
-                            color: Colors.grey[600],
+                            color: context.colors.textSecondary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -336,7 +332,7 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
                       child: LinearProgressIndicator(
                         value: porcentaje,
                         minHeight: 8,
-                        backgroundColor: _grisClaro,
+                        backgroundColor: context.colors.borderSubtle,
                         color: area.color,
                       ),
                     ),
@@ -368,7 +364,7 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
               Text(
                 '${_ofertasRecomendadas.length} opciones',
                 style: TextStyle(
-                  color: Colors.grey[600],
+                  color: context.colors.textSecondary,
                   fontSize: 14,
                 ),
               ),
@@ -380,21 +376,24 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.colors.bgSurface,
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: context.colors.borderSubtle),
             ),
             child: Column(
               children: [
-                Icon(Icons.search_off, size: 48, color: Colors.grey[400]),
+                Icon(Icons.search_off,
+                    size: 48, color: context.colors.iconNormal),
                 const SizedBox(height: 12),
                 Text(
                   'No se encontraron ofertas para esta área',
-                  style: TextStyle(color: Colors.grey[600]),
+                  style: TextStyle(color: context.colors.textSecondary),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Intentá con otro test o explorá todas las ofertas',
-                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                  style: TextStyle(
+                      color: context.colors.textSecondary, fontSize: 12),
                 ),
               ],
             ),
@@ -410,8 +409,9 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.colors.borderSubtle),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -440,7 +440,7 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
                     Text(
                       '${oferta.institucionUid.toUpperCase()} · ${oferta.nivel}',
                       style: TextStyle(
-                        color: Colors.grey[600],
+                        color: context.colors.textSecondary,
                         fontSize: 13,
                       ),
                     ),
@@ -450,13 +450,13 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: _azulPrimario.withValues(alpha: 0.1),
+                  color: context.colors.accentPrimary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   '${oferta.duracionAnios} ${oferta.duracionAnios == 1 ? 'año' : 'años'}',
-                  style: const TextStyle(
-                    color: _azulPrimario,
+                  style: TextStyle(
+                    color: context.colors.accentPrimary,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -470,7 +470,7 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              color: Colors.grey[600],
+              color: context.colors.textSecondary,
               fontSize: 13,
             ),
           ),
@@ -491,8 +491,8 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
                 Navigator.pushNamed(context, '/home');
               },
               style: OutlinedButton.styleFrom(
-                foregroundColor: _azulPrimario,
-                side: const BorderSide(color: _azulPrimario),
+                foregroundColor: context.colors.accentPrimary,
+                side: BorderSide(color: context.colors.accentPrimary),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -509,19 +509,19 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: _grisClaro.withValues(alpha: 0.5),
+        color: context.colors.borderSubtle.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: Colors.grey[600]),
+          Icon(icon, size: 14, color: context.colors.textSecondary),
           const SizedBox(width: 6),
           Flexible(
             child: Text(
               text,
               style: TextStyle(
-                color: Colors.grey[700],
+                color: context.colors.textSecondary,
                 fontSize: 12,
               ),
               overflow: TextOverflow.ellipsis,
@@ -543,7 +543,7 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
               Navigator.pushReplacementNamed(context, '/home');
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: _azulPrimario,
+              backgroundColor: context.colors.accentPrimary,
               foregroundColor: Colors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(
@@ -565,8 +565,8 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
               Navigator.pushReplacementNamed(context, '/test');
             },
             style: OutlinedButton.styleFrom(
-              foregroundColor: _azulPrimario,
-              side: const BorderSide(color: _azulPrimario),
+              foregroundColor: context.colors.accentPrimary,
+              side: BorderSide(color: context.colors.accentPrimary),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -585,7 +585,7 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
           child: Text(
             'Volver al inicio',
             style: TextStyle(
-              color: Colors.grey[600],
+              color: context.colors.textSecondary,
             ),
           ),
         ),

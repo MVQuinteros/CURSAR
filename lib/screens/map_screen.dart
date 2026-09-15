@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/institucion_model.dart';
+import '../theme/app_theme.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -106,7 +107,7 @@ class _MapScreenState extends State<MapScreen> {
               Geolocator.openAppSettings();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1A237E),
+              backgroundColor: context.colors.accentPrimary,
             ),
             child: const Text(
               'Abrir configuración',
@@ -133,24 +134,25 @@ class _MapScreenState extends State<MapScreen> {
             children: [
               Text(
                 inst.nombre,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1A237E),
+                  color: context.colors.textPrimary,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 inst.descripcion,
-                style: const TextStyle(fontSize: 13, color: Colors.grey),
+                style: TextStyle(
+                    fontSize: 13, color: context.colors.textSecondary),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const Icon(Icons.location_on,
-                      size: 16, color: Color(0xFF1A237E)),
+                  Icon(Icons.location_on,
+                      size: 16, color: context.colors.accentPrimary),
                   const SizedBox(width: 6),
                   Text(
                     '${inst.direccion}, ${inst.ciudad}',
@@ -171,7 +173,7 @@ class _MapScreenState extends State<MapScreen> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1A237E),
+                    backgroundColor: context.colors.accentPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -195,8 +197,6 @@ class _MapScreenState extends State<MapScreen> {
     if (_loading) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFF1A237E),
-          foregroundColor: Colors.white,
           title: const Text('Mapa de universidades'),
         ),
         body: const Center(child: CircularProgressIndicator()),
@@ -207,10 +207,10 @@ class _MapScreenState extends State<MapScreen> {
         .where((i) => i.latitud != null && i.longitud != null)
         .toList();
 
+    final oscuro = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A237E),
-        foregroundColor: Colors.white,
         title: const Text('Mapa de universidades'),
       ),
       body: Stack(
@@ -228,10 +228,24 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
             children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'proyecto.app',
-              ),
+              if (oscuro)
+                ColorFiltered(
+                  colorFilter: ColorFilter.mode(
+                    const Color(0xFF505966),
+                    BlendMode.multiply,
+                  ),
+                  child: TileLayer(
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'proyecto.app',
+                  ),
+                )
+              else
+                TileLayer(
+                  urlTemplate:
+                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'proyecto.app',
+                ),
               MarkerLayer(
                 markers: [
                   ...institucionesConCoords.map(
@@ -244,24 +258,24 @@ class _MapScreenState extends State<MapScreen> {
                         child: inst.logoURL.isNotEmpty
                             ? CircleAvatar(
                                 radius: 20,
-                                backgroundColor: Colors.white,
+                                backgroundColor: context.colors.bgSurface,
                                 child: ClipOval(
                                   child: Image.network(
                                     inst.logoURL,
                                     width: 40,
                                     height: 40,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (_, _, _) => const Icon(
+                                    errorBuilder: (_, _, _) => Icon(
                                       Icons.location_pin,
-                                      color: Color(0xFF1A237E),
+                                      color: context.colors.accentPrimary,
                                       size: 40,
                                     ),
                                   ),
                                 ),
                               )
-                            : const Icon(
+                            : Icon(
                                 Icons.location_pin,
-                                color: Color(0xFF1A237E),
+                                color: context.colors.accentPrimary,
                                 size: 40,
                               ),
                       ),
@@ -275,7 +289,7 @@ class _MapScreenState extends State<MapScreen> {
                       height: 20,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.blue,
+                          color: context.colors.accentPrimary,
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 3),
                           boxShadow: [
@@ -298,16 +312,18 @@ class _MapScreenState extends State<MapScreen> {
               children: [
                 FloatingActionButton.small(
                   heroTag: 'userLocation',
-                  backgroundColor: Colors.white,
+                  backgroundColor: context.colors.bgSurface,
                   onPressed: _centrarEnMiUbicacion,
-                  child: const Icon(Icons.my_location, color: Color(0xFF1A237E)),
+                  child: Icon(Icons.my_location,
+                      color: context.colors.accentPrimary),
                 ),
                 const SizedBox(height: 8),
                 FloatingActionButton.small(
                   heroTag: 'allInstitutions',
-                  backgroundColor: Colors.white,
+                  backgroundColor: context.colors.bgSurface,
                   onPressed: _centrarEnInstituciones,
-                  child: const Icon(Icons.unfold_more, color: Color(0xFF1A237E)),
+                  child: Icon(Icons.unfold_more,
+                      color: context.colors.accentPrimary),
                 ),
               ],
             ),

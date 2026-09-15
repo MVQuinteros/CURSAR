@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../theme/app_theme.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -10,11 +11,6 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _emailController = TextEditingController();
-
-  static const Color _mainBrandBlue = Color(0xFF1E88E5);
-  static const Color _darkNavy = Color(0xFF001533);
-  static const Color _lightGrey = Color(0xFF9E9E9E);
-  static const Color _softGreyBorder = Color(0xFFE0E0E0);
 
   Future<void> _enviarReset() async {
     final email = _emailController.text.trim();
@@ -109,9 +105,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           flex: 3,
                           child: Container(
                             width: double.infinity,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
+                            decoration: BoxDecoration(
+                              color: context.colors.bgSurface,
+                              borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(40),
                                 topRight: Radius.circular(40),
                               ),
@@ -126,19 +122,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Restablecer contraseña',
                                     style: TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold,
-                                      color: _darkNavy,
+                                      color: context.colors.textPrimary,
                                     ),
                                   ),
                                   const SizedBox(height: 12),
-                                  const Text(
+                                  Text(
                                     'Ingresá tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.',
                                     style: TextStyle(
-                                      color: _lightGrey,
+                                      color: context.colors.textSecondary,
                                       fontSize: 14,
                                     ),
                                   ),
@@ -148,10 +144,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                     keyboardType: TextInputType.emailAddress,
                                     decoration: InputDecoration(
                                       hintText: 'Correo electrónico',
-                                      hintStyle: const TextStyle(
-                                        color: _lightGrey,
-                                        fontSize: 14,
-                                      ),
                                       prefixIcon: Padding(
                                         padding: const EdgeInsets.all(12),
                                         child: Image.asset(
@@ -160,38 +152,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                           height: 24,
                                         ),
                                       ),
-                                      contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 16,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: const BorderSide(
-                                          color: _softGreyBorder,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: const BorderSide(
-                                          color: _softGreyBorder,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: const BorderSide(
-                                          color: _mainBrandBlue,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      filled: true,
-                                      fillColor: Colors.white,
                                     ),
                                   ),
                                   const SizedBox(height: 24),
                                   ElevatedButton(
                                     onPressed: _enviarReset,
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: _mainBrandBlue,
+                                      backgroundColor:
+                                          context.colors.accentPrimary,
                                       foregroundColor: Colors.white,
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 16,
@@ -214,19 +182,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Text(
+                                      Text(
                                         '¿Recordaste tu contraseña? ',
                                         style: TextStyle(
-                                          color: _lightGrey,
+                                          color: context.colors.textSecondary,
                                           fontSize: 14,
                                         ),
                                       ),
                                       GestureDetector(
                                         onTap: () => Navigator.pop(context),
-                                        child: const Text(
+                                        child: Text(
                                           'Iniciá sesión',
                                           style: TextStyle(
-                                            color: _mainBrandBlue,
+                                            color: context.colors.accentPrimary,
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                           ),

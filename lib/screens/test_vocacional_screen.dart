@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/test_service.dart';
+import '../theme/app_theme.dart';
 
 class TestVocacionalScreen extends StatefulWidget {
   const TestVocacionalScreen({super.key});
@@ -24,13 +25,8 @@ class _PreguntaTest {
 }
 
 class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
-  static const Color _azulPrimario = Color(0xFF1877F2);
   static const Color _azulGradienteInicio = Color(0xFF1B74E4);
   static const Color _azulGradienteFin = Color(0xFF58B2FF);
-  static const Color _grisOscuro = Color(0xFF424242);
-  static const Color _grisClaro = Color(0xFFE0E0E0);
-  static const Color _grisMedio = Color(0xFF9E9E9E);
-  static const Color _fondoPantalla = Color(0xFFF8F9FA);
 
   final TestService _testService = TestService();
 
@@ -205,7 +201,7 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
     final progreso = (_indiceActual + 1) / _preguntas.length;
 
     return Scaffold(
-      backgroundColor: _fondoPantalla,
+      backgroundColor: context.colors.bgMain,
       body: Column(
         children: [
           _buildEncabezado(),
@@ -249,8 +245,6 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
         currentIndex: 1,
         onTap: _navegar,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: _azulPrimario,
-        unselectedItemColor: _grisMedio,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -334,7 +328,7 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
       children: [
         Text(
           'Pregunta ${_indiceActual + 1} de ${_preguntas.length}',
-          style: const TextStyle(color: _grisOscuro, fontSize: 13),
+          style: TextStyle(color: context.colors.textPrimary, fontSize: 13),
         ),
         const SizedBox(height: 8),
         ClipRRect(
@@ -342,8 +336,8 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
           child: LinearProgressIndicator(
             value: progreso,
             minHeight: 8,
-            backgroundColor: _grisClaro,
-            color: _azulPrimario,
+            backgroundColor: context.colors.borderSubtle,
+            color: context.colors.accentPrimary,
           ),
         ),
       ],
@@ -355,8 +349,9 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: context.colors.borderSubtle),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -371,8 +366,8 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
         children: [
           Text(
             pregunta.texto,
-            style: const TextStyle(
-              color: Color(0xFF212121),
+            style: TextStyle(
+              color: context.colors.textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -401,22 +396,24 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.bgSurface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: seleccionada ? _azulPrimario : _grisClaro,
+            color: seleccionada
+                ? context.colors.accentPrimary
+                : context.colors.borderSubtle,
             width: seleccionada ? 1.6 : 1,
           ),
         ),
         child: Row(
           children: [
-            Icon(opcion.icono, color: _azulPrimario, size: 22),
+            Icon(opcion.icono, color: context.colors.accentPrimary, size: 22),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 opcion.texto,
                 style: TextStyle(
-                  color: _grisOscuro,
+                  color: context.colors.textPrimary,
                   fontSize: 15,
                   fontWeight: seleccionada ? FontWeight.w600 : FontWeight.w400,
                 ),
@@ -427,7 +424,9 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
               seleccionada
                   ? Icons.radio_button_checked
                   : Icons.radio_button_unchecked,
-              color: seleccionada ? _azulPrimario : _grisMedio,
+              color: seleccionada
+                  ? context.colors.accentPrimary
+                  : context.colors.iconNormal,
               size: 22,
             ),
           ],
@@ -443,8 +442,8 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
       child: OutlinedButton(
         onPressed: _guardando ? null : _irAtras,
         style: OutlinedButton.styleFrom(
-          foregroundColor: _azulPrimario,
-          side: const BorderSide(color: _azulPrimario, width: 1.5),
+          foregroundColor: context.colors.accentPrimary,
+          side: BorderSide(color: context.colors.accentPrimary, width: 1.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -465,9 +464,9 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
       child: ElevatedButton(
         onPressed: _guardando ? null : _irASiguiente,
         style: ElevatedButton.styleFrom(
-          backgroundColor: _azulPrimario,
+          backgroundColor: context.colors.accentPrimary,
           foregroundColor: Colors.white,
-          disabledBackgroundColor: _grisMedio,
+          disabledBackgroundColor: context.colors.borderSubtle,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),

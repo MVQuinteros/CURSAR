@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../theme/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,10 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  static const Color _mainBrandBlue = Color(0xFF1E88E5);
   static const Color _darkNavy = Color(0xFF001533);
-  static const Color _lightGrey = Color(0xFF9E9E9E);
-  static const Color _softGreyBorder = Color(0xFFE0E0E0);
 
   InputDecoration _buildInputDecoration({
     required Widget prefixIcon,
@@ -27,24 +25,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }) {
     return InputDecoration(
       hintText: hintText,
-      hintStyle: const TextStyle(color: _lightGrey, fontSize: 14),
+      hintStyle: const TextStyle(fontSize: 14),
       prefixIcon: Padding(padding: const EdgeInsets.all(12), child: prefixIcon),
       suffixIcon: suffixIcon,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _softGreyBorder),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _softGreyBorder),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _mainBrandBlue, width: 2),
-      ),
-      filled: true,
-      fillColor: Colors.white,
     );
   }
 
@@ -182,13 +165,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                     text: TextSpan(
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: _darkNavy.withValues(alpha: 0.8),
+                                        color:
+                                            _darkNavy.withValues(alpha: 0.8),
                                       ),
-                                      children: const [
+                                      children: [
                                         TextSpan(
                                           text: 'Tu futuro académico',
                                           style: TextStyle(
-                                            color: _mainBrandBlue,
+                                            color: context.colors.accentPrimary,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -208,9 +192,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           flex: 3,
                           child: Container(
                             width: double.infinity,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
+                            decoration: BoxDecoration(
+                              color: context.colors.bgSurface,
+                              borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(40),
                                 topRight: Radius.circular(40),
                               ),
@@ -275,10 +259,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                         context,
                                         '/forgot-password',
                                       ),
-                                      child: const Text(
+                                      child: Text(
                                         '¿Olvidaste tu contraseña?',
                                         style: TextStyle(
-                                          color: _mainBrandBlue,
+                                          color: context.colors.accentPrimary,
                                           fontSize: 14,
                                         ),
                                       ),
@@ -288,7 +272,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ElevatedButton(
                                     onPressed: _loginWithEmail,
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: _mainBrandBlue,
+                                      backgroundColor:
+                                          context.colors.accentPrimary,
                                       foregroundColor: Colors.white,
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 16,
@@ -310,23 +295,25 @@ class _LoginScreenState extends State<LoginScreen> {
                                   const SizedBox(height: 24),
                                   Row(
                                     children: [
-                                      const Expanded(
-                                        child: Divider(color: _softGreyBorder),
+                                      Expanded(
+                                        child: Divider(
+                                            color: context.colors.borderSubtle),
                                       ),
-                                      const Padding(
-                                        padding: EdgeInsets.symmetric(
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
                                           horizontal: 16,
                                         ),
                                         child: Text(
                                           'o continuá con',
                                           style: TextStyle(
-                                            color: _lightGrey,
+                                            color: context.colors.textSecondary,
                                             fontSize: 14,
                                           ),
                                         ),
                                       ),
-                                      const Expanded(
-                                        child: Divider(color: _softGreyBorder),
+                                      Expanded(
+                                        child: Divider(
+                                            color: context.colors.borderSubtle),
                                       ),
                                     ],
                                   ),
@@ -334,34 +321,35 @@ class _LoginScreenState extends State<LoginScreen> {
                                   OutlinedButton(
                                     onPressed: _loginWithGoogle,
                                     style: OutlinedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      foregroundColor: _darkNavy,
+                                      backgroundColor: context.colors.bgSurface,
+                                      foregroundColor: context.colors.textPrimary,
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 14,
                                       ),
-                                      side: const BorderSide(
-                                        color: _softGreyBorder,
+                                      side: BorderSide(
+                                        color: context.colors.borderSubtle,
                                       ),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                     ),
-                                    child: const Row(
+                                    child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Image(
+                                        const Image(
                                           image: AssetImage(
                                             'assets/imagenes/logoGoogle.png',
                                           ),
                                           height: 24,
                                         ),
-                                        SizedBox(width: 12),
+                                        const SizedBox(width: 12),
                                         Text(
                                           'Continuar con Google',
                                           style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w500,
+                                            color: context.colors.textPrimary,
                                           ),
                                         ),
                                       ],
@@ -371,10 +359,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Text(
+                                      Text(
                                         '¿No tenés cuenta? ',
                                         style: TextStyle(
-                                          color: _lightGrey,
+                                          color: context.colors.textSecondary,
                                           fontSize: 14,
                                         ),
                                       ),
@@ -383,10 +371,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                           context,
                                           '/register',
                                         ),
-                                        child: const Text(
+                                        child: Text(
                                           'Registrate',
                                           style: TextStyle(
-                                            color: _mainBrandBlue,
+                                            color: context.colors.accentPrimary,
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                           ),

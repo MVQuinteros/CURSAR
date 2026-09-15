@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/institucion_model.dart';
 import '../models/oferta_model.dart';
 import '../services/historial_service.dart';
+import '../theme/app_theme.dart';
 
 class InstitucionDetailScreen extends StatefulWidget {
   final String institucionUid;
@@ -135,8 +136,6 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
     if (_loading) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFF1A237E),
-          foregroundColor: Colors.white,
           title: const Text('Cargando...'),
         ),
         body: const Center(child: CircularProgressIndicator()),
@@ -146,8 +145,6 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
     if (_institucion == null) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFF1A237E),
-          foregroundColor: Colors.white,
           title: const Text('Error'),
         ),
         body: const Center(child: Text('Institución no encontrada')),
@@ -156,11 +153,11 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
 
     final inst = _institucion!;
     final tieneCoordenadas = inst.latitud != null && inst.longitud != null;
+    final oscuro = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: context.colors.bgMain,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A237E),
-        foregroundColor: Colors.white,
         title: Text(inst.nombre),
         actions: [
           if (inst.sitioWeb.isNotEmpty)
@@ -187,20 +184,33 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
                     ),
                   ),
                   children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'proyecto.app',
-                    ),
+                    if (oscuro)
+                      ColorFiltered(
+                        colorFilter: ColorFilter.mode(
+                          const Color(0xFF505966),
+                          BlendMode.multiply,
+                        ),
+                        child: TileLayer(
+                          urlTemplate:
+                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          userAgentPackageName: 'proyecto.app',
+                        ),
+                      )
+                    else
+                      TileLayer(
+                        urlTemplate:
+                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName: 'proyecto.app',
+                      ),
                     MarkerLayer(
                       markers: [
                         Marker(
                           point: LatLng(inst.latitud!, inst.longitud!),
                           width: 40,
                           height: 40,
-                          child: const Icon(
+                          child: Icon(
                             Icons.location_pin,
-                            color: Color(0xFF1A237E),
+                            color: context.colors.accentPrimary,
                             size: 40,
                           ),
                         ),
@@ -218,17 +228,17 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
                     Center(
                       child: CircleAvatar(
                         radius: 45,
-                        backgroundColor: Colors.white,
+                        backgroundColor: context.colors.bgSurface,
                         child: ClipOval(
                           child: Image.network(
                             inst.logoURL,
                             width: 90,
                             height: 90,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) => const Icon(
+                            errorBuilder: (_, _, _) => Icon(
                               Icons.school,
                               size: 45,
-                              color: Color(0xFF1A237E),
+                              color: context.colors.accentPrimary,
                             ),
                           ),
                         ),
@@ -238,27 +248,27 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
                   ],
                   Text(
                     inst.nombre,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A237E),
+                      color: context.colors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     inst.descripcion,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey,
+                      color: context.colors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _infoRow(Icons.location_on, inst.direccion),
-                  _infoRow(Icons.location_city, '${inst.ciudad}, ${inst.provincia}'),
-                  _infoRow(Icons.phone, inst.telefono),
-                  _infoRow(Icons.email, inst.email),
+                  _infoRow(context, Icons.location_on, inst.direccion),
+                  _infoRow(context, Icons.location_city, '${inst.ciudad}, ${inst.provincia}'),
+                  _infoRow(context, Icons.phone, inst.telefono),
+                  _infoRow(context, Icons.email, inst.email),
                   if (inst.sitioWeb.isNotEmpty)
-                    _infoRow(Icons.language, inst.sitioWeb),
+                    _infoRow(context, Icons.language, inst.sitioWeb),
                   const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
@@ -270,7 +280,7 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
                         style: TextStyle(color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1A237E),
+                        backgroundColor: context.colors.accentPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -279,22 +289,22 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Text(
+                  Text(
                     'Ofertas académicas',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A237E),
+                      color: context.colors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 12),
                   if (_ofertas.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
                       child: Center(
                         child: Text(
                           'No hay ofertas disponibles',
-                          style: TextStyle(color: Colors.grey),
+                          style: TextStyle(color: context.colors.textSecondary),
                         ),
                       ),
                     )
@@ -309,12 +319,12 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
     );
   }
 
-  Widget _infoRow(IconData icon, String text) {
+  Widget _infoRow(BuildContext context, IconData icon, String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: const Color(0xFF1A237E)),
+          Icon(icon, size: 18, color: context.colors.accentPrimary),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -369,7 +379,8 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
             const SizedBox(height: 8),
             Text(
               oferta.descripcion,
-              style: const TextStyle(fontSize: 13, color: Colors.grey),
+              style: TextStyle(
+                  fontSize: 13, color: context.colors.textSecondary),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
@@ -387,12 +398,14 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.work_outline, size: 14, color: Colors.grey),
+                Icon(Icons.work_outline,
+                    size: 14, color: context.colors.iconNormal),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
                     oferta.salidaLaboral,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(
+                        fontSize: 12, color: context.colors.textSecondary),
                   ),
                 ),
               ],
@@ -407,9 +420,11 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: Colors.grey[600]),
+        Icon(icon, size: 14, color: context.colors.textSecondary),
         const SizedBox(width: 4),
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+        Text(label,
+            style: TextStyle(
+                fontSize: 12, color: context.colors.textSecondary)),
       ],
     );
   }

@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/reporte_model.dart';
 import '../services/soporte_service.dart';
-
-const Color _kViolet = Color(0xFF8B5CF6);
-const Color _kGreyText = Color(0xFF6B7280);
-const Color _kGreyBorder = Color(0xFFE5E7EB);
+import '../theme/app_theme.dart';
 
 class AyudaSoporteScreen extends StatefulWidget {
   const AyudaSoporteScreen({super.key});
@@ -75,33 +72,16 @@ class _AyudaSoporteScreenState extends State<AyudaSoporteScreen> {
   InputDecoration _decoration(String hint, IconData icono) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: _kGreyText, fontSize: 14),
-      prefixIcon: Icon(icono, color: _kGreyText, size: 20),
-      filled: true,
-      fillColor: const Color(0xFFF9FAFB),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _kGreyBorder),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _kGreyBorder),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _kViolet, width: 2),
-      ),
+      hintStyle: const TextStyle(fontSize: 14),
+      prefixIcon: Icon(icono, size: 20),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDFF),
+      backgroundColor: context.colors.bgMain,
       appBar: AppBar(
-        backgroundColor: _kViolet,
-        foregroundColor: Colors.white,
         title: const Text('Ayuda y soporte'),
       ),
       body: SingleChildScrollView(
@@ -109,12 +89,12 @@ class _AyudaSoporteScreenState extends State<AyudaSoporteScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               'Preguntas frecuentes',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1F2937),
+                color: context.colors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
@@ -122,8 +102,9 @@ class _AyudaSoporteScreenState extends State<AyudaSoporteScreen> {
               (pregunta) => Container(
                 margin: const EdgeInsets.only(bottom: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: context.colors.bgSurface,
                   borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: context.colors.borderSubtle),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.04),
@@ -139,36 +120,41 @@ class _AyudaSoporteScreenState extends State<AyudaSoporteScreen> {
                   collapsedShape: const Border(),
                   title: Text(
                     pregunta,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF111827),
+                      color: context.colors.textPrimary,
                     ),
                   ),
-                  children: const [
+                  children: [
                     Text(
                       'El equipo de CursAR está trabajando en esta respuesta. '
                       'Si necesitás resolverlo antes, mandanos un reporte con '
                       'el formulario de más abajo.',
-                      style: TextStyle(fontSize: 13, color: _kGreyText, height: 1.4),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: context.colors.textSecondary,
+                        height: 1.4,
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               '¿Encontraste un problema?',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1F2937),
+                color: context.colors.textPrimary,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Contanos qué pasó y lo vamos a revisar.',
-              style: TextStyle(fontSize: 12, color: _kGreyText),
+              style: TextStyle(
+                  fontSize: 12, color: context.colors.textSecondary),
             ),
             const SizedBox(height: 12),
             Form(
@@ -218,9 +204,10 @@ class _AyudaSoporteScreenState extends State<AyudaSoporteScreen> {
                   ElevatedButton(
                     onPressed: _enviando ? null : _enviar,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _kViolet,
+                      backgroundColor: context.colors.accentPrimary,
                       foregroundColor: Colors.white,
-                      disabledBackgroundColor: _kViolet.withValues(alpha: 0.4),
+                      disabledBackgroundColor:
+                          context.colors.accentPrimary.withValues(alpha: 0.4),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),

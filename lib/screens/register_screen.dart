@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../services/notificacion_service.dart';
+import '../theme/app_theme.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -25,11 +26,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _aceptaTerminos = false;
   DateTime? _fechaNacimiento;
 
-  static const Color _mainBrandBlue = Color(0xFF1E88E5);
-  static const Color _darkNavy = Color(0xFF001533);
-  static const Color _lightGrey = Color(0xFF9E9E9E);
-  static const Color _softGreyBorder = Color(0xFFE0E0E0);
-
   InputDecoration _buildInputDecoration({
     required Widget prefixIcon,
     String? hintText,
@@ -37,35 +33,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }) {
     return InputDecoration(
       hintText: hintText,
-      hintStyle: const TextStyle(color: _lightGrey, fontSize: 14),
+      hintStyle: const TextStyle(fontSize: 14),
       prefixIcon: Padding(
         padding: const EdgeInsets.all(12),
         child: prefixIcon,
       ),
       suffixIcon: suffixIcon,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _softGreyBorder),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _softGreyBorder),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _mainBrandBlue, width: 2),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Colors.red, width: 1),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Colors.red, width: 2),
-      ),
-      filled: true,
-      fillColor: Colors.white,
     );
   }
 
@@ -275,9 +248,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           flex: 4,
                           child: Container(
                             width: double.infinity,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
+                            decoration: BoxDecoration(
+                              color: context.colors.bgSurface,
+                              borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(40),
                                 topRight: Radius.circular(40),
                               ),
@@ -289,12 +262,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
-                                    const Text(
+                                    Text(
                                       'Crear cuenta',
                                       style: TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold,
-                                        color: _darkNavy,
+                                        color: context.colors.textPrimary,
                                       ),
                                     ),
                                     const SizedBox(height: 24),
@@ -305,7 +278,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             controller: _nombreController,
                                             textCapitalization: TextCapitalization.words,
                                             decoration: _buildInputDecoration(
-                                              prefixIcon: const Icon(Icons.person_outline, color: _lightGrey),
+                                              prefixIcon: const Icon(Icons.person_outline),
                                               hintText: 'Nombre',
                                             ),
                                             validator: (value) {
@@ -322,7 +295,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             controller: _apellidoController,
                                             textCapitalization: TextCapitalization.words,
                                             decoration: _buildInputDecoration(
-                                              prefixIcon: const Icon(Icons.person_outline, color: _lightGrey),
+                                              prefixIcon: const Icon(Icons.person_outline),
                                               hintText: 'Apellido',
                                             ),
                                             validator: (value) {
@@ -438,13 +411,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       child: AbsorbPointer(
                                         child: TextFormField(
                                           decoration: _buildInputDecoration(
-                                            prefixIcon: const Icon(Icons.calendar_today, color: _lightGrey),
+                                            prefixIcon: const Icon(Icons.calendar_today),
                                             hintText: _fechaNacimiento != null
                                                 ? _formatearFecha(_fechaNacimiento!)
                                                 : 'Fecha de nacimiento',
                                           ),
                                           style: TextStyle(
-                                            color: _fechaNacimiento != null ? _darkNavy : _lightGrey,
+                                            color: _fechaNacimiento != null
+                                                ? context.colors.textPrimary
+                                                : context.colors.textSecondary,
                                           ),
                                         ),
                                       ),
@@ -454,7 +429,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       controller: _localidadController,
                                       textCapitalization: TextCapitalization.words,
                                       decoration: _buildInputDecoration(
-                                        prefixIcon: const Icon(Icons.location_on_outlined, color: _lightGrey),
+                                        prefixIcon: const Icon(Icons.location_on_outlined),
                                         hintText: 'Localidad',
                                       ),
                                     ),
@@ -466,7 +441,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           width: 24,
                                           child: Checkbox(
                                             value: _aceptaTerminos,
-                                            activeColor: _mainBrandBlue,
+                                            activeColor: context.colors.accentPrimary,
                                             onChanged: (value) {
                                               setState(() {
                                                 _aceptaTerminos = value ?? false;
@@ -480,7 +455,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             'Acepto los Términos y Condiciones',
                                             style: TextStyle(
                                               fontSize: 13,
-                                              color: _aceptaTerminos ? _darkNavy : _lightGrey,
+                                              color: _aceptaTerminos
+                                                  ? context.colors.textPrimary
+                                                  : context.colors.textSecondary,
                                             ),
                                           ),
                                         ),
@@ -490,9 +467,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     ElevatedButton(
                                       onPressed: _aceptaTerminos ? _registrar : null,
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: _mainBrandBlue,
+                                        backgroundColor: context.colors.accentPrimary,
                                         foregroundColor: Colors.white,
-                                        disabledBackgroundColor: _softGreyBorder,
+                                        disabledBackgroundColor: context.colors.borderSubtle,
                                         disabledForegroundColor: Colors.white70,
                                         padding: const EdgeInsets.symmetric(vertical: 16),
                                         shape: RoundedRectangleBorder(
@@ -512,45 +489,46 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     const SizedBox(height: 24),
                                     Row(
                                       children: [
-                                        const Expanded(child: Divider(color: _softGreyBorder)),
-                                        const Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 16),
+                                        Expanded(child: Divider(color: context.colors.borderSubtle)),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 16),
                                           child: Text(
                                             'o registrate con',
                                             style: TextStyle(
-                                              color: _lightGrey,
+                                              color: context.colors.textSecondary,
                                               fontSize: 14,
                                             ),
                                           ),
                                         ),
-                                        const Expanded(child: Divider(color: _softGreyBorder)),
+                                        Expanded(child: Divider(color: context.colors.borderSubtle)),
                                       ],
                                     ),
                                     const SizedBox(height: 24),
                                     OutlinedButton(
                                       onPressed: _loginWithGoogle,
                                       style: OutlinedButton.styleFrom(
-                                        backgroundColor: Colors.white,
-                                        foregroundColor: _darkNavy,
+                                        backgroundColor: context.colors.bgSurface,
+                                        foregroundColor: context.colors.textPrimary,
                                         padding: const EdgeInsets.symmetric(vertical: 14),
-                                        side: const BorderSide(color: _softGreyBorder),
+                                        side: BorderSide(color: context.colors.borderSubtle),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(12),
                                         ),
                                       ),
-                                      child: const Row(
+                                      child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          Image(
+                                          const Image(
                                             image: AssetImage('assets/imagenes/logoGoogle.png'),
                                             height: 24,
                                           ),
-                                          SizedBox(width: 12),
+                                          const SizedBox(width: 12),
                                           Text(
                                             'Continuar con Google',
                                             style: TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w500,
+                                              color: context.colors.textPrimary,
                                             ),
                                           ),
                                         ],
@@ -560,19 +538,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        const Text(
+                                        Text(
                                           '¿Ya tenés cuenta? ',
                                           style: TextStyle(
-                                            color: _lightGrey,
+                                            color: context.colors.textSecondary,
                                             fontSize: 14,
                                           ),
                                         ),
                                         GestureDetector(
                                           onTap: () => Navigator.pop(context),
-                                          child: const Text(
+                                          child: Text(
                                             'Iniciá sesión',
                                             style: TextStyle(
-                                              color: _mainBrandBlue,
+                                              color: context.colors.accentPrimary,
                                               fontSize: 14,
                                               fontWeight: FontWeight.bold,
                                             ),
