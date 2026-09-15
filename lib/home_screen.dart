@@ -6,6 +6,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'models/oferta_model.dart';
 import 'models/institucion_model.dart';
+import 'services/aviso_service.dart';
+import 'services/notificacion_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,12 +21,65 @@ class _HomeScreenState extends State<HomeScreen> {
   String _userName = 'Usuario';
   Position? _userPosition;
   List<InstitucionModel>? _institucionesCache;
+  Set<String>? _avisosLeidos;
 
   @override
   void initState() {
     super.initState();
     _cargarNombreUsuario();
     _cargarUbicacion();
+    _recargarAvisosLeidos();
+  }
+
+  Future<void> _recargarAvisosLeidos() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+    final leidos = await AvisoService().obtenerAvisosLeidos(uid);
+    if (mounted) {
+      setState(() => _avisosLeidos = leidos.toSet());
+    }
+  }
+
+  Widget _campanaNotificaciones() {
+    final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    return StreamBuilder<QuerySnapshot>(
+      stream: AvisoService().avisosStream(),
+      builder: (context, avisoSnap) {
+        final cantidadAvisos = avisoSnap.data?.docs.length ?? 0;
+        final leidosAvisos = _avisosLeidos == null
+            ? 0
+            : (_avisosLeidos!.length < cantidadAvisos
+                ? cantidadAvisos - _avisosLeidos!.length
+                : 0);
+        return StreamBuilder<QuerySnapshot>(
+          stream: NotificacionService().notificacionesStream(uid),
+          builder: (context, notifSnap) {
+            final docs = notifSnap.data?.docs ?? [];
+            var noLeidas = 0;
+            for (final doc in docs) {
+              final data = doc.data() as Map<String, dynamic>;
+              if (data['leido'] == false) noLeidas++;
+            }
+            final total = noLeidas + leidosAvisos;
+            return Badge(
+              isLabelVisible: total > 0,
+              backgroundColor: const Color(0xFFE53935),
+              label: Text('$total'),
+              child: IconButton(
+                onPressed: () async {
+                  await Navigator.pushNamed(context, '/notificaciones');
+                  await _recargarAvisosLeidos();
+                },
+                icon: const Icon(
+                  Icons.notifications_outlined,
+                  color: Colors.white,
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Future<void> _cargarUbicacion() async {
@@ -169,13 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               'assets/imagenes/logo.png',
                               height: 35,
                             ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Icons.notifications_outlined,
-                                color: Colors.white,
-                              ),
-                            ),
+                            _campanaNotificaciones(),
                           ],
                         ),
                         const SizedBox(height: 20),

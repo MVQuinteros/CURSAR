@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../services/notificacion_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -127,6 +128,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
           'localidad': localidad,
         });
         await user.updateDisplayName('$nombre $apellido');
+        try {
+          await NotificacionService().crear(
+            userUid: user.uid,
+            titulo: '¡Bienvenido/a a CursAR!',
+            mensaje: 'Completá tu test vocacional y descubrí tu carrera ideal.',
+            tipo: 'bienvenida',
+            link: '/test',
+          );
+        } catch (_) {}
       }
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/home');
@@ -171,6 +181,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
             'rol': 'usuario',
             'ultimoLogin': FieldValue.serverTimestamp(),
           });
+          try {
+            await NotificacionService().crear(
+              userUid: user.uid,
+              titulo: '¡Bienvenido/a a CursAR!',
+              mensaje: 'Completá tu test vocacional y descubrí tu carrera ideal.',
+              tipo: 'bienvenida',
+              link: '/test',
+            );
+          } catch (_) {}
         }
       }
       if (mounted) {
