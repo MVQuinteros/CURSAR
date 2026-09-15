@@ -10,6 +10,7 @@ import 'screens/edit_profile_screen.dart';
 import 'screens/historial_screen.dart';
 import 'screens/configuracion_screen.dart';
 import 'screens/ayuda_soporte_screen.dart';
+import 'screens/notificaciones_screen.dart';
 import 'screens/test_vocacional_screen.dart';
 import 'screens/test_resultados_screen.dart';
 import 'screens/map_screen.dart';
@@ -34,6 +35,14 @@ void main() async {
       .get();
   if (!patchDoc.exists) {
     await patchInstitucionesSinLogo();
+  }
+
+  final avisosDoc = await FirebaseFirestore.instance
+      .collection('avisos')
+      .doc('avisos_seed_v1')
+      .get();
+  if (!avisosDoc.exists) {
+    await seedAvisos();
   }
 
   runApp(const MyApp());
@@ -65,6 +74,7 @@ class MyApp extends StatelessWidget {
         },
         '/configuracion': (context) => const ConfiguracionScreen(),
         '/soporte': (context) => const AyudaSoporteScreen(),
+        '/notificaciones': (context) => const NotificacionesScreen(),
         '/test': (context) => const TestVocacionalScreen(),
         '/test-resultados': (context) => const TestResultadosScreen(),
         '/map': (context) => const MapScreen(),

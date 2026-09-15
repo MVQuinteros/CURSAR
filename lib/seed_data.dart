@@ -1282,3 +1282,48 @@ Future<void> patchInstitucionesSinLogo() async {
       );
   debugPrint('patchInstitucionesSinLogo: $actualizadas instituciones actualizadas');
 }
+
+Future<void> seedAvisos() async {
+  final firestore = FirebaseFirestore.instance;
+  final batch = firestore.batch();
+
+  final avisos = [
+    {
+      'titulo': 'Inscripciones abiertas 2027',
+      'mensaje':
+          'Se encuentran abiertas las inscripciones para el ciclo lectivo 2027 en las universidades de la región. Consultá las fechas de cada institución.',
+      'tipo': 'inscripcion',
+      'link': '/map',
+      'publicado': DateTime(2026, 9, 12),
+    },
+    {
+      'titulo': 'Nuevas fechas de ingreso en zona norte',
+      'mensaje':
+          'Las universidades de la zona norte confirmaron nuevas fechas de ingreso e inscripción. Ingresá y revisá los requisitos por carrera.',
+      'tipo': 'noticia',
+      'link': '/map',
+      'publicado': DateTime(2026, 9, 5),
+    },
+    {
+      'titulo': '¿Todavía no hacés tu test vocacional?',
+      'mensaje':
+          'Descubrí qué carrera se ajusta a tus intereses con nuestro test vocacional gratuito. Te lleva menos de 5 minutos.',
+      'tipo': 'consejo',
+      'link': '/test',
+      'publicado': DateTime(2026, 8, 28),
+    },
+  ];
+
+  for (final aviso in avisos) {
+    final id = 'aviso_${(aviso['titulo'] as String).toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_')}';
+    batch.set(firestore.collection('avisos').doc(id), aviso);
+  }
+
+  batch.set(
+    firestore.collection('avisos').doc('avisos_seed_v1'),
+    {'trigger': true, 'createdAt': DateTime.now()},
+    SetOptions(merge: false),
+  );
+
+  await batch.commit();
+}
