@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/institucion_model.dart';
 import '../models/oferta_model.dart';
 import '../services/historial_service.dart';
+import '../services/ubicacion_service.dart';
 import '../theme/app_theme.dart';
 
 class InstitucionDetailScreen extends StatefulWidget {
@@ -23,11 +24,25 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
   InstitucionModel? _institucion;
   List<OfertaModel> _ofertas = [];
   bool _loading = true;
+  double? _userLat;
+  double? _userLng;
+  ModoViaje _modo = ModoViaje.auto;
 
   @override
   void initState() {
     super.initState();
     _cargarDatos();
+    _cargarPosicion();
+  }
+
+  Future<void> _cargarPosicion() async {
+    final pos = await UbicacionService.obtenerPosicion();
+    if (mounted) {
+      setState(() {
+        _userLat = pos?.latitude;
+        _userLng = pos?.longitude;
+      });
+    }
   }
 
   Future<void> _cargarDatos() async {
@@ -103,6 +118,25 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
     }
     final url = Uri.parse(
         'https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> _abrirRuta(ModoViaje modo) async {
+    if (_institucion == null) return;
+    final inst = _institucion!;
+    final destino = (inst.latitud != null && inst.longitud != null)
+        ? '${inst.latitud},${inst.longitud}'
+        : Uri.encodeComponent('${inst.direccion}, ${inst.ciudad}');
+    final origen =
+        (_userLat != null && _userLng != null) ? '$_userLat,$_userLng' : null;
+    final url = Uri.parse(
+      'https://www.google.com/maps/dir/?api=1'
+      '${origen != null ? '&origin=$origen' : ''}'
+      '&destination=$destino'
+      '&travelmode=${modo.travelmode}',
+    );
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     }
@@ -270,24 +304,7 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
                   if (inst.sitioWeb.isNotEmpty)
                     _infoRow(context, Icons.language, inst.sitioWeb),
                   const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: _abrirEnGoogleMaps,
-                      icon: const Icon(Icons.directions, color: Colors.white),
-                      label: const Text(
-                        'Cómo llegar',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: context.colors.accentPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                  ),
+                  ..._buildSeccionComoLlegar(inst),
                   const SizedBox(height: 24),
                   Text(
                     'Ofertas académicas',
@@ -314,6 +331,142 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildSeccionComoLlegar(InstitucionModel inst) {
+    double? dist;
+    if (inst.latitud != null &&
+        inst.longitud != null &&
+        _userLat != null &&
+        _userLng != null) {
+      dist = UbicacionService.distanciaKm(
+          _userLat!, _userLng!, inst.latitud!, inst.longitud!);
+    }
+    final tiempos = dist != null ? UbicacionService.tiempos(dist) : null;
+
+    if (dist == null || tiempos == null) {
+      return [
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: _abrirEnGoogleMaps,
+            icon: const Icon(Icons.directions, color: Colors.white),
+            label: const Text(
+              'Cómo llegar',
+              style: TextStyle(color: Colors.white),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.colors.accentPrimary,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+        ),
+      ];
+    }
+
+    return [
+      Row(
+        children: [
+          Icon(Icons.near_me, size: 16, color: context.colors.accentPrimary),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              'A ${UbicacionService.formatearKm(dist)} de tu ubicación',
+              style: TextStyle(
+                fontSize: 13,
+                color: context.colors.textSecondary,
+              ),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 12),
+      Row(
+        children: [
+          _buildChipViaje(
+            Icons.directions_car,
+            '${tiempos.autoMin} min',
+            ModoViaje.auto,
+          ),
+          const SizedBox(width: 8),
+          _buildChipViaje(
+            Icons.directions_walk,
+            '${tiempos.caminandoMin} min',
+            ModoViaje.caminando,
+          ),
+          const SizedBox(width: 8),
+          _buildChipViaje(
+            Icons.directions_bus,
+            '${tiempos.transporteMin} min',
+            ModoViaje.transporte,
+          ),
+        ],
+      ),
+      const SizedBox(height: 12),
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: () => _abrirRuta(_modo),
+          icon: const Icon(Icons.directions, color: Colors.white),
+          label: const Text(
+            'Cómo llegar',
+            style: TextStyle(color: Colors.white),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: context.colors.accentPrimary,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+      ),
+    ];
+  }
+
+  Widget _buildChipViaje(IconData icon, String label, ModoViaje modo) {
+    final accent = context.colors.accentPrimary;
+    final seleccionado = _modo == modo;
+    return Expanded(
+      child: InkWell(
+        onTap: () => setState(() => _modo = modo),
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+          decoration: BoxDecoration(
+            color: seleccionado
+                ? accent.withValues(alpha: 0.15)
+                : context.colors.borderSubtle.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: seleccionado ? accent : context.colors.borderSubtle,
+            ),
+          ),
+          child: Column(
+            children: [
+              Icon(
+                icon,
+                size: 20,
+                color:
+                    seleccionado ? accent : context.colors.textSecondary,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: seleccionado ? accent : context.colors.textPrimary,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
