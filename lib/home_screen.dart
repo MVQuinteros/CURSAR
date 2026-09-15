@@ -8,6 +8,8 @@ import 'models/oferta_model.dart';
 import 'models/institucion_model.dart';
 import 'services/aviso_service.dart';
 import 'services/notificacion_service.dart';
+import 'services/theme_controller.dart';
+import 'theme/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    ThemeController.instance.cargar();
     _cargarNombreUsuario();
     _cargarUbicacion();
     _recargarAvisosLeidos();
@@ -124,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Geolocator.openAppSettings();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1A237E),
+              backgroundColor: context.colors.accentPrimary,
             ),
             child: const Text(
               'Abrir configuración',
@@ -237,17 +240,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   Text(
                                     '¡Hola, $_userName!',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 28,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF1A237E),
+                                      color: context.colors.accentPrimary,
                                     ),
                                   ),
                                   const SizedBox(height: 5),
-                                  const Text(
+                                  Text(
                                     'Descubrí tu camino y empezá a construir tu futuro.',
                                     style: TextStyle(
-                                      color: Colors.grey,
+                                      color: context.colors.textSecondary,
                                       fontSize: 14,
                                     ),
                                   ),
@@ -258,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 CircleAvatar(
                                   radius: 40,
-                                  backgroundColor: Colors.grey[300],
+                                  backgroundColor: context.colors.bgSurface,
                                   child: const Icon(
                                     Icons.person,
                                     size: 40,
@@ -271,8 +274,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Container(
                                     width: 24,
                                     height: 24,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.blue,
+                                    decoration: BoxDecoration(
+                                      color: context.colors.accentPrimary,
                                       shape: BoxShape.circle,
                                     ),
                                     child: const Icon(
@@ -327,7 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     width: 220,
                                     margin: const EdgeInsets.only(right: 16),
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: context.colors.bgSurface,
                                       borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(
@@ -346,16 +349,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                               height: 120,
                                               width: double.infinity,
                                               decoration: BoxDecoration(
-                                                color: Colors.grey[300],
+                                                color: context.colors.bgSurface,
                                                 borderRadius: const BorderRadius.only(
                                                   topLeft: Radius.circular(12),
                                                   topRight: Radius.circular(12),
                                                 ),
                                               ),
-                                              child: const Center(
+                                              child: Center(
                                                 child: Icon(
                                                   Icons.image,
-                                                  color: Colors.white,
+                                                  color: context.colors.iconNormal,
                                                   size: 40,
                                                 ),
                                               ),
@@ -369,7 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   vertical: 4,
                                                 ),
                                                 decoration: BoxDecoration(
-                                                  color: Colors.blue,
+                                                  color: context.colors.accentPrimary,
                                                   borderRadius: BorderRadius.circular(4),
                                                 ),
                                                 child: Text(
@@ -402,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               Text(
                                                 oferta.descripcion,
                                                 style: TextStyle(
-                                                  color: Colors.grey[600],
+                                                  color: context.colors.textSecondary,
                                                   fontSize: 12,
                                                 ),
                                                 maxLines: 2,
@@ -411,16 +414,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                               const SizedBox(height: 8),
                                               Row(
                                                 children: [
-                                                  const Icon(
+                                                  Icon(
                                                     Icons.calendar_today,
                                                     size: 12,
-                                                    color: Colors.grey,
+                                                    color: context.colors.iconNormal,
                                                   ),
                                                   const SizedBox(width: 4),
                                                   Text(
                                                     fecha,
-                                                    style: const TextStyle(
-                                                      color: Colors.grey,
+                                                    style: TextStyle(
+                                                      color: context.colors.textSecondary,
                                                       fontSize: 11,
                                                     ),
                                                   ),
@@ -458,10 +461,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         TextButton(
                           onPressed: () {},
-                          child: const Text(
+                          child: Text(
                             'Ver todas',
                             style: TextStyle(
-                              color: Colors.blue,
+                              color: context.colors.accentPrimary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -500,7 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: 130,
                               margin: const EdgeInsets.only(right: 16),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: context.colors.bgSurface,
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
@@ -517,7 +520,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     CircleAvatar(
                                       radius: 24,
-                                      backgroundColor: Colors.grey[300],
+                                      backgroundColor: context.colors.bgSurface,
                                       backgroundImage: institucion
                                               .logoURL.isNotEmpty
                                           ? NetworkImage(institucion.logoURL)
@@ -528,17 +531,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                           : null,
                                       child: institucion.logoURL.isNotEmpty
                                           ? null
-                                          : const Icon(
+                                          : Icon(
                                               Icons.business,
-                                              color: Colors.white,
+                                              color: context.colors.iconNormal,
                                               size: 22,
                                             ),
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
                                       institucion.nombre,
-                                      style: const TextStyle(
-                                        color: Colors.blue,
+                                      style: TextStyle(
+                                        color: context.colors.accentPrimary,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13,
                                       ),
@@ -551,7 +554,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       child: Text(
                                         institucion.descripcion,
                                         style: TextStyle(
-                                          color: Colors.grey[600],
+                                          color: context.colors.textSecondary,
                                           fontSize: 10,
                                         ),
                                         textAlign: TextAlign.center,
@@ -562,10 +565,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        const Icon(
+                                        Icon(
                                           Icons.location_on,
                                           size: 12,
-                                          color: Colors.grey,
+                                          color: context.colors.iconNormal,
                                         ),
                                         const SizedBox(width: 2),
                                         Flexible(
@@ -573,8 +576,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                             institucion.ciudad.isNotEmpty
                                                 ? institucion.ciudad
                                                 : '',
-                                            style: const TextStyle(
-                                              color: Colors.grey,
+                                            style: TextStyle(
+                                              color: context.colors.textSecondary,
                                               fontSize: 11,
                                             ),
                                             overflow: TextOverflow.ellipsis,
@@ -612,10 +615,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () {
                             Navigator.pushNamed(context, '/map');
                           },
-                          child: const Text(
+                          child: Text(
                             'Ver mapa completo',
                             style: TextStyle(
-                              color: Colors.blue,
+                              color: context.colors.accentPrimary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -660,11 +663,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                   children: [
-                                    TileLayer(
-                                      urlTemplate:
-                                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                      userAgentPackageName: 'proyecto.app',
-                                    ),
+                                    if (Theme.of(context).brightness ==
+                                        Brightness.dark)
+                                      ColorFiltered(
+                                        colorFilter: ColorFilter.mode(
+                                          const Color(0xFF505966),
+                                          BlendMode.multiply,
+                                        ),
+                                        child: TileLayer(
+                                          urlTemplate:
+                                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                          userAgentPackageName: 'proyecto.app',
+                                        ),
+                                      )
+                                    else
+                                      TileLayer(
+                                        urlTemplate:
+                                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                        userAgentPackageName: 'proyecto.app',
+                                      ),
                                     MarkerLayer(
                                       markers: [
                                         ...institucionesConCoords.map(
@@ -682,9 +699,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       inst.institucionUid,
                                                 );
                                               },
-                                              child: const Icon(
+                                              child: Icon(
                                                 Icons.location_pin,
-                                                color: Color(0xFF1A237E),
+                                                color: context.colors.accentPrimary,
                                                 size: 32,
                                               ),
                                             ),
@@ -699,7 +716,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             height: 16,
                                             child: Container(
                                               decoration: BoxDecoration(
-                                                color: Colors.blue,
+                                                color: context.colors.accentPrimary,
                                                 shape: BoxShape.circle,
                                                 border: Border.all(
                                                     color: Colors.white,
@@ -721,7 +738,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: context.colors.bgSurface,
                                     borderRadius: BorderRadius.circular(8),
                                     boxShadow: [
                                       BoxShadow(
@@ -751,8 +768,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                             Text(
                                               primera.descripcion,
-                                              style: const TextStyle(
-                                                color: Colors.grey,
+                                              style: TextStyle(
+                                                color: context.colors.textSecondary,
                                                 fontSize: 11,
                                               ),
                                               maxLines: 1,
@@ -774,7 +791,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor:
-                                              const Color(0xFF1A237E),
+                                              context.colors.accentPrimary,
                                           padding:
                                               const EdgeInsets.symmetric(
                                             horizontal: 12,
@@ -810,8 +827,6 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

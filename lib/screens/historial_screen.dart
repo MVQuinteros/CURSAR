@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/historial_model.dart';
 import '../services/historial_service.dart';
-
-const Color _kViolet = Color(0xFF8B5CF6);
-const Color _kGreyText = Color(0xFF6B7280);
+import '../theme/app_theme.dart';
 
 class HistorialScreen extends StatefulWidget {
   final String titulo;
@@ -36,9 +34,9 @@ class _HistorialScreenState extends State<HistorialScreen> {
         : Icons.auto_stories_outlined;
   }
 
-  Color _colorDe(HistorialModel item) {
+  Color _colorDe(BuildContext context, HistorialModel item) {
     return item.tipo == 'institucion'
-        ? _kViolet
+        ? context.colors.accentPrimary
         : const Color(0xFFEC4899);
   }
 
@@ -54,17 +52,15 @@ class _HistorialScreenState extends State<HistorialScreen> {
     final uid = user?.uid ?? '';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDFF),
+      backgroundColor: context.colors.bgMain,
       appBar: AppBar(
-        backgroundColor: _kViolet,
-        foregroundColor: Colors.white,
         title: Text(widget.titulo),
       ),
       body: uid.isEmpty
-          ? const Center(
+          ? Center(
               child: Text(
                 'Iniciá sesión para ver tu historial',
-                style: TextStyle(color: _kGreyText),
+                style: TextStyle(color: context.colors.textSecondary),
               ),
             )
           : StreamBuilder<List<HistorialModel>>(
@@ -78,13 +74,16 @@ class _HistorialScreenState extends State<HistorialScreen> {
                 }
                 final items = snapshot.data ?? [];
                 if (items.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Padding(
-                      padding: EdgeInsets.all(32),
+                      padding: const EdgeInsets.all(32),
                       child: Text(
                         'Todavía no hay actividad.\nExplorá carreras e instituciones para ver tu historial acá.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: _kGreyText, height: 1.4),
+                        style: TextStyle(
+                          color: context.colors.textSecondary,
+                          height: 1.4,
+                        ),
                       ),
                     ),
                   );
@@ -93,9 +92,10 @@ class _HistorialScreenState extends State<HistorialScreen> {
                   padding: const EdgeInsets.all(16),
                   itemCount: items.length,
                   separatorBuilder: (_, _) =>
-                      const Divider(height: 1, color: Color(0xFFF3F4F6)),
+                      Divider(height: 1, color: context.colors.borderSubtle),
                   itemBuilder: (context, index) {
                     final item = items[index];
+                    final colorItem = _colorDe(context, item);
                     return ListTile(
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -103,21 +103,21 @@ class _HistorialScreenState extends State<HistorialScreen> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: _colorDe(item).withValues(alpha: 0.12),
+                          color: colorItem.withValues(alpha: 0.15),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           _iconoDe(item),
-                          color: _colorDe(item),
+                          color: colorItem,
                           size: 20,
                         ),
                       ),
                       title: Text(
                         item.nombre,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF111827),
+                          color: context.colors.textPrimary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -129,15 +129,15 @@ class _HistorialScreenState extends State<HistorialScreen> {
                             item.institucionNombre,
                           _fecha(item),
                         ].join(' · '),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: _kGreyText,
+                          color: context.colors.textSecondary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      trailing:
-                          const Icon(Icons.chevron_right, color: Color(0xFF9CA3AF)),
+                      trailing: Icon(Icons.chevron_right,
+                          color: context.colors.iconNormal),
                       onTap: () {
                         final institucionUid = _abrirInstitucionDe(item);
                         if (institucionUid.isEmpty) return;

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-const Color _kViolet = Color(0xFF8B5CF6);
-const Color _kGreyText = Color(0xFF6B7280);
+import '../services/theme_controller.dart';
+import '../theme/app_theme.dart';
 
 class ConfiguracionScreen extends StatefulWidget {
   const ConfiguracionScreen({super.key});
@@ -59,8 +58,6 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
     if (_cargando) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: _kViolet,
-          foregroundColor: Colors.white,
           title: const Text('Configuración'),
         ),
         body: const Center(child: CircularProgressIndicator()),
@@ -68,10 +65,8 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDFF),
+      backgroundColor: context.colors.bgMain,
       appBar: AppBar(
-        backgroundColor: _kViolet,
-        foregroundColor: Colors.white,
         title: const Text('Configuración'),
       ),
       body: ListView(
@@ -80,8 +75,7 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
           _titulo('General'),
           _opcionSwitch(
             icon: Icons.notifications_outlined,
-            color: const Color(0xFF3B82F6),
-            bg: const Color(0xFFEAF3FF),
+            color: context.colors.accentPrimary,
             titulo: 'Notificaciones',
             subtitulo: 'Recibir avisos de novedades',
             valor: _notificaciones,
@@ -94,7 +88,6 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
           _opcionSwitch(
             icon: Icons.my_location,
             color: const Color(0xFF2FA36B),
-            bg: const Color(0xFFE5F9EF),
             titulo: 'Usar mi ubicación automática',
             subtitulo: 'Centrar el mapa en tu ubicación',
             valor: _ubicacionAutomatica,
@@ -105,15 +98,15 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
           ),
           _opcionSwitch(
             icon: Icons.dark_mode_outlined,
-            color: _kViolet,
-            bg: const Color(0xFFF0ECFF),
+            color: context.colors.accentPrimary,
             titulo: 'Modo oscuro',
-            subtitulo: 'Próximamente disponible',
+            subtitulo: _modoOscuro
+                ? 'Tema oscuro activado'
+                : 'Tema claro activado',
             valor: _modoOscuro,
-            onChanged: (v) {
+            onChanged: (v) async {
               setState(() => _modoOscuro = v);
-              _guardarCampo('modoOscuro', v);
-              _mensaje('El modo oscuro estará disponible pronto');
+              await ThemeController.instance.setModoOscuro(v);
             },
           ),
           const SizedBox(height: 24),
@@ -121,14 +114,12 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
           _opcionTexto(
             icon: Icons.info_outline,
             color: const Color(0xFFEC4899),
-            bg: const Color(0xFFFCE7F3),
             titulo: 'Versión de la app',
             subtitulo: '1.0.0',
           ),
           _opcionTexto(
             icon: Icons.policy_outlined,
-            color: const Color(0xFF64748B),
-            bg: const Color(0xFFF1F5F9),
+            color: context.colors.textSecondary,
             titulo: 'Política de privacidad',
             subtitulo: 'Conocé cómo usamos tus datos',
             onTap: _mostrarPrivacidad,
@@ -168,10 +159,10 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
       padding: const EdgeInsets.only(left: 4, bottom: 8),
       child: Text(
         texto,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          color: _kGreyText,
+          color: context.colors.textSecondary,
         ),
       ),
     );
@@ -180,7 +171,6 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
   Widget _opcionSwitch({
     required IconData icon,
     required Color color,
-    required Color bg,
     required String titulo,
     required String subtitulo,
     required bool valor,
@@ -190,8 +180,9 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.colors.borderSubtle),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -205,24 +196,28 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
         leading: Container(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            shape: BoxShape.circle,
+          ),
           child: Icon(icon, color: color, size: 20),
         ),
         title: Text(
           titulo,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF111827),
+            color: context.colors.textPrimary,
           ),
         ),
         subtitle: Text(
           subtitulo,
-          style: const TextStyle(fontSize: 12, color: _kGreyText),
+          style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
         ),
         trailing: Switch(
           value: valor,
-          activeThumbColor: _kViolet,
+          activeThumbColor: context.colors.accentPrimary,
+          activeTrackColor: context.colors.accentPrimary.withValues(alpha: 0.3),
           onChanged: onChanged,
         ),
       ),
@@ -232,7 +227,6 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
   Widget _opcionTexto({
     required IconData icon,
     required Color color,
-    required Color bg,
     required String titulo,
     required String subtitulo,
     VoidCallback? onTap,
@@ -241,8 +235,9 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.colors.borderSubtle),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -256,23 +251,26 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
         leading: Container(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            shape: BoxShape.circle,
+          ),
           child: Icon(icon, color: color, size: 20),
         ),
         title: Text(
           titulo,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF111827),
+            color: context.colors.textPrimary,
           ),
         ),
         subtitle: Text(
           subtitulo,
-          style: const TextStyle(fontSize: 12, color: _kGreyText),
+          style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
         ),
         trailing: onTap != null
-            ? const Icon(Icons.chevron_right, color: Color(0xFF9CA3AF))
+            ? Icon(Icons.chevron_right, color: context.colors.iconNormal)
             : null,
         onTap: onTap,
       ),

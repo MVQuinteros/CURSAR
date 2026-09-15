@@ -4,6 +4,7 @@ import '../models/aviso_model.dart';
 import '../models/notificacion_model.dart';
 import '../services/aviso_service.dart';
 import '../services/notificacion_service.dart';
+import '../theme/app_theme.dart';
 
 class NotificacionesScreen extends StatefulWidget {
   const NotificacionesScreen({super.key});
@@ -13,8 +14,6 @@ class NotificacionesScreen extends StatefulWidget {
 }
 
 class _NotificacionesScreenState extends State<NotificacionesScreen> {
-  static const Color _darkNavy = Color(0xFF1A237E);
-
   final NotificacionService _notificacionService = NotificacionService();
   final AvisoService _avisoService = AvisoService();
 
@@ -99,7 +98,7 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
     }
   }
 
-  Color _colorPorTipo(String tipo) {
+  Color _colorPorTipo(BuildContext context, String tipo) {
     switch (tipo) {
       case 'inscripcion':
         return const Color(0xFF2E7D32);
@@ -110,22 +109,22 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
       case 'bienvenida':
         return const Color(0xFF6A1B9A);
       default:
-        return _darkNavy;
+        return context.colors.accentPrimary;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDFF),
+      backgroundColor: context.colors.bgMain,
       appBar: AppBar(
-        backgroundColor: _darkNavy,
-        foregroundColor: Colors.white,
         title: const Text('Notificaciones'),
         actions: [
           TextButton.icon(
             onPressed: _marcarTodoComoLeido,
-            style: TextButton.styleFrom(foregroundColor: Colors.white),
+            style: TextButton.styleFrom(
+              foregroundColor: context.colors.accentPrimary,
+            ),
             icon: const Icon(Icons.done_all, size: 18),
             label: const Text('Marcar todas'),
           ),
@@ -161,21 +160,22 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
         _avisos.isEmpty && notificaciones.isEmpty && connection != ConnectionState.waiting;
 
     if (sinDatos) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.notifications_none, size: 72, color: Colors.grey),
-            SizedBox(height: 12),
-            Text(
+            Icon(Icons.notifications_none,
+                size: 72, color: context.colors.iconNormal),
+            const SizedBox(height: 12),
+            const Text(
               'No tenés notificaciones',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
             Text(
               'Cuando haya novedades sobre inscripciones,\nte las mostramos acá.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: context.colors.textSecondary),
             ),
           ],
         ),
@@ -202,7 +202,9 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Material(
-        color: leido ? Colors.white : const Color(0xFFEAF2FF),
+        color: leido
+            ? context.colors.bgSurface
+            : context.colors.accentPrimary.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
@@ -227,10 +229,11 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor: _colorPorTipo(aviso.tipo).withValues(alpha: 0.15),
+                  backgroundColor:
+                      _colorPorTipo(context, aviso.tipo).withValues(alpha: 0.15),
                   child: Icon(
                     _iconoPorTipo(aviso.tipo),
-                    color: _colorPorTipo(aviso.tipo),
+                    color: _colorPorTipo(context, aviso.tipo),
                     size: 20,
                   ),
                 ),
@@ -243,22 +246,24 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
                         aviso.titulo,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: leido ? Colors.grey[700] : _darkNavy,
+                          color: leido
+                              ? context.colors.textSecondary
+                              : context.colors.accentPrimary,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         aviso.mensaje,
                         style: TextStyle(
-                          color: Colors.grey[800],
+                          color: context.colors.textSecondary,
                           fontSize: 13,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         _formatearFecha(aviso.publicado),
-                        style: const TextStyle(
-                          color: Colors.grey,
+                        style: TextStyle(
+                          color: context.colors.textSecondary,
                           fontSize: 11,
                         ),
                       ),
@@ -288,7 +293,9 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Material(
-        color: notificacion.leido ? Colors.white : const Color(0xFFEAF2FF),
+        color: notificacion.leido
+            ? context.colors.bgSurface
+            : context.colors.accentPrimary.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
@@ -309,11 +316,11 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor:
-                      _colorPorTipo(notificacion.tipo).withValues(alpha: 0.15),
+                  backgroundColor: _colorPorTipo(context, notificacion.tipo)
+                      .withValues(alpha: 0.15),
                   child: Icon(
                     _iconoPorTipo(notificacion.tipo),
-                    color: _colorPorTipo(notificacion.tipo),
+                    color: _colorPorTipo(context, notificacion.tipo),
                     size: 20,
                   ),
                 ),
@@ -327,23 +334,23 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: notificacion.leido
-                              ? Colors.grey[700]
-                              : _darkNavy,
+                              ? context.colors.textSecondary
+                              : context.colors.accentPrimary,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         notificacion.mensaje,
                         style: TextStyle(
-                          color: Colors.grey[800],
+                          color: context.colors.textSecondary,
                           fontSize: 13,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         _formatearFecha(notificacion.createdAt),
-                        style: const TextStyle(
-                          color: Colors.grey,
+                        style: TextStyle(
+                          color: context.colors.textSecondary,
                           fontSize: 11,
                         ),
                       ),
@@ -380,10 +387,10 @@ class _SeccionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       child: Text(
         texto,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF1A237E),
+          color: context.colors.textPrimary,
         ),
       ),
     );

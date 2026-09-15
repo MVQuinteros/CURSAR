@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/preferencias_service.dart';
-
-const Color _kViolet = Color(0xFF8B5CF6);
-const Color _kGreyText = Color(0xFF6B7280);
-const Color _kGreyBorder = Color(0xFFE5E7EB);
+import '../theme/app_theme.dart';
 
 const List<int> _opcionesRadio = [5, 10, 20, 50, 100];
 const List<String> _opcionesModalidad = [
@@ -130,23 +127,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   InputDecoration _decoration(String hint, IconData icono) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: _kGreyText, fontSize: 14),
-      prefixIcon: Icon(icono, color: _kGreyText, size: 20),
-      filled: true,
-      fillColor: const Color(0xFFF9FAFB),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _kGreyBorder),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _kGreyBorder),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _kViolet, width: 2),
-      ),
+      hintStyle: const TextStyle(fontSize: 14),
+      prefixIcon: Icon(icono, size: 20),
     );
   }
 
@@ -163,8 +145,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_cargando) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: _kViolet,
-          foregroundColor: Colors.white,
           title: const Text('Editar perfil'),
         ),
         body: const Center(child: CircularProgressIndicator()),
@@ -172,10 +152,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDFF),
+      backgroundColor: context.colors.bgMain,
       appBar: AppBar(
-        backgroundColor: _kViolet,
-        foregroundColor: Colors.white,
         title: const Text('Editar perfil'),
       ),
       body: SingleChildScrollView(
@@ -185,7 +163,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _seccionTitulo('Datos personales'),
+              _seccionTitulo(context, 'Datos personales'),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _nombreController,
@@ -213,11 +191,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 decoration: _decoration('Email', Icons.email_outlined),
               ),
               const SizedBox(height: 24),
-              _seccionTitulo('Preferencias de búsqueda'),
+              _seccionTitulo(context, 'Preferencias de búsqueda'),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 'Contanos qué estás buscando para recomendarte mejor.',
-                style: TextStyle(fontSize: 12, color: _kGreyText),
+                style: TextStyle(
+                    fontSize: 12, color: context.colors.textSecondary),
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -283,9 +262,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ElevatedButton(
                 onPressed: _guardando ? null : _guardar,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _kViolet,
+                  backgroundColor: context.colors.accentPrimary,
                   foregroundColor: Colors.white,
-                  disabledBackgroundColor: _kViolet.withValues(alpha: 0.4),
+                  disabledBackgroundColor:
+                      context.colors.accentPrimary.withValues(alpha: 0.4),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -316,13 +296,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _seccionTitulo(String texto) {
+  Widget _seccionTitulo(BuildContext context, String texto) {
     return Text(
       texto,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: Color(0xFF1F2937),
+        color: context.colors.textPrimary,
       ),
     );
   }

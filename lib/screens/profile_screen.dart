@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/preferencias_model.dart';
 import '../services/preferencias_service.dart';
+import '../theme/app_theme.dart';
 
-const Color _kViolet = Color(0xFF8B5CF6);
 const Color _kRose = Color(0xFFFF6B95);
-const Color _kGreyText = Color(0xFF6B7280);
+const Color _kViolet = Color(0xFF8B5CF6);
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -92,7 +92,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.colors.bgMain,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -108,17 +108,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     _nombre.isNotEmpty ? 'Hola, $_nombre 👋' : 'Hola 👋',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1F2937),
+                      color: context.colors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
+                  Text(
                     'Explorá tu próximo paso',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 15, color: _kGreyText),
+                    style: TextStyle(
+                        fontSize: 15, color: context.colors.textSecondary),
                   ),
                   const SizedBox(height: 20),
                   _buildBotonPerfil(),
@@ -230,7 +231,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             padding: const EdgeInsets.all(3),
             child: CircleAvatar(
-              backgroundColor: Colors.grey[300],
+              backgroundColor: context.colors.bgSurface,
               child: const Icon(
                 Icons.person,
                 size: 52,
@@ -276,9 +277,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.bgSurface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFEFEAFD)),
+          border: Border.all(color: context.colors.borderSubtle),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
@@ -287,15 +288,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.edit_outlined, color: _kViolet, size: 20),
-            SizedBox(width: 8),
+            Icon(Icons.edit_outlined,
+                color: context.colors.accentPrimary, size: 20),
+            const SizedBox(width: 8),
             Text(
               'Editar perfil',
               style: TextStyle(
-                color: _kViolet,
+                color: context.colors.accentPrimary,
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),
@@ -307,24 +309,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildCerrarSesion() {
+    final error = Theme.of(context).colorScheme.error;
     return InkWell(
       onTap: _cerrarSesion,
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: const Color(0xFFFFECEC),
+          color: error.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.logout, color: Color(0xFFE5484D), size: 20),
-            SizedBox(width: 8),
+            Icon(Icons.logout, color: error, size: 20),
+            const SizedBox(width: 8),
             Text(
               'Cerrar sesión',
               style: TextStyle(
-                color: Color(0xFFE5484D),
+                color: error,
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),
@@ -344,7 +347,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ];
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.bgSurface,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -369,8 +372,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Icon(
                           items[i].icon,
                           color: i == _selectedIndex
-                              ? _kViolet
-                              : const Color(0xFF9CA3AF),
+                              ? context.colors.iconActive
+                              : context.colors.iconNormal,
                           size: 26,
                         ),
                         const SizedBox(height: 3),
@@ -382,8 +385,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ? FontWeight.w600
                                 : FontWeight.w500,
                             color: i == _selectedIndex
-                                ? _kViolet
-                                : const Color(0xFF9CA3AF),
+                                ? context.colors.iconActive
+                                : context.colors.iconNormal,
                           ),
                         ),
                       ],
@@ -435,8 +438,9 @@ class _Card extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: context.colors.borderSubtle),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -453,10 +457,10 @@ class _Card extends StatelessWidget {
               Expanded(
                 child: Text(
                   titulo,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1F2937),
+                    color: context.colors.textPrimary,
                   ),
                 ),
               ),
@@ -493,7 +497,7 @@ class _PreferenciasCard extends StatelessWidget {
       trailing: TextButton(
         onPressed: onEditar,
         style: TextButton.styleFrom(
-          foregroundColor: _kViolet,
+          foregroundColor: context.colors.accentPrimary,
           padding: EdgeInsets.zero,
           minimumSize: const Size(0, 32),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -505,32 +509,28 @@ class _PreferenciasCard extends StatelessWidget {
       ),
       children: [
         _FilaPreferencia(
-          bg: const Color(0xFFEAF3FF),
           icon: Icons.location_on,
-          color: const Color(0xFF3B82F6),
+          color: context.colors.accentPrimary,
           titulo: 'Ubicación',
           valor: ubicacion.isNotEmpty
               ? ubicacion
               : 'San Miguel, Buenos Aires',
         ),
         _FilaPreferencia(
-          bg: const Color(0xFFE5F9EF),
           icon: Icons.radar,
           color: const Color(0xFF2FA36B),
           titulo: 'Radio de búsqueda',
           valor: radio,
         ),
         _FilaPreferencia(
-          bg: const Color(0xFFFFF2E3),
           icon: Icons.school_outlined,
           color: const Color(0xFFF59E0B),
           titulo: 'Modalidad',
           valor: modalidad,
         ),
         _FilaPreferencia(
-          bg: const Color(0xFFF0ECFF),
           icon: Icons.account_balance_outlined,
-          color: _kViolet,
+          color: context.colors.accentPrimary,
           titulo: 'Tipo de institución',
           valor: tipoInstitucion,
         ),
@@ -541,14 +541,12 @@ class _PreferenciasCard extends StatelessWidget {
 
 class _FilaPreferencia extends StatelessWidget {
   const _FilaPreferencia({
-    required this.bg,
     required this.icon,
     required this.color,
     required this.titulo,
     required this.valor,
   });
 
-  final Color bg;
   final IconData icon;
   final Color color;
   final String titulo;
@@ -563,14 +561,18 @@ class _FilaPreferencia extends StatelessWidget {
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
             child: Icon(icon, color: color, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               titulo,
-              style: const TextStyle(fontSize: 14, color: Color(0xFF374151)),
+              style: TextStyle(
+                  fontSize: 14, color: context.colors.textPrimary),
             ),
           ),
           const SizedBox(width: 8),
@@ -578,10 +580,10 @@ class _FilaPreferencia extends StatelessWidget {
             child: Text(
               valor,
               textAlign: TextAlign.right,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF111827),
+                color: context.colors.textPrimary,
               ),
             ),
           ),
@@ -606,15 +608,13 @@ class _ActividadCard extends StatelessWidget {
       titulo: 'Actividad',
       children: [
         _FilaOpcion(
-          bg: const Color(0xFFEEF2FF),
           icon: Icons.history,
           color: const Color(0xFF6366F1),
           titulo: 'Búsquedas recientes',
           onTap: onBusquedasRecientes,
         ),
-        const Divider(height: 1, color: Color(0xFFF3F4F6)),
+        Divider(height: 1, color: context.colors.borderSubtle),
         _FilaOpcion(
-          bg: const Color(0xFFFCE7F3),
           icon: Icons.auto_stories_outlined,
           color: const Color(0xFFEC4899),
           titulo: 'Carreras vistas',
@@ -640,17 +640,15 @@ class _MasCard extends StatelessWidget {
       titulo: 'Más',
       children: [
         _FilaOpcion(
-          bg: const Color(0xFFEAF2FD),
           icon: Icons.settings_outlined,
-          color: const Color(0xFF3B82F6),
+          color: context.colors.accentPrimary,
           titulo: 'Configuración',
           onTap: onConfiguracion,
         ),
-        const Divider(height: 1, color: Color(0xFFF3F4F6)),
+        Divider(height: 1, color: context.colors.borderSubtle),
         _FilaOpcion(
-          bg: const Color(0xFFF1F5F9),
           icon: Icons.help_outline,
-          color: const Color(0xFF64748B),
+          color: context.colors.iconNormal,
           titulo: 'Ayuda y soporte',
           onTap: onAyudaSoporte,
         ),
@@ -661,14 +659,12 @@ class _MasCard extends StatelessWidget {
 
 class _FilaOpcion extends StatelessWidget {
   const _FilaOpcion({
-    required this.bg,
     required this.icon,
     required this.color,
     required this.titulo,
     this.onTap,
   });
 
-  final Color bg;
   final IconData icon;
   final Color color;
   final String titulo;
@@ -686,17 +682,21 @@ class _FilaOpcion extends StatelessWidget {
             Container(
               width: 38,
               height: 38,
-              decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
               child: Icon(icon, color: color, size: 19),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 titulo,
-                style: const TextStyle(fontSize: 14, color: Color(0xFF111827)),
+                style: TextStyle(
+                    fontSize: 14, color: context.colors.textPrimary),
               ),
             ),
-            const Icon(Icons.chevron_right, color: Color(0xFF9CA3AF)),
+            Icon(Icons.chevron_right, color: context.colors.iconNormal),
           ],
         ),
       ),
