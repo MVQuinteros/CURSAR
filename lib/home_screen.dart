@@ -469,11 +469,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                     CircleAvatar(
                                       radius: 24,
                                       backgroundColor: Colors.grey[300],
-                                      child: const Icon(
-                                        Icons.business,
-                                        color: Colors.white,
-                                        size: 22,
-                                      ),
+                                      backgroundImage: institucion
+                                              .logoURL.isNotEmpty
+                                          ? NetworkImage(institucion.logoURL)
+                                          : null,
+                                      onBackgroundImageError: institucion
+                                              .logoURL.isNotEmpty
+                                          ? (_, _) {}
+                                          : null,
+                                      child: institucion.logoURL.isNotEmpty
+                                          ? null
+                                          : const Icon(
+                                              Icons.business,
+                                              color: Colors.white,
+                                              size: 22,
+                                            ),
                                     ),
                                     const SizedBox(height: 6),
                                     Text(

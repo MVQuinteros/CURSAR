@@ -241,11 +241,29 @@ class _MapScreenState extends State<MapScreen> {
                       height: 40,
                       child: GestureDetector(
                         onTap: () => _showInstitucionInfo(inst),
-                        child: const Icon(
-                          Icons.location_pin,
-                          color: Color(0xFF1A237E),
-                          size: 40,
-                        ),
+                        child: inst.logoURL.isNotEmpty
+                            ? CircleAvatar(
+                                radius: 20,
+                                backgroundColor: Colors.white,
+                                child: ClipOval(
+                                  child: Image.network(
+                                    inst.logoURL,
+                                    width: 40,
+                                    height: 40,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, _, _) => const Icon(
+                                      Icons.location_pin,
+                                      color: Color(0xFF1A237E),
+                                      size: 40,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : const Icon(
+                                Icons.location_pin,
+                                color: Color(0xFF1A237E),
+                                size: 40,
+                              ),
                       ),
                     ),
                   ),

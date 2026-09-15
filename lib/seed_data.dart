@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'models/institucion_model.dart';
 import 'models/oferta_model.dart';
 
@@ -21,7 +22,7 @@ Future<void> seedData() async {
       telefono: '(011) 4867-7500',
       email: 'info@frba.utn.edu.ar',
       sitioWeb: 'https://frba.utn.edu.ar',
-      logoURL: '',
+      logoURL: 'https://utn.edu.ar/images/logo-utn.png',
       latitud: -34.6037,
       longitud: -58.3683,
       estado: 'aprobada',
@@ -144,7 +145,7 @@ Future<void> seedData() async {
       telefono: '(0221) 423-6800',
       email: 'info@unlp.edu.ar',
       sitioWeb: 'https://www.unlp.edu.ar',
-      logoURL: '',
+      logoURL: 'https://unlp.edu.ar/wp-content/uploads/2022/07/UNLP.png',
       latitud: -34.9186,
       longitud: -57.9561,
       estado: 'aprobada',
@@ -266,7 +267,7 @@ Future<void> seedData() async {
       telefono: '(011) 4006-1500',
       email: 'rrectorado@unsam.edu.ar',
       sitioWeb: 'https://www.unsam.edu.ar',
-      logoURL: '',
+      logoURL: 'https://www.unsam.edu.ar/img/logo-UNSAM.png',
       latitud: -34.5746,
       longitud: -58.5144,
       estado: 'aprobada',
@@ -392,7 +393,7 @@ Future<void> seedData() async {
       telefono: '(011) 4365-7100',
       email: 'info@unq.edu.ar',
       sitioWeb: 'https://www.unq.edu.ar',
-      logoURL: '',
+      logoURL: 'https://www.unq.edu.ar/wp-content/uploads/2022/11/LOGO-UNQ.png',
       latitud: -34.7078,
       longitud: -58.2811,
       estado: 'aprobada',
@@ -516,7 +517,7 @@ Future<void> seedData() async {
       telefono: '(0249) 438-5600',
       email: 'info@unicen.edu.ar',
       sitioWeb: 'https://www.unicen.edu.ar',
-      logoURL: '',
+      logoURL: 'https://www.unicen.edu.ar/sites/all/themes/unicen/images/logo-50.png',
       latitud: -37.3217,
       longitud: -59.1332,
       estado: 'aprobada',
@@ -642,7 +643,7 @@ Future<void> seedData() async {
       telefono: '(0223) 492-1705',
       email: 'info@mdp.edu.ar',
       sitioWeb: 'https://www.mdp.edu.ar',
-      logoURL: '',
+      logoURL: 'https://www.mdp.edu.ar/templates/unmdp/iconos/512.png',
       latitud: -38.0055,
       longitud: -57.5426,
       estado: 'aprobada',
@@ -766,7 +767,7 @@ Future<void> seedData() async {
       telefono: '(011) 4469-7500',
       email: 'info@campus.ungs.edu.ar',
       sitioWeb: 'https://www.ungs.edu.ar',
-      logoURL: '',
+      logoURL: 'https://www.ungs.edu.ar/wp-content/uploads/2024/06/logo_ungs_512.png',
       latitud: -34.5267,
       longitud: -58.6988,
       estado: 'aprobada',
@@ -891,7 +892,7 @@ Future<void> seedData() async {
       telefono: '(011) 4282-8045',
       email: 'info@unlz.edu.ar',
       sitioWeb: 'https://www.unlz.edu.ar',
-      logoURL: '',
+      logoURL: 'https://www.unlz.edu.ar/wp-content/uploads/2023/12/unlz-logo-png.png',
       latitud: -34.7649,
       longitud: -58.3963,
       estado: 'aprobada',
@@ -1000,6 +1001,205 @@ Future<void> seedData() async {
     ),
   ]);
 
+  // --- UNPAZ (Universidad Nacional de José C. Paz) ---
+  batch.set(
+    firestore.collection('instituciones').doc('unpaz'),
+    InstitucionModel(
+      institucionUid: 'unpaz',
+      nombre: 'UNPAZ',
+      descripcion:
+          'La Universidad Nacional de José Clemente Paz, fundada en 2009, es una universidad pública de acceso irrestricto con enfoque interdisciplinario y compromiso social.',
+      direccion: 'Leandro N. Alem 4731',
+      ciudad: 'José C. Paz',
+      provincia: 'Buenos Aires',
+      telefono: '(02320) 649025',
+      email: 'comunicacion@unpaz.edu.ar',
+      sitioWeb: 'https://www.unpaz.edu.ar',
+      logoURL: 'https://www.unpaz.edu.ar/sites/default/files/Logo%20Unpaz.png',
+      latitud: -34.5204,
+      longitud: -58.7456,
+      estado: 'aprobada',
+      createdAt: DateTime(2025, 6, 1),
+    ).toMap(),
+    SetOptions(merge: false),
+  );
+
+  // --- ISFT 180 (Moreno) ---
+  batch.set(
+    firestore.collection('instituciones').doc('isft180'),
+    InstitucionModel(
+      institucionUid: 'isft180',
+      nombre: 'ISFT N°180',
+      descripcion:
+          'Instituto Superior de Formación Técnica Nº 180 de Moreno. Ofrece tecnicaturas en Enfermería, Acompañamiento Terapéutico e Interpretación de Lengua de Señas.',
+      direccion: 'Viamonte 2615',
+      ciudad: 'Moreno',
+      provincia: 'Buenos Aires',
+      telefono: '(0237) 462-6593',
+      email: 'infoinscripcionesisft180@gmail.com',
+      sitioWeb: '',
+      logoURL: 'https://scontent.cdninstagram.com/v/t51.2885-19/118599354_623845748316806_4649154145967017479_n.jpg?stp=dst-jpg_s100x100_tt6&_nc_cat=109&ccb=7-5&_nc_sid=bf7eb4&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&_nc_ohc=Ea0vAwq5uYsQ7kNvwFnBbnU&_nc_oc=AdrGXGY7MlcrmzLpb1_ULLviuYF7tY2Bwi7jdjQReaYpuTpTLbiLqL5fC05l5JK7WTZNuhgtdC_2tymZ13U4owl7&_nc_zt=24&_nc_ht=scontent.cdninstagram.com&_nc_ss=7960f&oh=00_AQL_N-yfl3IOm4O1gQ-BLJUyhxX8h9RRCmAl20_wf9jPSA&oe=6A9CFF65',
+      latitud: -34.6524,
+      longitud: -58.7893,
+      estado: 'aprobada',
+      createdAt: DateTime(2025, 6, 1),
+    ).toMap(),
+    SetOptions(merge: false),
+  );
+
+  // --- ISFT 184 (Pilar) ---
+  batch.set(
+    firestore.collection('instituciones').doc('isft184'),
+    InstitucionModel(
+      institucionUid: 'isft184',
+      nombre: 'ISFT N°184',
+      descripcion:
+          'Instituto Superior de Formación Técnica Nº 184 "Lic. Jorge Pugliese" de Pilar. Más de 34 años formando profesionales con títulos de validez nacional.',
+      direccion: 'Sanguinetti 521',
+      ciudad: 'Pilar',
+      provincia: 'Buenos Aires',
+      telefono: '(0230) 443-5135',
+      email: 'isft184oficial@gmail.com',
+      sitioWeb: 'https://isft184.wixsite.com/inicio',
+      logoURL: 'https://isft184-bue.infd.edu.ar/sitio/wp-content/uploads/2020/10/icono-184.jpg',
+      latitud: -34.4547,
+      longitud: -58.9103,
+      estado: 'aprobada',
+      createdAt: DateTime(2025, 6, 1),
+    ).toMap(),
+    SetOptions(merge: false),
+  );
+
+  // --- ISFT 182 (San Miguel) ---
+  batch.set(
+    firestore.collection('instituciones').doc('isft182'),
+    InstitucionModel(
+      institucionUid: 'isft182',
+      nombre: 'ISFT N°182',
+      descripcion:
+          'Instituto Superior de Formación Técnica Nº 182 "Nos Importa el Mañana" de San Miguel. Ofrece tecnicaturas en Análisis de Sistemas, Enfermería, RRHH y más.',
+      direccion: 'Rta. 8 y Avellaneda, Bo. Sgto. Cabral',
+      ciudad: 'San Miguel',
+      provincia: 'Buenos Aires',
+      telefono: '(011) 4667-3993',
+      email: '182informes@gmail.com',
+      sitioWeb: 'https://isft182.edu.ar',
+      logoURL: 'https://isft182-bue.infd.edu.ar/sitio/wp-content/uploads/2018/09/isft182_logo.png',
+      latitud: -34.5348,
+      longitud: -58.6941,
+      estado: 'aprobada',
+      createdAt: DateTime(2025, 6, 1),
+    ).toMap(),
+    SetOptions(merge: false),
+  );
+
+  // --- ISFT 234 (Malvinas Argentinas / Los Polvorines) ---
+  batch.set(
+    firestore.collection('instituciones').doc('isft234'),
+    InstitucionModel(
+      institucionUid: 'isft234',
+      nombre: 'ISFT N°234',
+      descripcion:
+          'Instituto Superior de Formación Técnica Nº 234 de Malvinas Argentinas. Carreras bimodales con títulos oficiales avalados por la Dirección General de Cultura y Educación.',
+      direccion: '25 de Mayo 3084',
+      ciudad: 'Los Polvorines, Malvinas Argentinas',
+      provincia: 'Buenos Aires',
+      telefono: '(011) 4664-0000',
+      email: 'isft234@gmail.com',
+      sitioWeb: 'https://isft234.edu.ar',
+      logoURL: 'https://isft234.edu.ar/wp-content/uploads/2021/11/INSTITUTO-SUPERIOR-234.png',
+      latitud: -34.5200,
+      longitud: -58.6950,
+      estado: 'aprobada',
+      createdAt: DateTime(2025, 6, 1),
+    ).toMap(),
+    SetOptions(merge: false),
+  );
+
+  // --- Ofertas de zona norte (1 por ISFT, sin carreras completas) ---
+  ofertas.addAll([
+    OfertaModel(
+      ofertaId: 'oferta_isft180_1',
+      institucionUid: 'isft180',
+      nombre: 'Tecnicatura Superior en Enfermería',
+      descripcion:
+          'Formación en cuidados enfermeros con rotaciones en hospitales públicos de la zona de Moreno. Enfoque en salud comunitaria.',
+      area: 'Salud',
+      nivel: 'Terciario',
+      duracionAnios: 3,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Enfermero/a, enfermero/a jefe, gestor de salud',
+      requisitos: 'Secundario completo. Examen de ingreso.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 1),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_isft184_1',
+      institucionUid: 'isft184',
+      nombre: 'Tecnicatura Superior en Administración',
+      descripcion:
+          'Formación en gestión empresarial, contabilidad y recursos humanos. Títulos de validez nacional.',
+      area: 'Administración',
+      nivel: 'Terciario',
+      duracionAnios: 3,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Administrativo, analista contable, gestor',
+      requisitos: 'Secundario completo',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 1),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_isft182_1',
+      institucionUid: 'isft182',
+      nombre: 'Tecnicatura Superior en Análisis de Sistemas',
+      descripcion:
+          'Formación en análisis, diseño e implementación de sistemas informáticos. Prácticas en empresas del sector.',
+      area: 'Tecnología',
+      nivel: 'Terciario',
+      duracionAnios: 3,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Analista funcional, desarrollador, consultor TI',
+      requisitos: 'Secundario completo',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 1),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_isft234_1',
+      institucionUid: 'isft234',
+      nombre: 'Tecnicatura Superior en Construcción Sustentable',
+      descripcion:
+          'Formación en construcción con enfoque sustentable, eficiencia energética y materiales ecológicos.',
+      area: 'Ingeniería',
+      nivel: 'Terciario',
+      duracionAnios: 3,
+      modalidad: 'Bimodal',
+      salidaLaboral: 'Técnico en construcción, proyectista, supervisor de obras',
+      requisitos: 'Secundario completo',
+      tag: 'NUEVO',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 1),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unpaz_1',
+      institucionUid: 'unpaz',
+      nombre: 'Licenciatura en Enfermería',
+      descripcion:
+          'Formación médica con énfasis en salud pública y atención primaria. Prácticas en hospitales de la zona.',
+      area: 'Salud',
+      nivel: 'Universitario',
+      duracionAnios: 5,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Enfermero/a universitario/a, investigador/a, gestor/a de salud',
+      requisitos: 'Secundario completo. Ingreso irrestricto.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 1),
+    ),
+  ]);
+
   for (final oferta in ofertas) {
     batch.set(
       firestore.collection('ofertas').doc(oferta.ofertaId),
@@ -1009,10 +1209,76 @@ Future<void> seedData() async {
   }
 
   batch.set(
-    firestore.collection('ofertas').doc('oferta_seed_v3_map'),
+    firestore.collection('ofertas').doc('oferta_seed_v6_zona_norte'),
     {'trigger': true, 'createdAt': DateTime.now()},
     SetOptions(merge: false),
   );
 
   await batch.commit();
+}
+
+const Map<String, String> _logosPorNombre = {
+  'austral': 'https://www.austral.edu.ar/wp-content/uploads/2022/09/logo-md-austral-1.png',
+  'universidad austral':
+      'https://www.austral.edu.ar/wp-content/uploads/2022/09/logo-md-austral-1.png',
+  'uai zona norte': 'https://uai.edu.ar/media/137710/uainuevo.png',
+  'uai': 'https://uai.edu.ar/media/137710/uainuevo.png',
+  'belgrano': 'https://ub.edu.ar/sites/default/files/iso-web-2025_0.png',
+  'universidad de belgrano':
+      'https://ub.edu.ar/sites/default/files/iso-web-2025_0.png',
+  'uba cbc tigre': 'https://www.uba.ar/imgs/logofooter.png',
+  'cbc': 'https://www.uba.ar/imgs/logofooter.png',
+  'cbc tigre': 'https://www.uba.ar/imgs/logofooter.png',
+  'uces': 'https://upload.wikimedia.org/wikipedia/commons/0/07/Uces_logo_simple.png',
+  'san andres': 'https://upload.wikimedia.org/wikipedia/commons/3/3f/UdeSA.png',
+  'universidad de san andres':
+      'https://upload.wikimedia.org/wikipedia/commons/3/3f/UdeSA.png',
+  'udesa': 'https://upload.wikimedia.org/wikipedia/commons/3/3f/UdeSA.png',
+  'unlu': 'https://www.unlu.edu.ar/imagenes/logo-transparente-escudo-titulo-bl-pant2021b.png',
+  'universidad nacional de lujan':
+      'https://www.unlu.edu.ar/imagenes/logo-transparente-escudo-titulo-bl-pant2021b.png',
+  'san miguel': 'https://isft182-bue.infd.edu.ar/sitio/wp-content/uploads/2018/09/isft182_logo.png',
+  'unt regional': 'https://upload.wikimedia.org/wikipedia/commons/7/75/Untref_logo.png',
+  'untref': 'https://upload.wikimedia.org/wikipedia/commons/7/75/Untref_logo.png',
+  'tres de febrero': 'https://upload.wikimedia.org/wikipedia/commons/7/75/Untref_logo.png',
+  'del salvador': 'https://www.usal.edu.ar/images/logo.png',
+  'universidad del salvador': 'https://www.usal.edu.ar/images/logo.png',
+  'usal': 'https://www.usal.edu.ar/images/logo.png',
+};
+
+String _normalizarNombre(String nombre) {
+  const conAcentos = 'áéíóúüñ';
+  const sinAcentos = 'aeioun';
+  final lower = nombre.toLowerCase().trim();
+  final buffer = StringBuffer();
+  for (final char in lower.split('')) {
+    final index = conAcentos.indexOf(char);
+    buffer.write(index >= 0 ? sinAcentos[index] : char);
+  }
+  return buffer.toString().replaceAll(RegExp(r'\s+'), ' ');
+}
+
+Future<void> patchInstitucionesSinLogo() async {
+  final firestore = FirebaseFirestore.instance;
+  final snapshot = await firestore.collection('instituciones').get();
+  final batch = firestore.batch();
+  var actualizadas = 0;
+  for (final doc in snapshot.docs) {
+    final data = doc.data();
+    final logoActual = (data['logoURL'] as String? ?? '').trim();
+    if (logoActual.isNotEmpty) continue;
+    final nombre = data['nombre'] as String? ?? '';
+    final logo = _logosPorNombre[_normalizarNombre(nombre)];
+    if (logo == null) continue;
+    batch.update(doc.reference, {'logoURL': logo});
+    actualizadas++;
+  }
+  if (actualizadas > 0) {
+    await batch.commit();
+  }
+  await firestore.collection('ofertas').doc('patch_logos_v1').set(
+        {'trigger': true, 'createdAt': DateTime.now()},
+        SetOptions(merge: false),
+      );
+  debugPrint('patchInstitucionesSinLogo: $actualizadas instituciones actualizadas');
 }

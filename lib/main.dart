@@ -6,6 +6,10 @@ import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/edit_profile_screen.dart';
+import 'screens/historial_screen.dart';
+import 'screens/configuracion_screen.dart';
+import 'screens/ayuda_soporte_screen.dart';
 import 'screens/test_vocacional_screen.dart';
 import 'screens/test_resultados_screen.dart';
 import 'screens/map_screen.dart';
@@ -18,10 +22,18 @@ void main() async {
 
   final ofertaDoc = await FirebaseFirestore.instance
       .collection('ofertas')
-      .doc('oferta_seed_v3_map')
+      .doc('oferta_seed_v6_zona_norte')
       .get();
   if (!ofertaDoc.exists) {
     await seedData();
+  }
+
+  final patchDoc = await FirebaseFirestore.instance
+      .collection('ofertas')
+      .doc('patch_logos_v1')
+      .get();
+  if (!patchDoc.exists) {
+    await patchInstitucionesSinLogo();
   }
 
   runApp(const MyApp());
@@ -42,6 +54,17 @@ class MyApp extends StatelessWidget {
         '/register': (context) => const RegisterScreen(),
         '/forgot-password': (context) => const ForgotPasswordScreen(),
         '/profile': (context) => const ProfileScreen(),
+        '/editar-perfil': (context) => const EditProfileScreen(),
+        '/historial': (context) {
+          final args =
+              ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+          return HistorialScreen(
+            titulo: args?['titulo']?.toString() ?? 'Búsquedas recientes',
+            tipo: args?['tipo']?.toString(),
+          );
+        },
+        '/configuracion': (context) => const ConfiguracionScreen(),
+        '/soporte': (context) => const AyudaSoporteScreen(),
         '/test': (context) => const TestVocacionalScreen(),
         '/test-resultados': (context) => const TestResultadosScreen(),
         '/map': (context) => const MapScreen(),
@@ -53,4 +76,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
