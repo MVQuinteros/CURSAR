@@ -11,6 +11,24 @@ class NotificacionService {
         .set(notificacion.toMap());
   }
 
+  Future<void> crear({
+    required String userUid,
+    required String titulo,
+    required String mensaje,
+    required String tipo,
+    String? link,
+  }) async {
+    await _notificaciones.add({
+      'userUid': userUid,
+      'titulo': titulo,
+      'mensaje': mensaje,
+      'tipo': tipo,
+      'link': link,
+      'leido': false,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
   Future<List<NotificacionModel>> obtenerNotificacionesDeUsuario(
       String userUid) async {
     final snapshot =
@@ -27,6 +45,19 @@ class NotificacionService {
 
   Future<void> marcarComoLeido(String id) async {
     await _notificaciones.doc(id).update({'leido': true});
+  }
+
+  Future<void> marcarTodasComoLeido(String userUid) async {
+    final snapshot =
+        await _notificaciones.where('userUid', isEqualTo: userUid).get();
+    final batch = FirebaseFirestore.instance.batch();
+    for (final doc in snapshot.docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      if (data['leido'] == false) {
+        batch.update(doc.reference, {'leido': true});
+      }
+    }
+    await batch.commit();
   }
 
   Future<void> eliminarNotificacion(String id) async {
