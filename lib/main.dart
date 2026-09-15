@@ -15,6 +15,8 @@ import 'screens/test_vocacional_screen.dart';
 import 'screens/test_resultados_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/institucion_detail_screen.dart';
+import 'services/theme_controller.dart';
+import 'theme/app_theme.dart';
 import 'seed_data.dart';
 
 void main() async {
@@ -52,11 +54,18 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Proyecto App',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue),
-      initialRoute: '/',
+    return ListenableBuilder(
+      listenable: ThemeController.instance,
+      builder: (context, _) {
+        return MaterialApp(
+          title: 'Proyecto App',
+          debugShowCheckedModeBanner: false,
+          theme: buildLightTheme(),
+          darkTheme: buildDarkTheme(),
+          themeMode: ThemeController.instance.isDark
+              ? ThemeMode.dark
+              : ThemeMode.light,
+          initialRoute: '/',
       routes: {
         '/': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
@@ -82,6 +91,8 @@ class MyApp extends StatelessWidget {
           final uid = ModalRoute.of(context)!.settings.arguments as String;
           return InstitucionDetailScreen(institucionUid: uid);
         },
+      },
+        );
       },
     );
   }
