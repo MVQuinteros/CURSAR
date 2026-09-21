@@ -12,8 +12,13 @@ import '../theme/app_theme.dart';
 
 class InstitucionDetailScreen extends StatefulWidget {
   final String institucionUid;
+  final String? ofertaFiltroId;
 
-  const InstitucionDetailScreen({super.key, required this.institucionUid});
+  const InstitucionDetailScreen({
+    super.key,
+    required this.institucionUid,
+    this.ofertaFiltroId,
+  });
 
   @override
   State<InstitucionDetailScreen> createState() =>
@@ -55,10 +60,19 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
       _institucion = InstitucionModel.fromMap(instDoc.id, instDoc.data()!);
     }
 
-    final ofertasSnap = await FirebaseFirestore.instance
+    var ofertasQuery = FirebaseFirestore.instance
         .collection('ofertas')
-        .where('institucionUid', isEqualTo: widget.institucionUid)
-        .get();
+        .where('institucionUid', isEqualTo: widget.institucionUid);
+
+    final ofertaFiltro = widget.ofertaFiltroId;
+    if (ofertaFiltro != null && ofertaFiltro.isNotEmpty) {
+      ofertasQuery = ofertasQuery.where(
+        FieldPath.documentId,
+        isEqualTo: ofertaFiltro,
+      );
+    }
+
+    final ofertasSnap = await ofertasQuery.get();
 
     setState(() {
       _ofertas = ofertasSnap.docs
@@ -102,25 +116,39 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
     } catch (_) {}
   }
 
+  Future<void> _lanzarUrl(Uri url, {String? mensajeError}) async {
+    try {
+      final ok = await canLaunchUrl(url);
+      if (!ok) {
+        throw Exception('No hay app disponible para abrir: ${url.host}');
+      }
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(mensajeError ?? 'No se pudo abrir el enlace'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _abrirEnGoogleMaps() async {
     if (_institucion == null) return;
     final lat = _institucion!.latitud;
     final lng = _institucion!.longitud;
+    final Uri url;
     if (lat == null || lng == null) {
       final query = Uri.encodeComponent(
           '${_institucion!.direccion}, ${_institucion!.ciudad}');
-      final url = Uri.parse(
-          'https://www.google.com/maps/search/?api=1&query=$query');
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.externalApplication);
-      }
-      return;
+      url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
+    } else {
+      url = Uri.parse(
+          'https://www.google.com/maps/search/?api=1&query=$lat,$lng');
     }
-    final url = Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=$lat,$lng');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    }
+    await _lanzarUrl(url, mensajeError: 'No se pudo abrir el mapa');
   }
 
   Future<void> _abrirRuta(ModoViaje modo) async {
@@ -137,17 +165,24 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
       '&destination=$destino'
       '&travelmode=${modo.travelmode}',
     );
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
+    await _lanzarUrl(url, mensajeError: 'No se pudo abrir la ruta');
+  }
+
+  Uri _parseUrlNormalizada(String url) {
+    var texto = url.trim();
+    if (!texto.startsWith('http://') && !texto.startsWith('https://')) {
+      texto = 'https://$texto';
     }
+    return Uri.parse(texto);
   }
 
   Future<void> _abrirSitioWeb() async {
-    if (_institucion?.sitioWeb == null || _institucion!.sitioWeb.isEmpty) return;
-    final url = Uri.parse(_institucion!.sitioWeb);
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    }
+    final sitio = _institucion?.sitioWeb;
+    if (sitio == null || sitio.isEmpty) return;
+    await _lanzarUrl(
+      _parseUrlNormalizada(sitio),
+      mensajeError: 'No se pudo abrir el sitio web',
+    );
   }
 
   Color _tagColor(String tag) {
@@ -302,7 +337,12 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
                   _infoRow(context, Icons.phone, inst.telefono),
                   _infoRow(context, Icons.email, inst.email),
                   if (inst.sitioWeb.isNotEmpty)
-                    _infoRow(context, Icons.language, inst.sitioWeb),
+                    _infoRow(
+                      context,
+                      Icons.language,
+                      inst.sitioWeb,
+                      onTap: _abrirSitioWeb,
+                    ),
                   const SizedBox(height: 20),
                   ..._buildSeccionComoLlegar(inst),
                   const SizedBox(height: 24),
@@ -472,20 +512,41 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
     );
   }
 
-  Widget _infoRow(BuildContext context, IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: context.colors.accentPrimary),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(fontSize: 14),
+  Widget _infoRow(
+    BuildContext context,
+    IconData icon,
+    String text, {
+    VoidCallback? onTap,
+  }) {
+    final row = Row(
+      children: [
+        Icon(icon, size: 18, color: context.colors.accentPrimary),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 14,
+              color: onTap != null
+                  ? context.colors.accentPrimary
+                  : context.colors.textPrimary,
+              decoration: onTap != null ? TextDecoration.underline : null,
             ),
           ),
-        ],
+        ),
+      ],
+    );
+
+    if (onTap == null) {
+      return Padding(padding: const EdgeInsets.only(bottom: 8), child: row);
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(6),
+        child: row,
       ),
     );
   }

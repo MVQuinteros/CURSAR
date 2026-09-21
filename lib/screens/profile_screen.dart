@@ -54,6 +54,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (index == _selectedIndex) return;
     if (index == 1) {
       Navigator.pushNamed(context, '/test');
+    } else if (index == 2) {
+      Navigator.pushNamed(context, '/favoritos');
     } else {
       Navigator.pop(context);
     }

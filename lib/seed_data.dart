@@ -1724,3 +1724,34 @@ Future<void> seedAvisos() async {
 
   await batch.commit();
 }
+
+Future<void> seedFavoritosDemo(String uid) async {
+  final firestore = FirebaseFirestore.instance;
+
+  const favoritos = [
+    (ofertaId: 'oferta_utn_3', institucionUid: 'utn'),
+    (ofertaId: 'oferta_unpaz_1', institucionUid: 'unpaz'),
+    (ofertaId: 'oferta_ungs_3', institucionUid: 'ungs'),
+    (ofertaId: 'oferta_isft182_1', institucionUid: 'isft182'),
+  ];
+
+  final batch = firestore.batch();
+  for (final fav in favoritos) {
+    final ref =
+        firestore.collection('usuarios').doc(uid).collection('favoritos').doc();
+    batch.set(ref, {
+      'ofertaId': fav.ofertaId,
+      'institucionUid': fav.institucionUid,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  batch.set(
+    firestore.collection('ofertas').doc('favoritos_seed_v1'),
+    {'trigger': true, 'createdAt': DateTime.now()},
+    SetOptions(merge: false),
+  );
+
+  await batch.commit();
+  debugPrint('seedFavoritosDemo: ${favoritos.length} favoritos guardados');
+}

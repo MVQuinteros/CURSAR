@@ -512,6 +512,10 @@ class _HomeScreenState extends State<HomeScreen> {
       Navigator.pushNamed(context, '/test');
       return;
     }
+    if (index == 2) {
+      Navigator.pushNamed(context, '/favoritos');
+      return;
+    }
     if (index == 3) {
       Navigator.pushNamed(context, '/profile');
       return;

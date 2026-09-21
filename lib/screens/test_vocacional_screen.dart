@@ -185,8 +185,10 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
   }
 
   void _navegar(int index) {
-    if (index == 0 || index == 2) {
+    if (index == 0) {
       Navigator.pushReplacementNamed(context, '/home');
+    } else if (index == 2) {
+      Navigator.pushReplacementNamed(context, '/favoritos');
     } else if (index == 3) {
       Navigator.pushNamed(context, '/profile');
     }
