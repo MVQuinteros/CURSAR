@@ -5,9 +5,6 @@ import '../models/preferencias_model.dart';
 import '../services/preferencias_service.dart';
 import '../theme/app_theme.dart';
 
-const Color _kRose = Color(0xFFFF6B95);
-const Color _kViolet = Color(0xFF8B5CF6);
-
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -17,6 +14,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String _nombre = '';
+  String _apellido = '';
+  String _email = '';
   PreferenciasModel _preferencias = const PreferenciasModel();
   final int _selectedIndex = 3;
 
@@ -36,7 +35,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final prefs = await PreferenciasService().obtener(user.uid);
     if (mounted) {
       setState(() {
-        _nombre = doc.data()?['nombre'] ?? '';
+        _nombre = doc.data()?['nombre']?.toString() ?? '';
+        _apellido = doc.data()?['apellido']?.toString() ?? '';
+        _email = doc.data()?['email']?.toString() ?? user.email ?? '';
         _preferencias = prefs;
       });
     }
@@ -53,6 +54,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (index == _selectedIndex) return;
     if (index == 1) {
       Navigator.pushNamed(context, '/test');
+    } else if (index == 2) {
+      Navigator.pushNamed(context, '/favoritos');
     } else {
       Navigator.pop(context);
     }
@@ -68,24 +71,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await _cargarDatos();
   }
 
-  void _abrirConfiguracion() {
-    Navigator.pushNamed(context, '/configuracion');
-  }
-
-  void _abrirHistorial() {
-    Navigator.pushNamed(context, '/historial');
-  }
-
-  void _abrirCarrerasVistas() {
-    Navigator.pushNamed(
-      context,
-      '/historial',
-      arguments: {'titulo': 'Carreras vistas', 'tipo': 'carrera'},
-    );
+  void _abrirNotificaciones() {
+    Navigator.pushNamed(context, '/notificaciones');
   }
 
   void _abrirAyudaSoporte() {
     Navigator.pushNamed(context, '/soporte');
+  }
+
+  void _mostrarTerminos() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Términos y condiciones'),
+        content: const Text(
+          'Al usar CursAR aceptás que tus datos se utilicen únicamente para '
+          'personalizar tu experiencia de búsqueda educativa. '
+          'No compartimos tu información con terceros.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cerrar'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -97,53 +108,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             _buildHeader(topPadding),
+            SizedBox(
+              height: 62,
+              width: double.infinity,
+              child: Center(
+                child: Transform.translate(
+                  offset: const Offset(0, -62),
+                  child: _buildAvatar(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 24),
-                  _buildAvatar(),
-                  const SizedBox(height: 16),
                   Text(
-                    _nombre.isNotEmpty ? 'Hola, $_nombre 👋' : 'Hola 👋',
+                    _mostrarNombre(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 26,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: context.colors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Explorá tu próximo paso',
+                    _email,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontSize: 15, color: context.colors.textSecondary),
+                      fontSize: 14,
+                      color: context.colors.textSecondary,
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  _buildBotonPerfil(),
                   const SizedBox(height: 28),
-                  _PreferenciasCard(
-                    ubicacion: _preferencias.localidad,
-                    radio: '${_preferencias.radioBusqueda} km',
-                    modalidad: _preferencias.modalidad,
-                    tipoInstitucion: _preferencias.tipoInstitucion,
-                    onEditar: _abrirEditarPerfil,
-                  ),
+                  _buildTarjetaOpciones([
+                    _OpcionFila(
+                      icono: Icons.edit_outlined,
+                      titulo: 'Editar perfil',
+                      onTap: _abrirEditarPerfil,
+                    ),
+                    Divider(height: 1, color: context.colors.borderSubtle),
+                    _OpcionFila(
+                      icono: Icons.notifications_outlined,
+                      titulo: 'Notificaciones',
+                      onTap: _abrirNotificaciones,
+                    ),
+                    Divider(height: 1, color: context.colors.borderSubtle),
+                    _OpcionFila(
+                      icono: Icons.radar,
+                      titulo: 'Radio de búsqueda',
+                      valor: '${_preferencias.radioBusqueda} km',
+                      onTap: _abrirEditarPerfil,
+                    ),
+                  ]),
                   const SizedBox(height: 16),
-                  _ActividadCard(
-                    onBusquedasRecientes: _abrirHistorial,
-                    onCarrerasVistas: _abrirCarrerasVistas,
-                  ),
-                  const SizedBox(height: 16),
-                  _MasCard(
-                    onConfiguracion: _abrirConfiguracion,
-                    onAyudaSoporte: _abrirAyudaSoporte,
-                  ),
-                  const SizedBox(height: 24),
+                  _buildTarjetaOpciones([
+                    _OpcionFila(
+                      icono: Icons.help_outline,
+                      titulo: 'Ayuda y soporte',
+                      onTap: _abrirAyudaSoporte,
+                    ),
+                    Divider(height: 1, color: context.colors.borderSubtle),
+                    _OpcionFila(
+                      icono: Icons.description_outlined,
+                      titulo: 'Términos y condiciones',
+                      onTap: _mostrarTerminos,
+                    ),
+                  ]),
+                  const SizedBox(height: 26),
                   _buildCerrarSesion(),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
@@ -154,51 +190,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  String _mostrarNombre() {
+    final completo = '$_nombre $_apellido'.trim();
+    if (completo.isNotEmpty) return completo;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null &&
+        user.displayName != null &&
+        user.displayName!.trim().isNotEmpty) {
+      return user.displayName!.trim();
+    }
+    return _nombre.isNotEmpty ? _nombre : 'Usuario';
+  }
+
   Widget _buildHeader(double topPadding) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.fromLTRB(20, topPadding + 12, 20, 34),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFFF6B95), Color(0xFFFF9A62), Color(0xFFFFC85C)],
-        ),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
+      padding: EdgeInsets.fromLTRB(20, topPadding + 18, 20, 64),
+      decoration: BoxDecoration(
+        color: context.colors.accentPrimary,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(40)),
       ),
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Positioned.fill(child: CustomPaint(painter: _BlobPainter())),
-          Row(
-            children: [
-              const Expanded(
-                child: Text(
-                  'Perfil',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: _abrirConfiguracion,
-                customBorder: const CircleBorder(),
-                child: Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.25),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.settings,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ),
-              ),
-            ],
+          const Text(
+            'Mi perfil',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Gestioná tu cuenta y preferencias',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white.withValues(alpha: 0.92),
+            ),
           ),
         ],
       ),
@@ -206,104 +235,72 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildAvatar() {
-    return Center(
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            width: 112,
-            height: 112,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [_kRose, _kViolet],
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: 124,
+          height: 124,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: context.colors.borderSubtle,
+            border: Border.all(color: Colors.white, width: 5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.10),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
               ),
-              border: Border.all(color: Colors.white, width: 4),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.10),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(3),
-            child: CircleAvatar(
-              backgroundColor: context.colors.bgSurface,
+            ],
+          ),
+          child: Icon(
+            Icons.person,
+            size: 54,
+            color: context.colors.iconNormal,
+          ),
+        ),
+        Positioned(
+          right: 2,
+          bottom: 2,
+          child: InkWell(
+            onTap: () => _mensaje('Cambiar foto de perfil'),
+            customBorder: const CircleBorder(),
+            child: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: context.colors.accentPrimary,
+                border: Border.all(color: Colors.white, width: 2.5),
+              ),
               child: const Icon(
-                Icons.person,
-                size: 52,
+                Icons.camera_alt,
+                size: 17,
                 color: Colors.white,
               ),
             ),
           ),
-          Positioned(
-            right: 0,
-            bottom: 0,
-            child: InkWell(
-              onTap: () => _mensaje('Cambiar foto de perfil'),
-              customBorder: const CircleBorder(),
-              child: Container(
-                width: 34,
-                height: 34,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [_kRose, _kViolet],
-                  ),
-                  border: Border.fromBorderSide(BorderSide(color: Colors.white)),
-                ),
-                child: const Icon(
-                  Icons.camera_alt,
-                  size: 16,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildBotonPerfil() {
-    return InkWell(
-      onTap: _abrirEditarPerfil,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(
-          color: context.colors.bgSurface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: context.colors.borderSubtle),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.edit_outlined,
-                color: context.colors.accentPrimary, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              'Editar perfil',
-              style: TextStyle(
-                color: context.colors.accentPrimary,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
+  Widget _buildTarjetaOpciones(List<Widget> children) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: context.colors.bgSurface,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: children,
       ),
     );
   }
@@ -312,13 +309,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final error = Theme.of(context).colorScheme.error;
     return InkWell(
       onTap: _cerrarSesion,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(
-          color: error.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(16),
-        ),
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -408,295 +401,57 @@ class _NavItemData {
   final String label;
 }
 
-class _BlobPainter extends CustomPainter {
-  const _BlobPainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint();
-    paint.color = Colors.white.withValues(alpha: 0.14);
-    canvas.drawCircle(Offset(size.width - 40, 34), 90, paint);
-    paint.color = Colors.white.withValues(alpha: 0.10);
-    canvas.drawCircle(Offset(size.width * 0.22, size.height - 30), 70, paint);
-    paint.color = Colors.white.withValues(alpha: 0.12);
-    canvas.drawCircle(Offset(size.width * 0.62, size.height - 56), 46, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-class _Card extends StatelessWidget {
-  const _Card({required this.titulo, this.trailing, required this.children});
-
-  final String titulo;
-  final Widget? trailing;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-      decoration: BoxDecoration(
-        color: context.colors.bgSurface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: context.colors.borderSubtle),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 14,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  titulo,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: context.colors.textPrimary,
-                  ),
-                ),
-              ),
-              ?trailing,
-            ],
-          ),
-          const SizedBox(height: 6),
-          ...children,
-        ],
-      ),
-    );
-  }
-}
-
-class _PreferenciasCard extends StatelessWidget {
-  const _PreferenciasCard({
-    required this.ubicacion,
-    required this.radio,
-    required this.modalidad,
-    required this.tipoInstitucion,
-    required this.onEditar,
-  });
-
-  final String ubicacion;
-  final String radio;
-  final String modalidad;
-  final String tipoInstitucion;
-  final VoidCallback onEditar;
-
-  @override
-  Widget build(BuildContext context) {
-    return _Card(
-      titulo: 'Preferencias de búsqueda',
-      trailing: TextButton(
-        onPressed: onEditar,
-        style: TextButton.styleFrom(
-          foregroundColor: context.colors.accentPrimary,
-          padding: EdgeInsets.zero,
-          minimumSize: const Size(0, 32),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
-        child: const Text(
-          'Editar',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-      ),
-      children: [
-        _FilaPreferencia(
-          icon: Icons.location_on,
-          color: context.colors.accentPrimary,
-          titulo: 'Ubicación',
-          valor: ubicacion.isNotEmpty
-              ? ubicacion
-              : 'San Miguel, Buenos Aires',
-        ),
-        _FilaPreferencia(
-          icon: Icons.radar,
-          color: const Color(0xFF2FA36B),
-          titulo: 'Radio de búsqueda',
-          valor: radio,
-        ),
-        _FilaPreferencia(
-          icon: Icons.school_outlined,
-          color: const Color(0xFFF59E0B),
-          titulo: 'Modalidad',
-          valor: modalidad,
-        ),
-        _FilaPreferencia(
-          icon: Icons.account_balance_outlined,
-          color: context.colors.accentPrimary,
-          titulo: 'Tipo de institución',
-          valor: tipoInstitucion,
-        ),
-      ],
-    );
-  }
-}
-
-class _FilaPreferencia extends StatelessWidget {
-  const _FilaPreferencia({
-    required this.icon,
-    required this.color,
+class _OpcionFila extends StatelessWidget {
+  const _OpcionFila({
+    required this.icono,
     required this.titulo,
-    required this.valor,
-  });
-
-  final IconData icon;
-  final Color color;
-  final String titulo;
-  final String valor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              titulo,
-              style: TextStyle(
-                  fontSize: 14, color: context.colors.textPrimary),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              valor,
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: context.colors.textPrimary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActividadCard extends StatelessWidget {
-  const _ActividadCard({
-    required this.onBusquedasRecientes,
-    required this.onCarrerasVistas,
-  });
-
-  final VoidCallback onBusquedasRecientes;
-  final VoidCallback onCarrerasVistas;
-
-  @override
-  Widget build(BuildContext context) {
-    return _Card(
-      titulo: 'Actividad',
-      children: [
-        _FilaOpcion(
-          icon: Icons.history,
-          color: const Color(0xFF6366F1),
-          titulo: 'Búsquedas recientes',
-          onTap: onBusquedasRecientes,
-        ),
-        Divider(height: 1, color: context.colors.borderSubtle),
-        _FilaOpcion(
-          icon: Icons.auto_stories_outlined,
-          color: const Color(0xFFEC4899),
-          titulo: 'Carreras vistas',
-          onTap: onCarrerasVistas,
-        ),
-      ],
-    );
-  }
-}
-
-class _MasCard extends StatelessWidget {
-  const _MasCard({
-    required this.onConfiguracion,
-    required this.onAyudaSoporte,
-  });
-
-  final VoidCallback onConfiguracion;
-  final VoidCallback onAyudaSoporte;
-
-  @override
-  Widget build(BuildContext context) {
-    return _Card(
-      titulo: 'Más',
-      children: [
-        _FilaOpcion(
-          icon: Icons.settings_outlined,
-          color: context.colors.accentPrimary,
-          titulo: 'Configuración',
-          onTap: onConfiguracion,
-        ),
-        Divider(height: 1, color: context.colors.borderSubtle),
-        _FilaOpcion(
-          icon: Icons.help_outline,
-          color: context.colors.iconNormal,
-          titulo: 'Ayuda y soporte',
-          onTap: onAyudaSoporte,
-        ),
-      ],
-    );
-  }
-}
-
-class _FilaOpcion extends StatelessWidget {
-  const _FilaOpcion({
-    required this.icon,
-    required this.color,
-    required this.titulo,
+    this.valor,
     this.onTap,
   });
 
-  final IconData icon;
-  final Color color;
+  final IconData icono;
   final String titulo;
+  final String? valor;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(18),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
         child: Row(
           children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: color, size: 19),
-            ),
-            const SizedBox(width: 12),
+            Icon(icono, size: 22, color: context.colors.accentPrimary),
+            const SizedBox(width: 14),
             Expanded(
               child: Text(
                 titulo,
                 style: TextStyle(
-                    fontSize: 14, color: context.colors.textPrimary),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: context.colors.textPrimary,
+                ),
               ),
             ),
-            Icon(Icons.chevron_right, color: context.colors.iconNormal),
+            if (valor != null) ...[
+              const SizedBox(width: 8),
+              Text(
+                valor!,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: context.colors.textSecondary,
+                ),
+              ),
+            ],
+            const SizedBox(width: 6),
+            Icon(
+              Icons.chevron_right,
+              size: 20,
+              color: context.colors.iconNormal,
+            ),
           ],
         ),
       ),

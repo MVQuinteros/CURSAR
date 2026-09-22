@@ -6,10 +6,18 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'models/oferta_model.dart';
 import 'models/institucion_model.dart';
+import 'models/aviso_model.dart';
 import 'services/aviso_service.dart';
 import 'services/notificacion_service.dart';
 import 'services/theme_controller.dart';
 import 'theme/app_theme.dart';
+
+class _NovedadesData {
+  final List<OfertaModel> ofertas;
+  final Map<String, InstitucionModel> instituciones;
+
+  const _NovedadesData(this.ofertas, this.instituciones);
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -160,6 +168,266 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Widget _cardAviso(AvisoModel aviso) {
+    final color = _colorPorTipo(aviso.tipo);
+    return Container(
+      width: 240,
+      margin: const EdgeInsets.only(right: 16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: context.colors.bgSurface,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () {
+            if (aviso.link != null && aviso.link!.isNotEmpty) {
+              _abrirLink(aviso.link!);
+            }
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundColor: color.withValues(alpha: 0.15),
+                    child: Icon(_iconoPorTipo(aviso.tipo),
+                        color: color, size: 18),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          aviso.titulo,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: context.colors.textPrimary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _formatearFechaAviso(aviso.publicado),
+                          style: TextStyle(
+                            color: context.colors.textSecondary,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                aviso.mensaje,
+                style: TextStyle(
+                  color: context.colors.textSecondary,
+                  fontSize: 12,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _cardCarrera(OfertaModel oferta, InstitucionModel? inst) {
+    final fecha = oferta.createdAt != null
+        ? '${oferta.createdAt!.day}/${oferta.createdAt!.month}/${oferta.createdAt!.year}'
+        : '';
+    return GestureDetector(
+      onTap: () {
+        if (inst != null) {
+          Navigator.pushNamed(
+            context,
+            '/institucion-carreras',
+            arguments: inst.institucionUid,
+          );
+        }
+      },
+      child: Container(
+        width: 220,
+        margin: const EdgeInsets.only(right: 16),
+        decoration: BoxDecoration(
+          color: context.colors.bgSurface,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              children: [
+                Container(
+                  height: 120,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: context.colors.bgSurface,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    ),
+                  ),
+                  child: Center(
+                    child: inst != null && inst.logoURL.isNotEmpty
+                        ? ClipOval(
+                            child: Image.network(
+                              inst.logoURL,
+                              width: 72,
+                              height: 72,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) => _logoSinFoto(inst),
+                            ),
+                          )
+                        : inst != null
+                            ? _logoSinFoto(inst)
+                            : Icon(
+                                Icons.school,
+                                size: 40,
+                                color: context.colors.iconNormal,
+                              ),
+                  ),
+                ),
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: context.colors.accentPrimary,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      oferta.tag,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (inst != null) ...[
+                    Text(
+                      inst.nombre,
+                      style: TextStyle(
+                        color: context.colors.accentPrimary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 3),
+                  ],
+                  Text(
+                    oferta.nombre,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    oferta.descripcion,
+                    style: TextStyle(
+                      color: context.colors.textSecondary,
+                      fontSize: 12,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today,
+                        size: 12,
+                        color: context.colors.iconNormal,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        fecha,
+                        style: TextStyle(
+                          color: context.colors.textSecondary,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _logoSinFoto(InstitucionModel inst) {
+    final iniciales = inst.nombre
+        .split(' ')
+        .where((p) => p.isNotEmpty)
+        .take(2)
+        .map((p) => p[0].toUpperCase())
+        .join();
+    return Container(
+      width: 72,
+      height: 72,
+      decoration: BoxDecoration(
+        color: context.colors.accentPrimary,
+        shape: BoxShape.circle,
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        iniciales,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
   Future<List<OfertaModel>> _cargarOfertas() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('ofertas')
@@ -181,9 +449,71 @@ class _HomeScreenState extends State<HomeScreen> {
     return _institucionesCache!;
   }
 
+  Future<_NovedadesData> _cargarNovedades() async {
+    final ofertasFuture = _cargarOfertas();
+    final institucionesFuture = _cargarInstituciones();
+    final ofertas = await ofertasFuture;
+    final instituciones = await institucionesFuture;
+    final mapa = {for (final i in instituciones) i.institucionUid: i};
+    return _NovedadesData(ofertas, mapa);
+  }
+
+  Future<void> _abrirLink(String link) async {
+    await Navigator.pushNamed(context, link);
+  }
+
+  String _formatearFechaAviso(DateTime? fecha) {
+    if (fecha == null) return '';
+    const meses = [
+      'ene', 'feb', 'mar', 'abr', 'may', 'jun',
+      'jul', 'ago', 'sep', 'oct', 'nov', 'dic',
+    ];
+    final hoy = DateTime.now();
+    final diff = hoy.difference(fecha).inDays;
+    if (diff == 0) return 'Hoy';
+    if (diff == 1) return 'Ayer';
+    return '${fecha.day} ${meses[fecha.month - 1]} ${fecha.year}';
+  }
+
+  IconData _iconoPorTipo(String tipo) {
+    switch (tipo) {
+      case 'inscripcion':
+        return Icons.event_available;
+      case 'noticia':
+        return Icons.newspaper;
+      case 'consejo':
+        return Icons.tips_and_updates;
+      case 'bienvenida':
+        return Icons.celebration;
+      case 'test':
+        return Icons.school;
+      default:
+        return Icons.notifications;
+    }
+  }
+
+  Color _colorPorTipo(String tipo) {
+    switch (tipo) {
+      case 'inscripcion':
+        return const Color(0xFF2E7D32);
+      case 'noticia':
+        return const Color(0xFF1565C0);
+      case 'consejo':
+        return const Color(0xFFF9A825);
+      case 'bienvenida':
+        return const Color(0xFF6A1B9A);
+      default:
+        return context.colors.accentPrimary;
+    }
+  }
+
   void _onItemTapped(int index) {
     if (index == 1) {
       Navigator.pushNamed(context, '/test');
+      return;
+    }
+    if (index == 2) {
+      Navigator.pushNamed(context, '/favoritos');
       return;
     }
     if (index == 3) {
@@ -306,135 +636,66 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         const SizedBox(height: 15),
+                        StreamBuilder<QuerySnapshot>(
+                          stream: AvisoService().avisosStream(),
+                          builder: (context, avisoSnap) {
+                            final docs = avisoSnap.data?.docs ?? [];
+                            if (docs.isEmpty) {
+                              return const SizedBox.shrink();
+                            }
+                            final avisos = docs
+                                .map((doc) => AvisoModel.fromMap(
+                                    doc.id, doc.data() as Map<String, dynamic>))
+                                .toList()
+                              ..sort((a, b) {
+                                final aDate = a.publicado ?? DateTime(0);
+                                final bDate = b.publicado ?? DateTime(0);
+                                return bDate.compareTo(aDate);
+                              });
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  height: 120,
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: avisos.length,
+                                    itemBuilder: (context, index) =>
+                                        _cardAviso(avisos[index]),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                const Text(
+                                  'Últimas carreras',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                              ],
+                            );
+                          },
+                        ),
                         SizedBox(
                           height: 280,
-                          child: FutureBuilder<List<OfertaModel>>(
-                            future: _cargarOfertas(),
+                          child: FutureBuilder<_NovedadesData>(
+                            future: _cargarNovedades(),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState == ConnectionState.waiting) {
                                 return const Center(child: CircularProgressIndicator());
                               }
-                              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              if (!snapshot.hasData || snapshot.data!.ofertas.isEmpty) {
                                 return const Center(child: Text('No hay novedades aún'));
                               }
-                              final ofertas = snapshot.data!;
+                              final data = snapshot.data!;
                               return ListView.builder(
                                 scrollDirection: Axis.horizontal,
-                                itemCount: ofertas.length,
+                                itemCount: data.ofertas.length,
                                 itemBuilder: (context, index) {
-                                  final oferta = ofertas[index];
-                                  final fecha = oferta.createdAt != null
-                                      ? '${oferta.createdAt!.day}/${oferta.createdAt!.month}/${oferta.createdAt!.year}'
-                                      : '';
-                                  return Container(
-                                    width: 220,
-                                    margin: const EdgeInsets.only(right: 16),
-                                    decoration: BoxDecoration(
-                                      color: context.colors.bgSurface,
-                                      borderRadius: BorderRadius.circular(12),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.1),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Stack(
-                                          children: [
-                                            Container(
-                                              height: 120,
-                                              width: double.infinity,
-                                              decoration: BoxDecoration(
-                                                color: context.colors.bgSurface,
-                                                borderRadius: const BorderRadius.only(
-                                                  topLeft: Radius.circular(12),
-                                                  topRight: Radius.circular(12),
-                                                ),
-                                              ),
-                                              child: Center(
-                                                child: Icon(
-                                                  Icons.image,
-                                                  color: context.colors.iconNormal,
-                                                  size: 40,
-                                                ),
-                                              ),
-                                            ),
-                                            Positioned(
-                                              top: 8,
-                                              left: 8,
-                                              child: Container(
-                                                padding: const EdgeInsets.symmetric(
-                                                  horizontal: 8,
-                                                  vertical: 4,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: context.colors.accentPrimary,
-                                                  borderRadius: BorderRadius.circular(4),
-                                                ),
-                                                child: Text(
-                                                  oferta.tag,
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(12),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                oferta.nombre,
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14,
-                                                ),
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                oferta.descripcion,
-                                                style: TextStyle(
-                                                  color: context.colors.textSecondary,
-                                                  fontSize: 12,
-                                                ),
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.calendar_today,
-                                                    size: 12,
-                                                    color: context.colors.iconNormal,
-                                                  ),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    fecha,
-                                                    style: TextStyle(
-                                                      color: context.colors.textSecondary,
-                                                      fontSize: 11,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
+                                  final oferta = data.ofertas[index];
+                                  final inst = data.instituciones[oferta.institucionUid];
+                                  return _cardCarrera(oferta, inst);
                                 },
                               );
                             },
@@ -460,7 +721,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/explore-instituciones',
+                            );
+                          },
                           child: Text(
                             'Ver todas',
                             style: TextStyle(
@@ -495,7 +761,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               onTap: () {
                                 Navigator.pushNamed(
                                   context,
-                                  '/institucion',
+                                  '/institucion-carreras',
                                   arguments: institucion.institucionUid,
                                 );
                               },

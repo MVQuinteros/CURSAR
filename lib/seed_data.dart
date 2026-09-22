@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'models/institucion_model.dart';
 import 'models/oferta_model.dart';
 
@@ -1024,29 +1026,6 @@ Future<void> seedData() async {
     SetOptions(merge: false),
   );
 
-  // --- ISFT 180 (Moreno) ---
-  batch.set(
-    firestore.collection('instituciones').doc('isft180'),
-    InstitucionModel(
-      institucionUid: 'isft180',
-      nombre: 'ISFT N°180',
-      descripcion:
-          'Instituto Superior de Formación Técnica Nº 180 de Moreno. Ofrece tecnicaturas en Enfermería, Acompañamiento Terapéutico e Interpretación de Lengua de Señas.',
-      direccion: 'Viamonte 2615',
-      ciudad: 'Moreno',
-      provincia: 'Buenos Aires',
-      telefono: '(0237) 462-6593',
-      email: 'infoinscripcionesisft180@gmail.com',
-      sitioWeb: '',
-      logoURL: 'https://scontent.cdninstagram.com/v/t51.2885-19/118599354_623845748316806_4649154145967017479_n.jpg?stp=dst-jpg_s100x100_tt6&_nc_cat=109&ccb=7-5&_nc_sid=bf7eb4&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&_nc_ohc=Ea0vAwq5uYsQ7kNvwFnBbnU&_nc_oc=AdrGXGY7MlcrmzLpb1_ULLviuYF7tY2Bwi7jdjQReaYpuTpTLbiLqL5fC05l5JK7WTZNuhgtdC_2tymZ13U4owl7&_nc_zt=24&_nc_ht=scontent.cdninstagram.com&_nc_ss=7960f&oh=00_AQL_N-yfl3IOm4O1gQ-BLJUyhxX8h9RRCmAl20_wf9jPSA&oe=6A9CFF65',
-      latitud: -34.6524,
-      longitud: -58.7893,
-      estado: 'aprobada',
-      createdAt: DateTime(2025, 6, 1),
-    ).toMap(),
-    SetOptions(merge: false),
-  );
-
   // --- ISFT 184 (Pilar) ---
   batch.set(
     firestore.collection('instituciones').doc('isft184'),
@@ -1118,22 +1097,6 @@ Future<void> seedData() async {
 
   // --- Ofertas de zona norte (1 por ISFT, sin carreras completas) ---
   ofertas.addAll([
-    OfertaModel(
-      ofertaId: 'oferta_isft180_1',
-      institucionUid: 'isft180',
-      nombre: 'Tecnicatura Superior en Enfermería',
-      descripcion:
-          'Formación en cuidados enfermeros con rotaciones en hospitales públicos de la zona de Moreno. Enfoque en salud comunitaria.',
-      area: 'Salud',
-      nivel: 'Terciario',
-      duracionAnios: 3,
-      modalidad: 'Presencial',
-      salidaLaboral: 'Enfermero/a, enfermero/a jefe, gestor de salud',
-      requisitos: 'Secundario completo. Examen de ingreso.',
-      tag: 'INSCRIPCIONES ABIERTAS',
-      aprobada: true,
-      createdAt: DateTime(2026, 6, 1),
-    ),
     OfertaModel(
       ofertaId: 'oferta_isft184_1',
       institucionUid: 'isft184',
@@ -1215,6 +1178,440 @@ Future<void> seedData() async {
   );
 
   await batch.commit();
+}
+
+Future<void> seedCarrerasCompletas() async {
+  final firestore = FirebaseFirestore.instance;
+  final batch = firestore.batch();
+
+  final carreras = [
+    // --- UNPAZ (completa la lista) ---
+    OfertaModel(
+      ofertaId: 'oferta_unpaz_2',
+      institucionUid: 'unpaz',
+      nombre: 'Abogacía',
+      descripcion:
+          'Formación en derecho con énfasis en derechos humanos, procesos de integración regional y acceso a la justicia. Clínicas jurídicas gratuitas para la comunidad.',
+      area: 'Derecho',
+      nivel: 'Universitario',
+      duracionAnios: 5,
+      modalidad: 'Presencial',
+      salidaLaboral: 'Abogado/a, defensor/a público/a, asesor/a legal, mediador/a',
+      requisitos: 'Secundario completo. Ingreso irrestricto.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unpaz_3',
+      institucionUid: 'unpaz',
+      nombre: 'Licenciatura en Trabajo Social',
+      descripcion:
+          'Formación en intervención social, políticas públicas y trabajo territorial. Prácticas en organizaciones sociales del distrito.',
+      area: 'Ciencias Sociales',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Trabajador/a social, gestor/a de políticas, referente territorial',
+      requisitos: 'Secundario completo. Ingreso irrestricto.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unpaz_4',
+      institucionUid: 'unpaz',
+      nombre: 'Licenciatura en Administración',
+      descripcion:
+          'Gestión de organizaciones públicas y privadas, economía social y desarrollo local. Proyectos con PyMEs de la región.',
+      area: 'Administración',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Administrador/a, gestor/a empresarial, analista financiero, consultor/a',
+      requisitos: 'Secundario completo. Ingreso irrestricto.',
+      tag: 'FECHAS IMPORTANTES',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unpaz_5',
+      institucionUid: 'unpaz',
+      nombre: 'Licenciatura en Educación',
+      descripcion:
+          'Formación de profesionales de la educación con enfoque en inclusión, tecnología educativa y políticas de niñez y juventud.',
+      area: 'Educación',
+      nivel: 'Universitario',
+      duracionAnios: 4,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Docente, pedagogo/a, diseñador/a curricular, gestor/a educativo/a',
+      requisitos: 'Secundario completo. Ingreso irrestricto.',
+      tag: 'BECAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_unpaz_6',
+      institucionUid: 'unpaz',
+      nombre: 'Contador Público',
+      descripcion:
+          'Formación en contabilidad, auditoría, impuestos y finanzas con perspectiva de desarrollo regional. Prácticas en estudios contables.',
+      area: 'Economía',
+      nivel: 'Universitario',
+      duracionAnios: 5,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Contador/a público/a, auditor/a, asesor/a impositivo/a',
+      requisitos: 'Secundario completo. Ingreso irrestricto.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    // --- ISFT 182 (San Miguel) ---
+    OfertaModel(
+      ofertaId: 'oferta_isft182_2',
+      institucionUid: 'isft182',
+      nombre: 'Tecnicatura Superior en Enfermería',
+      descripcion:
+          'Formación en cuidados enfermeros con rotaciones hospitalarias y atención primaria de la salud. Enfoque comunitario.',
+      area: 'Salud',
+      nivel: 'Terciario',
+      duracionAnios: 3,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Enfermero/a, enfermero/a jefe, gestor/a de salud',
+      requisitos: 'Secundario completo. Examen de ingreso.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_isft182_3',
+      institucionUid: 'isft182',
+      nombre: 'Tecnicatura Superior en Recursos Humanos',
+      descripcion:
+          'Gestión del capital humano: selección, capacitación, liquidación de sueldos y administración de personal.',
+      area: 'Administración',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Técnico/a en RRHH, selector/a de personal, capacitador/a, liquidador/a',
+      requisitos: 'Secundario completo',
+      tag: 'NUEVO',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_isft182_4',
+      institucionUid: 'isft182',
+      nombre: 'Tecnicatura Superior en Bibliotecología',
+      descripcion:
+          'Organización, gestión y difusión de colecciones bibliográficas y recursos de información en bibliotecas, archivos y centros de documentación.',
+      area: 'Humanidades',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Bibliotecario/a, gestor/a documental, auxiliar de bibliotecas',
+      requisitos: 'Secundario completo',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_isft182_5',
+      institucionUid: 'isft182',
+      nombre: 'Tecnicatura Superior en Higiene y Seguridad en el Trabajo',
+      descripcion:
+          'Prevención de riesgos laborales, control de condiciones ambientales y confección de planes de evacuación.',
+      area: 'Ingeniería',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Técnico/a en higiene y seguridad, asesor/a de prevención, auditor/a',
+      requisitos: 'Secundario completo',
+      tag: 'FECHAS IMPORTANTES',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    // --- ISFT 184 (Pilar) ---
+    OfertaModel(
+      ofertaId: 'oferta_isft184_2',
+      institucionUid: 'isft184',
+      nombre: 'Tecnicatura Superior en Coaching Educativo',
+      descripcion:
+          'Formación para acompañar procesos de aprendizaje y desarrollo personal en ámbitos educativos y organizacionales.',
+      area: 'Educación',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Coach educativo/a, orientador/a vocacional, formador/a',
+      requisitos: 'Secundario completo',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_isft184_3',
+      institucionUid: 'isft184',
+      nombre: 'Tecnicatura Superior en Contabilidad',
+      descripcion:
+          'Registración contable, liquidación de impuestos y cierres de ejercicio. Prácticas en estudios contables de la zona.',
+      area: 'Economía',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Técnico/a contable, auxiliar impositivo/a, liquidador/a',
+      requisitos: 'Secundario completo',
+      tag: 'BECAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_isft184_4',
+      institucionUid: 'isft184',
+      nombre: 'Tecnicatura Superior en Comercio Internacional',
+      descripcion:
+          'Negocios internacionales, logística, aduana y operaciones de exportación e importación. Simulaciones de comercio exterior.',
+      area: 'Administración',
+      nivel: 'Terciario',
+      duracionAnios: 3,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Despachante de aduana, operador/a de comercio exterior, logístico/a',
+      requisitos: 'Secundario completo',
+      tag: 'NUEVO',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_isft184_5',
+      institucionUid: 'isft184',
+      nombre: 'Tecnicatura Superior en Gestión Ambiental',
+      descripcion:
+          'Gestión de residuos, auditoría ambiental y sustentabilidad en organizaciones. Trabajo de campo en el corredor del Río Luján.',
+      area: 'Ciencias Ambientales',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Técnico/a ambiental, auditor/a, gestor/a de residuos',
+      requisitos: 'Secundario completo',
+      tag: 'FECHAS IMPORTANTES',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_isft184_6',
+      institucionUid: 'isft184',
+      nombre: 'Tecnicatura Superior en Seguridad e Higiene',
+      descripcion:
+          'Prevención de accidentes laborales y enfermedades profesionales en plantas industriales y obras.',
+      area: 'Ingeniería',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Técnico/a en higiene y seguridad, supervisor/a de obra',
+      requisitos: 'Secundario completo',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    // --- ISFT 234 (Los Polvorines) ---
+    OfertaModel(
+      ofertaId: 'oferta_isft234_2',
+      institucionUid: 'isft234',
+      nombre: 'Tecnicatura Superior en Enfermería',
+      descripcion:
+          'Cuidados enfermeros con rotaciones en el Hospital Mercante y en la red de salud del distrito. Modalidad bimodal.',
+      area: 'Salud',
+      nivel: 'Terciario',
+      duracionAnios: 3,
+      modalidad: 'Bimodal',
+      salidaLaboral:
+          'Enfermero/a, enfermero/a jefe, gestor/a de salud',
+      requisitos: 'Secundario completo. Examen de ingreso.',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_isft234_3',
+      institucionUid: 'isft234',
+      nombre: 'Tecnicatura Superior en Análisis de Sistemas',
+      descripcion:
+          'Análisis, diseño e implementación de sistemas informáticos. Prácticas profesionalizantes en el polo tecnológico de la zona.',
+      area: 'Tecnología',
+      nivel: 'Terciario',
+      duracionAnios: 3,
+      modalidad: 'Bimodal',
+      salidaLaboral:
+          'Analista funcional, desarrollador/a, consultor/a TI',
+      requisitos: 'Secundario completo',
+      tag: 'INSCRIPCIONES ABIERTAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_isft234_4',
+      institucionUid: 'isft234',
+      nombre: 'Tecnicatura Superior en Periodismo Deportivo',
+      descripcion:
+          'Periodismo deportivo en radio, televisión y medios digitales. Relatos, crónicas y coberturas en vivo.',
+      area: 'Creativa',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Presencial',
+      salidaLaboral:
+          'Periodista deportivo/a, relator/a, cronista, productor/a',
+      requisitos: 'Secundario completo',
+      tag: 'NUEVO',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_isft234_5',
+      institucionUid: 'isft234',
+      nombre: 'Tecnicatura Superior en Acompañamiento Terapéutico',
+      descripcion:
+          'Acompañamiento de personas con padecimientos subjetivos en el marco de equipos interdisciplinarios de salud.',
+      area: 'Salud',
+      nivel: 'Terciario',
+      duracionAnios: 3,
+      modalidad: 'Bimodal',
+      salidaLaboral:
+          'Acompañante terapéutico/a, integrante de equipos de salud',
+      requisitos: 'Secundario completo',
+      tag: 'BECAS',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+    OfertaModel(
+      ofertaId: 'oferta_isft234_6',
+      institucionUid: 'isft234',
+      nombre: 'Tecnicatura Superior en Recursos Humanos',
+      descripcion:
+          'Selección, capacitación y administración de personal. Prácticas en empresas del Parque Industrial de Malvinas Argentinas.',
+      area: 'Administración',
+      nivel: 'Terciario',
+      duracionAnios: 2,
+      modalidad: 'Bimodal',
+      salidaLaboral:
+          'Técnico/a en RRHH, selector/a de personal, capacitador/a',
+      requisitos: 'Secundario completo',
+      tag: 'FECHAS IMPORTANTES',
+      aprobada: true,
+      createdAt: DateTime(2026, 6, 5),
+    ),
+  ];
+
+  for (final oferta in carreras) {
+    batch.set(
+      firestore.collection('ofertas').doc(oferta.ofertaId),
+      oferta.toMap(),
+      SetOptions(merge: false),
+    );
+  }
+
+  batch.delete(
+    firestore.collection('ofertas').doc('oferta_isft182_6'),
+  );
+
+  batch.set(
+    firestore.collection('ofertas').doc('oferta_seed_v8_carreras_completas'),
+    {'trigger': true, 'createdAt': DateTime.now()},
+    SetOptions(merge: false),
+  );
+
+  await batch.commit();
+  debugPrint('seedCarrerasCompletas: ${carreras.length} carreras agregadas');
+}
+
+Future<void> eliminarIsft180() async {
+  final firestore = FirebaseFirestore.instance;
+  final batch = firestore.batch();
+
+  batch.delete(firestore.collection('instituciones').doc('isft180'));
+
+  final ofertasSnap = await firestore
+      .collection('ofertas')
+      .where('institucionUid', isEqualTo: 'isft180')
+      .get();
+  for (final doc in ofertasSnap.docs) {
+    batch.delete(doc.reference);
+  }
+
+  batch.set(
+    firestore.collection('instituciones').doc('eliminar_isft180_v1'),
+    {'trigger': true, 'createdAt': DateTime.now()},
+    SetOptions(merge: false),
+  );
+
+  await batch.commit();
+  debugPrint(
+      'eliminarIsft180: ${ofertasSnap.docs.length} ofertas y la institución eliminadas');
+}
+
+Future<void> seedLogosStorage() async {
+  final firestore = FirebaseFirestore.instance;
+  final storage = FirebaseStorage.instance;
+
+  final snap = await firestore.collection('instituciones').get();
+  final batch = firestore.batch();
+  var migrados = 0;
+
+  for (final doc in snap.docs) {
+    final data = doc.data();
+    final urls = data['logoURL'] as String? ?? '';
+    if (urls.trim().isEmpty) continue;
+    if (urls.contains('firebasestorage.app')) continue;
+
+    try {
+      final response = await http.get(Uri.parse(urls));
+      if (response.statusCode != 200 || response.bodyBytes.isEmpty) continue;
+
+      final ext = _extensionDesdeUrl(urls);
+      final ref = storage.ref('instituciones_logos/${doc.id}$ext');
+      await ref.putData(
+        response.bodyBytes,
+        SettableMetadata(contentType: response.headers['content-type']),
+      );
+      final downloadUrl = await ref.getDownloadURL();
+      batch.update(doc.reference, {'logoURL': downloadUrl});
+      migrados++;
+    } catch (_) {
+      continue;
+    }
+  }
+
+  batch.set(
+    firestore.collection('instituciones').doc('logos_storage_v1'),
+    {'trigger': true, 'createdAt': DateTime.now()},
+    SetOptions(merge: false),
+  );
+
+  await batch.commit();
+  debugPrint(
+      'seedLogosStorage: $migrados logos migrados a Firebase Storage');
+}
+
+String _extensionDesdeUrl(String url) {
+  try {
+    var path = Uri.parse(url).path;
+    final dot = path.lastIndexOf('.');
+    if (dot == -1) return '.png';
+    final ext = path.substring(dot).toLowerCase();
+    if (RegExp(r'^\.[a-z]{2,4}$').hasMatch(ext)) return ext;
+  } catch (_) {}
+  return '.png';
 }
 
 const Map<String, String> _logosPorNombre = {
@@ -1326,4 +1723,35 @@ Future<void> seedAvisos() async {
   );
 
   await batch.commit();
+}
+
+Future<void> seedFavoritosDemo(String uid) async {
+  final firestore = FirebaseFirestore.instance;
+
+  const favoritos = [
+    (ofertaId: 'oferta_utn_3', institucionUid: 'utn'),
+    (ofertaId: 'oferta_unpaz_1', institucionUid: 'unpaz'),
+    (ofertaId: 'oferta_ungs_3', institucionUid: 'ungs'),
+    (ofertaId: 'oferta_isft182_1', institucionUid: 'isft182'),
+  ];
+
+  final batch = firestore.batch();
+  for (final fav in favoritos) {
+    final ref =
+        firestore.collection('usuarios').doc(uid).collection('favoritos').doc();
+    batch.set(ref, {
+      'ofertaId': fav.ofertaId,
+      'institucionUid': fav.institucionUid,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  batch.set(
+    firestore.collection('ofertas').doc('favoritos_seed_v1'),
+    {'trigger': true, 'createdAt': DateTime.now()},
+    SetOptions(merge: false),
+  );
+
+  await batch.commit();
+  debugPrint('seedFavoritosDemo: ${favoritos.length} favoritos guardados');
 }

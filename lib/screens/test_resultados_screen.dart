@@ -54,7 +54,7 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
     } else if (index == 1) {
       Navigator.pushReplacementNamed(context, '/test');
     } else if (index == 2) {
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/favoritos');
     } else if (index == 3) {
       Navigator.pushNamed(context, '/profile');
     }

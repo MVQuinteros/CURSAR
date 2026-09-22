@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/preferencias_service.dart';
+import '../services/theme_controller.dart';
 import '../theme/app_theme.dart';
 
 const List<int> _opcionesRadio = [5, 10, 20, 50, 100];
@@ -34,6 +35,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   int _radioBusqueda = 20;
   String _modalidad = 'Presencial y Online';
   String _tipoInstitucion = 'Pública y Privada';
+  bool _modoOscuro = false;
   bool _cargando = true;
   bool _guardando = false;
 
@@ -66,6 +68,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _radioBusqueda = prefs.radioBusqueda;
         _modalidad = prefs.modalidad;
         _tipoInstitucion = prefs.tipoInstitucion;
+        _modoOscuro = ThemeController.instance.isDark;
         _cargando = false;
       });
     }
@@ -258,6 +261,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   }
                 },
               ),
+              const SizedBox(height: 24),
+              _seccionTitulo(context, 'Preferencias de la app'),
+              const SizedBox(height: 12),
+              _buildModoOscuro(),
               const SizedBox(height: 28),
               ElevatedButton(
                 onPressed: _guardando ? null : _guardar,
@@ -303,6 +310,61 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         fontSize: 16,
         fontWeight: FontWeight.bold,
         color: context.colors.textPrimary,
+      ),
+    );
+  }
+
+  Widget _buildModoOscuro() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      decoration: BoxDecoration(
+        color: context.colors.bgSurface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.colors.borderSubtle),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: context.colors.accentPrimary.withValues(alpha: 0.15),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            Icons.dark_mode_outlined,
+            color: context.colors.accentPrimary,
+            size: 20,
+          ),
+        ),
+        title: Text(
+          'Modo oscuro',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: context.colors.textPrimary,
+          ),
+        ),
+        subtitle: Text(
+          _modoOscuro ? 'Tema oscuro activado' : 'Tema claro activado',
+          style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
+        ),
+        trailing: Switch(
+          value: _modoOscuro,
+          activeThumbColor: context.colors.accentPrimary,
+          activeTrackColor: context.colors.accentPrimary.withValues(alpha: 0.3),
+          onChanged: (v) async {
+            setState(() => _modoOscuro = v);
+            await ThemeController.instance.setModoOscuro(v);
+          },
+        ),
       ),
     );
   }
