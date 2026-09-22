@@ -20,11 +20,31 @@ class _AyudaSoporteScreenState extends State<AyudaSoporteScreen> {
   bool _enviando = false;
 
   static const List<String> _tiposReporte = ['Problema', 'Consulta', 'Sugerencia'];
-  static const List<String> _faq = [
-    '¿Cómo guardo una carrera en favoritos?',
-    '¿Cómo cambio mi ubicación de búsqueda?',
-    '¿Qué es el test vocacional?',
-    '¿Cómo contacto con una institución?',
+  static const List<(String, String)> _faq = [
+    (
+      '¿Cómo guardo una carrera en favoritos?',
+      'Andá a la ficha o al listado de una carrera y tocá el ícono de corazón '
+      'para guardarla. Después podés verlas todas desde la pestaña Favoritos '
+      '(el corazón de la barra inferior). Para quitarla, tocá el corazón otra vez.',
+    ),
+    (
+      '¿Cómo cambio mi ubicación de búsqueda?',
+      'Entrá a Mi perfil y tocá la opción "Radio de búsqueda". Ahí elegís la '
+      'distancia en kilómetros (5, 10, 20, 50 o 100 km) que querés que abarque '
+      'tu búsqueda. También podés editar tu localidad desde "Editar perfil".',
+    ),
+    (
+      '¿Qué es el test vocacional?',
+      'Es un test exprés de 5 preguntas, disponible en la pestaña Test, que '
+      'analiza tus gustos y te muestra tus áreas de interés con un porcentaje. '
+      'Al final te recomendamos carreras e instituciones que se ajustan a tu perfil.',
+    ),
+    (
+      '¿Cómo contacto con una institución?',
+      'En la ficha de cada institución vas a encontrar su teléfono, email, '
+      'dirección y un botón para verla en el mapa. Si todavía no aparece algún '
+      'dato, escribinos desde el formulario más abajo y lo gestionamos.',
+    ),
   ];
 
   @override
@@ -99,47 +119,49 @@ class _AyudaSoporteScreenState extends State<AyudaSoporteScreen> {
             ),
             const SizedBox(height: 8),
             ..._faq.map(
-              (pregunta) => Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                decoration: BoxDecoration(
-                  color: context.colors.bgSurface,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: context.colors.borderSubtle),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: ExpansionTile(
-                  tilePadding: const EdgeInsets.symmetric(horizontal: 14),
-                  childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
-                  shape: const Border(),
-                  collapsedShape: const Border(),
-                  title: Text(
-                    pregunta,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: context.colors.textPrimary,
-                    ),
+              (item) {
+                final pregunta = item.$1;
+                final respuesta = item.$2;
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    color: context.colors.bgSurface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: context.colors.borderSubtle),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
                   ),
-                  children: [
-                    Text(
-                      'El equipo de CursAR está trabajando en esta respuesta. '
-                      'Si necesitás resolverlo antes, mandanos un reporte con '
-                      'el formulario de más abajo.',
+                  child: ExpansionTile(
+                    tilePadding: const EdgeInsets.symmetric(horizontal: 14),
+                    childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+                    shape: const Border(),
+                    collapsedShape: const Border(),
+                    title: Text(
+                      pregunta,
                       style: TextStyle(
-                        fontSize: 13,
-                        color: context.colors.textSecondary,
-                        height: 1.4,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: context.colors.textPrimary,
                       ),
                     ),
-                  ],
-                ),
-              ),
+                    children: [
+                      Text(
+                        respuesta,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: context.colors.textSecondary,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 24),
             Text(

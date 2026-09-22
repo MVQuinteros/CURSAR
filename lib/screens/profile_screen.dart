@@ -1,46 +1,274 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../models/preferencias_model.dart';
-import '../services/preferencias_service.dart';
 import '../theme/app_theme.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String _nombre = '';
-  String _apellido = '';
-  String _email = '';
+  File? _imageFile;
+  final ImagePicker _picker = ImagePicker();
+  bool _isLoadingImage = false;
   PreferenciasModel _preferencias = const PreferenciasModel();
   final int _selectedIndex = 3;
 
-  @override
-  void initState() {
-    super.initState();
-    _cargarDatos();
+  static const Color _azulGradienteInicio = Color(0xFF1B74E4);
+  static const Color _azulGradienteFin = Color(0xFF58B2FF);
+
+  Future<void> _pickImage() async {
+    try {
+      final XFile? pickedFile =
+          await _picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile == null) return;
+
+      setState(() {
+        _imageFile = File(pickedFile.path);
+        _isLoadingImage = true;
+      });
+
+      final User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception(
+            "No hay un usuario autenticado. Inicia sesión primero.");
+      }
+
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('profile_images')
+          .child('${user.uid}.jpg');
+
+      // Ejecutar la subida y ESPERAR a que termine por completo
+      final UploadTask uploadTask = storageRef.putFile(_imageFile!);
+      final TaskSnapshot snapshot = await uploadTask;
+
+      // Obtener la URL solo después de confirmar que se subió
+      final String downloadUrl = await snapshot.ref.getDownloadURL();
+
+      // Actualizar el perfil del usuario en FirebaseAuth
+      await user.updatePhotoURL(downloadUrl);
+
+      // (Opcional) Mostrar mensaje de éxito
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Foto actualizada con éxito'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint("Error subiendo imagen: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingImage = false;
+        });
+      }
+    }
   }
 
-  Future<void> _cargarDatos() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    final doc = await FirebaseFirestore.instance
-        .collection('usuarios')
-        .doc(user.uid)
-        .get();
-    final prefs = await PreferenciasService().obtener(user.uid);
-    if (mounted) {
-      setState(() {
-        _nombre = doc.data()?['nombre']?.toString() ?? '';
-        _apellido = doc.data()?['apellido']?.toString() ?? '';
-        _email = doc.data()?['email']?.toString() ?? user.email ?? '';
-        _preferencias = prefs;
-      });
-    }
+  @override
+  Widget build(BuildContext context) {
+    const double avatarRadius = 55.0;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
+      bottomNavigationBar: _buildBottomNav(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // 1. ENCABEZADO (Estilo Favoritos: centrado y sin solapamientos)
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(28),
+              ),
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top + 8,
+                  bottom: 28,
+                ),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [_azulGradienteInicio, _azulGradienteFin],
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const Spacer(),
+                          const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          const Spacer(),
+                          const SizedBox(width: 48),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Mi perfil',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Gestioná tu cuenta y preferencias',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // 2. AVATAR Y CÁMARA (en el flujo normal, debajo del encabezado)
+            const SizedBox(height: 25),
+            Center(
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  CircleAvatar(
+                    radius: avatarRadius,
+                    backgroundColor: Colors.white,
+                    child: CircleAvatar(
+                      radius: avatarRadius - 4,
+                      backgroundColor: Colors.grey[300],
+                      backgroundImage: _imageFile != null
+                          ? FileImage(_imageFile!) as ImageProvider
+                          : (FirebaseAuth.instance.currentUser?.photoURL != null
+                              ? NetworkImage(
+                                  FirebaseAuth.instance.currentUser!.photoURL!)
+                              : null),
+                      child: _isLoadingImage
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : (_imageFile == null &&
+                                  FirebaseAuth
+                                      .instance.currentUser?.photoURL == null)
+                              ? const Icon(
+                                  Icons.person,
+                                  size: 55,
+                                  color: Colors.white,
+                                )
+                              : null,
+                    ),
+                  ),
+                  // Botón de cámara
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: _pickImage,
+                      behavior: HitTestBehavior.opaque,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // 3. DATOS DEL USUARIO
+            const SizedBox(height: 15),
+            const Text(
+              "Lola Lopez",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 5),
+            const Text(
+              "lola12@gmail.com",
+              style: TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+
+            // 4. MENÚ
+            const SizedBox(height: 25),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildMenu(),
+            ),
+
+            // 5. BOTÓN CERRAR SESIÓN
+            const SizedBox(height: 25),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300, width: 1),
+                ),
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.logout, color: Colors.red),
+                  label: const Text(
+                    "Cerrar sesión",
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  onPressed: _cerrarSesion,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _cerrarSesion() async {
@@ -50,25 +278,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _navegar(int index) {
-    if (index == _selectedIndex) return;
-    if (index == 1) {
-      Navigator.pushNamed(context, '/test');
-    } else if (index == 2) {
-      Navigator.pushNamed(context, '/favoritos');
-    } else {
-      Navigator.pop(context);
-    }
-  }
-
-  void _mensaje(String texto) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(texto)));
-  }
-
   Future<void> _abrirEditarPerfil() async {
     await Navigator.pushNamed(context, '/editar-perfil');
-    await _cargarDatos();
   }
 
   void _abrirNotificaciones() {
@@ -99,236 +310,131 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final topPadding = MediaQuery.of(context).padding.top;
-    return Scaffold(
-      backgroundColor: context.colors.bgMain,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeader(topPadding),
-            SizedBox(
-              height: 62,
-              width: double.infinity,
-              child: Center(
-                child: Transform.translate(
-                  offset: const Offset(0, -62),
-                  child: _buildAvatar(),
-                ),
-              ),
-            ),
-            const SizedBox(height: 18),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    _mostrarNombre(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: context.colors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    _email,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: context.colors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  _buildTarjetaOpciones([
-                    _OpcionFila(
-                      icono: Icons.edit_outlined,
-                      titulo: 'Editar perfil',
-                      onTap: _abrirEditarPerfil,
-                    ),
-                    Divider(height: 1, color: context.colors.borderSubtle),
-                    _OpcionFila(
-                      icono: Icons.notifications_outlined,
-                      titulo: 'Notificaciones',
-                      onTap: _abrirNotificaciones,
-                    ),
-                    Divider(height: 1, color: context.colors.borderSubtle),
-                    _OpcionFila(
-                      icono: Icons.radar,
-                      titulo: 'Radio de búsqueda',
-                      valor: '${_preferencias.radioBusqueda} km',
-                      onTap: _abrirEditarPerfil,
-                    ),
-                  ]),
-                  const SizedBox(height: 16),
-                  _buildTarjetaOpciones([
-                    _OpcionFila(
-                      icono: Icons.help_outline,
-                      titulo: 'Ayuda y soporte',
-                      onTap: _abrirAyudaSoporte,
-                    ),
-                    Divider(height: 1, color: context.colors.borderSubtle),
-                    _OpcionFila(
-                      icono: Icons.description_outlined,
-                      titulo: 'Términos y condiciones',
-                      onTap: _mostrarTerminos,
-                    ),
-                  ]),
-                  const SizedBox(height: 26),
-                  _buildCerrarSesion(),
-                  const SizedBox(height: 30),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: _buildBottomNav(),
-    );
-  }
-
-  String _mostrarNombre() {
-    final completo = '$_nombre $_apellido'.trim();
-    if (completo.isNotEmpty) return completo;
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null &&
-        user.displayName != null &&
-        user.displayName!.trim().isNotEmpty) {
-      return user.displayName!.trim();
-    }
-    return _nombre.isNotEmpty ? _nombre : 'Usuario';
-  }
-
-  Widget _buildHeader(double topPadding) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.fromLTRB(20, topPadding + 18, 20, 64),
-      decoration: BoxDecoration(
-        color: context.colors.accentPrimary,
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(40)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Mi perfil',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Gestioná tu cuenta y preferencias',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white.withValues(alpha: 0.92),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAvatar() {
-    return Stack(
-      clipBehavior: Clip.none,
+  Widget _buildMenu() {
+    return Column(
       children: [
         Container(
-          width: 124,
-          height: 124,
+          margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: context.colors.borderSubtle,
-            border: Border.all(color: Colors.white, width: 5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.10),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
-              ),
-            ],
+            color: context.colors.bgSurface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: context.colors.borderSubtle, width: 1),
           ),
-          child: Icon(
-            Icons.person,
-            size: 54,
-            color: context.colors.iconNormal,
+          child: _buildMenuItem(
+            icono: Icons.edit_outlined,
+            titulo: 'Editar perfil',
+            onTap: _abrirEditarPerfil,
           ),
         ),
-        Positioned(
-          right: 2,
-          bottom: 2,
-          child: InkWell(
-            onTap: () => _mensaje('Cambiar foto de perfil'),
-            customBorder: const CircleBorder(),
-            child: Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: context.colors.accentPrimary,
-                border: Border.all(color: Colors.white, width: 2.5),
-              ),
-              child: const Icon(
-                Icons.camera_alt,
-                size: 17,
-                color: Colors.white,
-              ),
-            ),
+        Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: context.colors.bgSurface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: context.colors.borderSubtle, width: 1),
+          ),
+          child: _buildMenuItem(
+            icono: Icons.notifications_outlined,
+            titulo: 'Notificaciones',
+            onTap: _abrirNotificaciones,
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: context.colors.bgSurface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: context.colors.borderSubtle, width: 1),
+          ),
+          child: _buildMenuItem(
+            icono: Icons.radar,
+            titulo: 'Radio de búsqueda',
+            valor: '${_preferencias.radioBusqueda} km',
+            onTap: _abrirEditarPerfil,
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: context.colors.bgSurface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: context.colors.borderSubtle, width: 1),
+          ),
+          child: _buildMenuItem(
+            icono: Icons.help_outline,
+            titulo: 'Ayuda y soporte',
+            onTap: _abrirAyudaSoporte,
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: context.colors.bgSurface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: context.colors.borderSubtle, width: 1),
+          ),
+          child: _buildMenuItem(
+            icono: Icons.description_outlined,
+            titulo: 'Términos y condiciones',
+            onTap: _mostrarTerminos,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildTarjetaOpciones(List<Widget> children) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: context.colors.bgSurface,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+  Widget _buildMenuItem({
+    required IconData icono,
+    required String titulo,
+    String? valor,
+    VoidCallback? onTap,
+  }) {
+    return ListTile(
+      onTap: onTap,
+      dense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      leading: Icon(icono, size: 22, color: context.colors.accentPrimary),
+      title: Text(
+        titulo,
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: context.colors.textPrimary,
+        ),
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (valor != null) ...[
+            Text(
+              valor,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: context.colors.textSecondary,
+              ),
+            ),
+            const SizedBox(width: 6),
+          ],
+          Icon(
+            Icons.chevron_right,
+            size: 20,
+            color: context.colors.iconNormal,
           ),
         ],
-      ),
-      child: Column(
-        children: children,
       ),
     );
   }
 
-  Widget _buildCerrarSesion() {
-    final error = Theme.of(context).colorScheme.error;
-    return InkWell(
-      onTap: _cerrarSesion,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.logout, color: error, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              'Cerrar sesión',
-              style: TextStyle(
-                color: error,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  void _navegar(int index) {
+    if (index == _selectedIndex) return;
+    if (index == 1) {
+      Navigator.pushNamed(context, '/test');
+    } else if (index == 2) {
+      Navigator.pushNamed(context, '/favoritos');
+    } else {
+      Navigator.pop(context);
+    }
   }
 
   Widget _buildBottomNav() {
@@ -399,62 +505,4 @@ class _NavItemData {
 
   final IconData icon;
   final String label;
-}
-
-class _OpcionFila extends StatelessWidget {
-  const _OpcionFila({
-    required this.icono,
-    required this.titulo,
-    this.valor,
-    this.onTap,
-  });
-
-  final IconData icono;
-  final String titulo;
-  final String? valor;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-        child: Row(
-          children: [
-            Icon(icono, size: 22, color: context.colors.accentPrimary),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(
-                titulo,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: context.colors.textPrimary,
-                ),
-              ),
-            ),
-            if (valor != null) ...[
-              const SizedBox(width: 8),
-              Text(
-                valor!,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: context.colors.textSecondary,
-                ),
-              ),
-            ],
-            const SizedBox(width: 6),
-            Icon(
-              Icons.chevron_right,
-              size: 20,
-              color: context.colors.iconNormal,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

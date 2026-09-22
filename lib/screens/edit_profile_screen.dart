@@ -6,12 +6,7 @@ import '../services/theme_controller.dart';
 import '../theme/app_theme.dart';
 
 const List<int> _opcionesRadio = [5, 10, 20, 50, 100];
-const List<String> _opcionesModalidad = [
-  'Presencial',
-  'Online',
-  'Híbrida',
-  'Presencial y Online',
-];
+const List<String> _opcionesModalidad = ['Presencial', 'Virtual', 'Mixta'];
 const List<String> _opcionesInstitucion = [
   'Pública',
   'Privada',
@@ -33,7 +28,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   String _email = '';
   int _radioBusqueda = 20;
-  String _modalidad = 'Presencial y Online';
+  String _modalidad = 'Presencial';
   String _tipoInstitucion = 'Pública y Privada';
   bool _modoOscuro = false;
   bool _cargando = true;
@@ -66,7 +61,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _email = datos['email']?.toString() ?? user.email ?? '';
         _localidadController.text = prefs.localidad;
         _radioBusqueda = prefs.radioBusqueda;
-        _modalidad = prefs.modalidad;
+        _modalidad = _opcionesModalidad.contains(prefs.modalidad)
+            ? prefs.modalidad
+            : 'Presencial';
         _tipoInstitucion = prefs.tipoInstitucion;
         _modoOscuro = ThemeController.instance.isDark;
         _cargando = false;
