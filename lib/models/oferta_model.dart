@@ -5,7 +5,10 @@ class OfertaModel {
   final String descripcion;
   final String area;
   final String nivel;
-  final int duracionAnios;
+
+  /// Puede ser fraccionario (1.5, 2.5 años) en ofertas a distancia.
+  /// 0 significa "duración no confirmada": la UI no la muestra.
+  final num duracionAnios;
   final String modalidad;
   final String salidaLaboral;
   final String requisitos;
@@ -29,6 +32,24 @@ class OfertaModel {
     this.createdAt,
   });
 
+  /// Texto listo para mostrar la duración, o cadena vacía si no está
+  /// confirmada. Ej.: "4 años", "1 año", "2,5 años", "".
+  String get duracionTexto {
+    if (duracionAnios <= 0) return '';
+    final entero = duracionAnios == duracionAnios.roundToDouble();
+    final numero = entero
+        ? duracionAnios.round().toString()
+        : duracionAnios.toStringAsFixed(1).replaceAll('.', ',');
+    return '$numero ${duracionAnios == 1 ? 'año' : 'años'}';
+  }
+
+  /// Indica si la oferta tiene al menos un dato que mostrar en la ficha.
+  bool get tieneDescripcion => descripcion.trim().isNotEmpty;
+  bool get tieneSalidaLaboral => salidaLaboral.trim().isNotEmpty;
+  bool get tieneTag => tag.trim().isNotEmpty;
+  bool get tieneNivel => nivel.trim().isNotEmpty;
+  bool get tieneModalidad => modalidad.trim().isNotEmpty;
+
   factory OfertaModel.fromMap(String id, Map<String, dynamic> map) {
     return OfertaModel(
       ofertaId: id,
@@ -37,7 +58,7 @@ class OfertaModel {
       descripcion: map['descripcion']?.toString() ?? '',
       area: map['area']?.toString() ?? '',
       nivel: map['nivel']?.toString() ?? '',
-      duracionAnios: map['duracionAnios'] ?? 0,
+      duracionAnios: _aNumero(map['duracionAnios']),
       modalidad: map['modalidad']?.toString() ?? '',
       salidaLaboral: map['salidaLaboral']?.toString() ?? '',
       requisitos: map['requisitos']?.toString() ?? '',
@@ -45,6 +66,12 @@ class OfertaModel {
       aprobada: map['aprobada'] ?? false,
       createdAt: (map['createdAt'] as dynamic)?.toDate(),
     );
+  }
+
+  static num _aNumero(dynamic v) {
+    if (v is num) return v;
+    if (v is String) return num.tryParse(v.replaceAll(',', '.')) ?? 0;
+    return 0;
   }
 
   Map<String, dynamic> toMap() {

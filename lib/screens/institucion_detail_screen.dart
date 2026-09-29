@@ -9,6 +9,7 @@ import '../models/oferta_model.dart';
 import '../services/historial_service.dart';
 import '../services/ubicacion_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/institucion_imagen.dart';
 
 class InstitucionDetailScreen extends StatefulWidget {
   final String institucionUid;
@@ -190,10 +191,14 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
       case 'INSCRIPCIONES ABIERTAS':
         return Colors.green;
       case 'NUEVO':
+      case 'CARRERA CREADA':
         return Colors.blue;
       case 'BECAS':
+      case 'VACANTES 2026':
         return Colors.orange;
       case 'FECHAS IMPORTANTES':
+      case 'SIN VACANTES':
+      case 'EN PROCESO':
         return Colors.red;
       default:
         return Colors.grey;
@@ -293,18 +298,17 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (inst.logoURL.isNotEmpty) ...[
+                  if (inst.logoAsset.isNotEmpty || inst.logoURL.isNotEmpty) ...[
                     Center(
                       child: CircleAvatar(
                         radius: 45,
                         backgroundColor: context.colors.bgSurface,
                         child: ClipOval(
-                          child: Image.network(
-                            inst.logoURL,
-                            width: 90,
-                            height: 90,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) => Icon(
+                          child: InstitucionImagen(
+                            institucion: inst,
+                            ancho: 90,
+                            alto: 90,
+                            placeholder: Icon(
                               Icons.school,
                               size: 45,
                               color: context.colors.accentPrimary,
@@ -324,18 +328,30 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    inst.descripcion,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: context.colors.textSecondary,
+                  if (inst.descripcion.trim().isNotEmpty) ...[
+                    Text(
+                      inst.descripcion,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: context.colors.textSecondary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  _infoRow(context, Icons.location_on, inst.direccion),
-                  _infoRow(context, Icons.location_city, '${inst.ciudad}, ${inst.provincia}'),
-                  _infoRow(context, Icons.phone, inst.telefono),
-                  _infoRow(context, Icons.email, inst.email),
+                    const SizedBox(height: 20),
+                  ],
+                  if (inst.direccion.trim().isNotEmpty)
+                    _infoRow(context, Icons.location_on, inst.direccion),
+                  if (inst.ciudad.trim().isNotEmpty)
+                    _infoRow(
+                      context,
+                      Icons.location_city,
+                      [inst.ciudad, inst.provincia]
+                          .where((s) => s.trim().isNotEmpty)
+                          .join(', '),
+                    ),
+                  if (inst.telefono.trim().isNotEmpty)
+                    _infoRow(context, Icons.phone, inst.telefono),
+                  if (inst.email.trim().isNotEmpty)
+                    _infoRow(context, Icons.email, inst.email),
                   if (inst.sitioWeb.isNotEmpty)
                     _infoRow(
                       context,
@@ -552,6 +568,14 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
   }
 
   Widget _ofertaCard(OfertaModel oferta) {
+    final chips = <Widget>[
+      if (oferta.tieneNivel) _ofertaChip(Icons.school, oferta.nivel),
+      if (oferta.duracionTexto.isNotEmpty)
+        _ofertaChip(Icons.access_time, oferta.duracionTexto),
+      if (oferta.tieneModalidad)
+        _ofertaChip(Icons.computer, oferta.modalidad),
+    ];
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -572,58 +596,62 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
                     ),
                   ),
                 ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _tagColor(oferta.tag).withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    oferta.tag,
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: _tagColor(oferta.tag),
+                if (oferta.tieneTag) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _tagColor(oferta.tag).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      oferta.tag,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: _tagColor(oferta.tag),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              oferta.descripcion,
-              style: TextStyle(
-                  fontSize: 13, color: context.colors.textSecondary),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 12,
-              runSpacing: 4,
-              children: [
-                _ofertaChip(Icons.school, oferta.nivel),
-                _ofertaChip(Icons.access_time,
-                    '${oferta.duracionAnios} ${oferta.duracionAnios == 1 ? 'año' : 'años'}'),
-                _ofertaChip(Icons.computer, oferta.modalidad),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.work_outline,
-                    size: 14, color: context.colors.iconNormal),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    oferta.salidaLaboral,
-                    style: TextStyle(
-                        fontSize: 12, color: context.colors.textSecondary),
+            if (oferta.tieneDescripcion) ...[
+              const SizedBox(height: 8),
+              Text(
+                oferta.descripcion,
+                style: TextStyle(
+                    fontSize: 13, color: context.colors.textSecondary),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+            if (chips.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 12,
+                runSpacing: 4,
+                children: chips,
+              ),
+            ],
+            if (oferta.tieneSalidaLaboral) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(Icons.work_outline,
+                      size: 14, color: context.colors.iconNormal),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      oferta.salidaLaboral,
+                      style: TextStyle(
+                          fontSize: 12, color: context.colors.textSecondary),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ],
         ),
       ),

@@ -5,6 +5,7 @@ import '../models/institucion_model.dart';
 import '../models/oferta_model.dart';
 import '../services/favorito_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/institucion_imagen.dart';
 
 class _FavoritoItem {
   final String favoriteDocId;
@@ -216,7 +217,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     final oferta = item.oferta;
     if (oferta != null) {
       return [
-        if (oferta.duracionAnios > 0) '${oferta.duracionAnios} años',
+        if (oferta.duracionTexto.isNotEmpty) oferta.duracionTexto,
         if (oferta.modalidad.isNotEmpty) oferta.modalidad,
       ];
     }
@@ -225,32 +226,21 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   Widget _imagenInstitucion(_FavoritoItem item) {
     final inst = item.institucion;
-    final logoURL = inst?.logoURL ?? '';
+    if (inst == null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(width: 72, height: 72, child: _imagenPlaceholder()),
+      );
+    }
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: SizedBox(
         width: 72,
         height: 72,
-        child: logoURL.isNotEmpty
-            ? Image.network(
-                logoURL,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    color: Colors.grey.shade200,
-                    child: const Center(
-                      child: SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2.5),
-                      ),
-                    ),
-                  );
-                },
-                errorBuilder: (_, _, _) => _imagenPlaceholder(),
-              )
-            : _imagenPlaceholder(),
+        child: InstitucionImagen(
+          institucion: inst,
+          placeholder: _imagenPlaceholder(),
+        ),
       ),
     );
   }

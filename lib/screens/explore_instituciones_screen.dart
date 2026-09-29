@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/institucion_model.dart';
 import '../services/ubicacion_service.dart';
+import '../services/filtro_zonas.dart';
 import '../theme/app_theme.dart';
+import '../widgets/institucion_imagen.dart';
 
 class ExploreInstitucionesScreen extends StatefulWidget {
   const ExploreInstitucionesScreen({super.key});
@@ -32,9 +34,10 @@ class _ExploreInstitucionesScreenState extends State<ExploreInstitucionesScreen>
     final snap = await FirebaseFirestore.instance
         .collection('instituciones')
         .get();
-    final instituciones = snap.docs
+    final todas = snap.docs
         .map((doc) => InstitucionModel.fromMap(doc.id, doc.data()))
         .toList();
+    final instituciones = FiltroZonas.aplicar(todas);
 
     final pos = await UbicacionService.obtenerPosicion();
 
@@ -226,23 +229,16 @@ class _ExploreInstitucionesScreenState extends State<ExploreInstitucionesScreen>
       radius: 26,
       backgroundColor: context.colors.bgSurface,
       child: ClipOval(
-        child: inst.logoURL.isNotEmpty
-            ? Image.network(
-                inst.logoURL,
-                width: 52,
-                height: 52,
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => Icon(
-                  Icons.school,
-                  size: 26,
-                  color: context.colors.accentPrimary,
-                ),
-              )
-            : Icon(
-                Icons.school,
-                size: 26,
-                color: context.colors.accentPrimary,
-              ),
+        child: InstitucionImagen(
+          institucion: inst,
+          ancho: 52,
+          alto: 52,
+          placeholder: Icon(
+            Icons.school,
+            size: 26,
+            color: context.colors.accentPrimary,
+          ),
+        ),
       ),
     );
   }

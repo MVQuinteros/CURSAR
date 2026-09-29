@@ -8,6 +8,7 @@ import '../models/oferta_model.dart';
 import '../services/favorito_service.dart';
 import '../services/ubicacion_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/institucion_imagen.dart';
 
 class InstitucionCarrerasScreen extends StatefulWidget {
   final String institucionUid;
@@ -340,23 +341,16 @@ class _InstitucionCarrerasScreenState extends State<InstitucionCarrerasScreen> {
       radius: 44,
       backgroundColor: context.colors.bgSurface,
       child: ClipOval(
-        child: inst.logoURL.isNotEmpty
-            ? Image.network(
-                inst.logoURL,
-                width: 88,
-                height: 88,
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => Icon(
-                  Icons.school,
-                  size: 44,
-                  color: context.colors.accentPrimary,
-                ),
-              )
-            : Icon(
-                Icons.school,
-                size: 44,
-                color: context.colors.accentPrimary,
-              ),
+        child: InstitucionImagen(
+          institucion: inst,
+          ancho: 88,
+          alto: 88,
+          placeholder: Icon(
+            Icons.school,
+            size: 44,
+            color: context.colors.accentPrimary,
+          ),
+        ),
       ),
     );
   }

@@ -7,8 +7,10 @@ import 'package:geolocator/geolocator.dart';
 import 'models/institucion_model.dart';
 import 'models/aviso_model.dart';
 import 'services/aviso_service.dart';
+import 'services/filtro_zonas.dart';
 import 'services/notificacion_service.dart';
 import 'services/theme_controller.dart';
+  import 'widgets/institucion_imagen.dart';
 import 'theme/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -253,9 +255,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final snapshot = await FirebaseFirestore.instance
         .collection('instituciones')
         .get();
-    _institucionesCache = snapshot.docs
+    final todas = snapshot.docs
         .map((doc) => InstitucionModel.fromMap(doc.id, doc.data()))
         .toList();
+    _institucionesCache = FiltroZonas.aplicar(todas);
     return _institucionesCache!;
   }
 
@@ -538,8 +541,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
                       final instituciones = List.of(snapshot.data!)
                         ..sort((a, b) {
-                          final bool hasLogoA = a.logoURL.trim().isNotEmpty;
-                          final bool hasLogoB = b.logoURL.trim().isNotEmpty;
+                          final bool hasLogoA =
+                              a.logoAsset.trim().isNotEmpty ||
+                              a.logoURL.trim().isNotEmpty;
+                          final bool hasLogoB =
+                              b.logoAsset.trim().isNotEmpty ||
+                              b.logoURL.trim().isNotEmpty;
                           if (hasLogoA && !hasLogoB) return -1; // A va primero
                           if (!hasLogoA && hasLogoB) return 1; // B va primero
                           return 0; // Se mantienen igual
@@ -579,22 +586,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     CircleAvatar(
                                       radius: 24,
-                                      backgroundColor: context.colors.bgSurface,
-                                      backgroundImage:
-                                          institucion.logoURL.isNotEmpty
-                                          ? NetworkImage(institucion.logoURL)
-                                          : null,
-                                      onBackgroundImageError:
-                                          institucion.logoURL.isNotEmpty
-                                          ? (_, _) {}
-                                          : null,
-                                      child: institucion.logoURL.isNotEmpty
-                                          ? null
-                                          : Icon(
-                                              Icons.business,
-                                              color: context.colors.iconNormal,
-                                              size: 22,
-                                            ),
+                                      backgroundColor:
+                                          context.colors.bgSurface,
+                                      child: ClipOval(
+                                        child: InstitucionImagen(
+                                          institucion: institucion,
+                                          ancho: 48,
+                                          alto: 48,
+                                          placeholder: Icon(
+                                            Icons.business,
+                                            color: context.colors.iconNormal,
+                                            size: 22,
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                     const SizedBox(height: 6),
                                     Text(

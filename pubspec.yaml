@@ -72,6 +72,9 @@ flutter:
   # Agrega esto respetando los espacios:
   assets:
     - assets/imagenes/
+    # Flutter no incluye subcarpetas de forma recursiva: hay que declararlas
+    - assets/imagenes/instituciones/
+    - assets/imagenes/campus/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

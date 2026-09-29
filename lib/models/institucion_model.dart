@@ -11,6 +11,14 @@ class InstitucionModel {
   final String email;
   final String sitioWeb;
   final String logoURL;
+  final String logoAsset;
+  final String fotoCampus;
+
+  /// Cuando es true el logo se muestra completo (contain) sobre la superficie
+  /// del tema, en vez de recortarse (cover). Necesario para logos verticales,
+  /// que en un CircleAvatar pierden los bordes superior e inferior.
+  final bool logoContained;
+
   final double? latitud;
   final double? longitud;
   final String estado;
@@ -27,6 +35,9 @@ class InstitucionModel {
     required this.email,
     required this.sitioWeb,
     required this.logoURL,
+    this.logoAsset = '',
+    this.fotoCampus = '',
+    this.logoContained = false,
     this.latitud,
     this.longitud,
     this.estado = 'pendiente',
@@ -45,6 +56,9 @@ class InstitucionModel {
       email: map['email'] ?? '',
       sitioWeb: map['sitioWeb'] ?? '',
       logoURL: map['logoURL'] ?? '',
+      logoAsset: map['logoAsset'] ?? '',
+      fotoCampus: map['fotoCampus'] ?? '',
+      logoContained: map['logoContained'] as bool? ?? false,
       latitud: (map['ubicacion'] as dynamic)?.latitude,
       longitud: (map['ubicacion'] as dynamic)?.longitude,
       estado: map['estado'] ?? 'pendiente',
@@ -64,6 +78,9 @@ class InstitucionModel {
       'email': email,
       'sitioWeb': sitioWeb,
       'logoURL': logoURL,
+      'logoAsset': logoAsset,
+      'fotoCampus': fotoCampus,
+      'logoContained': logoContained,
       'ubicacion': (latitud != null && longitud != null)
           ? GeoPoint(latitud!, longitud!)
           : null,

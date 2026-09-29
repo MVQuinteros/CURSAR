@@ -27,53 +27,24 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeFirebase();
 
-  final ofertaDoc = await FirebaseFirestore.instance
-      .collection('ofertas')
-      .doc('oferta_seed_v6_zona_norte')
-      .get();
-  if (!ofertaDoc.exists) {
-    await seedData();
-  }
-
-  final patchDoc = await FirebaseFirestore.instance
-      .collection('ofertas')
-      .doc('patch_logos_v1')
-      .get();
-  if (!patchDoc.exists) {
-    await patchInstitucionesSinLogo();
-  }
-
-  final carrerasDoc = await FirebaseFirestore.instance
-      .collection('ofertas')
-      .doc('oferta_seed_v8_carreras_completas')
-      .get();
-  if (!carrerasDoc.exists) {
-    await seedCarrerasCompletas();
-  }
-
-  final eliminarDoc = await FirebaseFirestore.instance
-      .collection('instituciones')
-      .doc('eliminar_isft180_v1')
-      .get();
-  if (!eliminarDoc.exists) {
-    await eliminarIsft180();
-  }
-
-  final logosDoc = await FirebaseFirestore.instance
-      .collection('instituciones')
-      .doc('logos_storage_v1')
-      .get();
-  if (!logosDoc.exists) {
-    await seedLogosStorage();
-  }
-
-  final avisosDoc = await FirebaseFirestore.instance
-      .collection('avisos')
-      .doc('avisos_seed_v1')
-      .get();
-  if (!avisosDoc.exists) {
-    await seedAvisos();
-  }
+  // Las siembras son best-effort: si las reglas de Firestore no dejan leer o
+  // escribir un marcador, la app tiene que arrancar igual.
+  await _conSeed(
+    'ofertas/oferta_seed_v6_zona_norte',
+    seedData,
+  );
+  await _conSeed('ofertas/patch_logos_v1', patchInstitucionesSinLogo);
+  await _conSeed(
+    'instituciones/patch_assets_locales_v6',
+    patchInstitucionesAssetsLocales,
+  );
+  await _conSeed(
+    'ofertas/oferta_seed_v8_carreras_completas',
+    seedCarrerasCompletas,
+  );
+  await _conSeed('instituciones/eliminar_isft180_v1', eliminarIsft180);
+  await _conSeed('instituciones/logos_storage_v1', seedLogosStorage);
+  await _conSeed('avisos/avisos_seed_v1', seedAvisos);
 
   runApp(const MyApp());
 
@@ -83,15 +54,35 @@ void main() async {
   });
 }
 
+/// Corre [semilla] solo si el documento [ruta] no existe todavia.
+/// Cualquier error de red o de permisos se ignora.
+Future<void> _conSeed(String ruta, Future<void> Function() semilla) async {
+  try {
+    final partes = ruta.split('/');
+    final doc = await FirebaseFirestore.instance
+        .collection(partes.first)
+        .doc(partes.last)
+        .get();
+    if (doc.exists) return;
+    await semilla();
+  } catch (e) {
+    debugPrint('Semilla $ruta omitida: $e');
+  }
+}
+
 Future<void> _seedFavoritosEnLogin() async {
-  final favoritosSeedDoc = await FirebaseFirestore.instance
-      .collection('ofertas')
-      .doc('favoritos_seed_v1')
-      .get();
-  if (favoritosSeedDoc.exists) return;
-  final user = FirebaseAuth.instance.currentUser;
-  if (user == null) return;
-  await seedFavoritosDemo(user.uid);
+  try {
+    final favoritosSeedDoc = await FirebaseFirestore.instance
+        .collection('ofertas')
+        .doc('favoritos_seed_v1')
+        .get();
+    if (favoritosSeedDoc.exists) return;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    await seedFavoritosDemo(user.uid);
+  } catch (e) {
+    debugPrint('Semilla de favoritos omitida: $e');
+  }
 }
 
 class MyApp extends StatelessWidget {

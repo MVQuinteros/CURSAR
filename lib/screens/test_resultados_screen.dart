@@ -438,7 +438,10 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${oferta.institucionUid.toUpperCase()} · ${oferta.nivel}',
+                      [
+                        oferta.institucionUid.toUpperCase(),
+                        if (oferta.nivel.trim().isNotEmpty) oferta.nivel,
+                      ].join(' · '),
                       style: TextStyle(
                         color: context.colors.textSecondary,
                         fontSize: 13,
@@ -447,40 +450,47 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: context.colors.accentPrimary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '${oferta.duracionAnios} ${oferta.duracionAnios == 1 ? 'año' : 'años'}',
-                  style: TextStyle(
-                    color: context.colors.accentPrimary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+              if (oferta.duracionTexto.isNotEmpty)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: context.colors.accentPrimary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    oferta.duracionTexto,
+                    style: TextStyle(
+                      color: context.colors.accentPrimary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            oferta.descripcion,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: context.colors.textSecondary,
-              fontSize: 13,
+          if (oferta.tieneDescripcion) ...[
+            const SizedBox(height: 12),
+            Text(
+              oferta.descripcion,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: context.colors.textSecondary,
+                fontSize: 13,
+              ),
             ),
-          ),
+          ],
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: [
-              _buildChipInfo(Icons.school, oferta.modalidad),
-              _buildChipInfo(Icons.work, oferta.salidaLaboral.split(',')[0].trim()),
+              if (oferta.tieneModalidad)
+                _buildChipInfo(Icons.school, oferta.modalidad),
+              if (oferta.tieneSalidaLaboral)
+                _buildChipInfo(
+                    Icons.work, oferta.salidaLaboral.split(',')[0].trim()),
             ],
           ),
           const SizedBox(height: 12),

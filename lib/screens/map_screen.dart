@@ -6,7 +6,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/institucion_model.dart';
 import '../services/ubicacion_service.dart';
+import '../services/filtro_zonas.dart';
 import '../theme/app_theme.dart';
+import '../widgets/institucion_imagen.dart';
 
 class _InstDist {
   final InstitucionModel inst;
@@ -45,9 +47,10 @@ class _MapScreenState extends State<MapScreen> {
     final snapshot =
         await FirebaseFirestore.instance.collection('instituciones').get();
 
-    final instituciones = snapshot.docs
+    final todas = snapshot.docs
         .map((doc) => InstitucionModel.fromMap(doc.id, doc.data()))
         .toList();
+    final instituciones = FiltroZonas.aplicar(todas);
 
     final pos = await UbicacionService.obtenerPosicion();
     final radio = await UbicacionService.obtenerRadioBusqueda();
@@ -498,19 +501,20 @@ class _MapScreenState extends State<MapScreen> {
                         height: 40,
                         child: GestureDetector(
                           onTap: () => _showInstitucionInfo(inst),
-                          child: inst.logoURL.isNotEmpty
+                          child: (inst.logoAsset.isNotEmpty ||
+                                  inst.logoURL.isNotEmpty)
                               ? CircleAvatar(
                                   radius: 20,
                                   backgroundColor: context.colors.bgSurface,
                                   child: ClipOval(
-                                    child: Image.network(
-                                      inst.logoURL,
-                                      width: 40,
-                                      height: 40,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, _, _) => Icon(
+                                    child: InstitucionImagen(
+                                      institucion: inst,
+                                      ancho: 40,
+                                      alto: 40,
+                                      placeholder: Icon(
                                         Icons.location_pin,
-                                        color: context.colors.accentPrimary,
+                                        color:
+                                            context.colors.accentPrimary,
                                         size: 40,
                                       ),
                                     ),

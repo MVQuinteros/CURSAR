@@ -17,14 +17,16 @@ Future<void> seedData() async {
       institucionUid: 'utn',
       nombre: 'UTN',
       descripcion:
-          'La Universidad Tecnológica Nacional es una institución pública de educación superior dedicada a la formación de profesionales en ingeniería y afines.',
+          'La Universidad TecnolÃ³gica Nacional es una instituciÃ³n pÃºblica de educaciÃ³n superior dedicada a la formaciÃ³n de profesionales en ingenierÃ­a y afines.',
       direccion: 'Av. Madero 399',
-      ciudad: 'Ciudad Autónoma de Buenos Aires',
+      ciudad: 'Ciudad AutÃ³noma de Buenos Aires',
       provincia: 'CABA',
       telefono: '(011) 4867-7500',
       email: 'info@frba.utn.edu.ar',
       sitioWeb: 'https://frba.utn.edu.ar',
       logoURL: 'https://utn.edu.ar/images/logo-utn.png',
+      logoAsset: 'assets/imagenes/instituciones/utn.jpg',
+      logoContained: true,
       latitud: -34.6037,
       longitud: -58.3683,
       estado: 'aprobada',
@@ -39,8 +41,8 @@ Future<void> seedData() async {
       institucionUid: 'utn',
       nombre: 'Analista de Sistemas',
       descripcion:
-          'Formación integral en análisis, diseño e implementación de sistemas informáticos. Incluye prácticas profesionalizantes en empresas del sector.',
-      area: 'Tecnología',
+          'FormaciÃ³n integral en anÃ¡lisis, diseÃ±o e implementaciÃ³n de sistemas informÃ¡ticos. Incluye prÃ¡cticas profesionalizantes en empresas del sector.',
+      area: 'TecnologÃ­a',
       nivel: 'Terciario',
       duracionAnios: 3,
       modalidad: 'Presencial',
@@ -53,10 +55,10 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_utn_2',
       institucionUid: 'utn',
-      nombre: 'Ingeniería en Sistemas',
+      nombre: 'IngenierÃ­a en Sistemas',
       descripcion:
-          'Carrera de grado con enfoque en desarrollo de software, gestión de proyectos tecnológicos y arquitectura de sistemas.',
-      area: 'Tecnología',
+          'Carrera de grado con enfoque en desarrollo de software, gestiÃ³n de proyectos tecnolÃ³gicos y arquitectura de sistemas.',
+      area: 'TecnologÃ­a',
       nivel: 'Universitario',
       duracionAnios: 5,
       modalidad: 'Presencial',
@@ -69,10 +71,10 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_utn_3',
       institucionUid: 'utn',
-      nombre: 'Tecnicatura en Programación',
+      nombre: 'Tecnicatura en ProgramaciÃ³n',
       descripcion:
-          'Carrera de formación rápida en desarrollo de software, bases de datos y aplicaciones web. 100% orientada a la inserción laboral.',
-      area: 'Tecnología',
+          'Carrera de formaciÃ³n rÃ¡pida en desarrollo de software, bases de datos y aplicaciones web. 100% orientada a la inserciÃ³n laboral.',
+      area: 'TecnologÃ­a',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Presencial',
@@ -85,15 +87,15 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_utn_4',
       institucionUid: 'utn',
-      nombre: 'Ingeniería Civil',
+      nombre: 'IngenierÃ­a Civil',
       descripcion:
-          'Formación en diseño, cálculo y construcción de obras civiles. Laboratorios equipados y convenios con empresas constructoras.',
-      area: 'Ingeniería',
+          'FormaciÃ³n en diseÃ±o, cÃ¡lculo y construcciÃ³n de obras civiles. Laboratorios equipados y convenios con empresas constructoras.',
+      area: 'IngenierÃ­a',
       nivel: 'Universitario',
       duracionAnios: 5,
       modalidad: 'Presencial',
       salidaLaboral: 'Ingeniero civil, proyectista, gerente de obra',
-      requisitos: 'Secundario completo con orientación en exactas',
+      requisitos: 'Secundario completo con orientaciÃ³n en exactas',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
       createdAt: DateTime(2026, 5, 12),
@@ -101,15 +103,15 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_utn_5',
       institucionUid: 'utn',
-      nombre: 'Ingeniería Electrónica',
+      nombre: 'IngenierÃ­a ElectrÃ³nica',
       descripcion:
-          'Carrera orientada a sistemas embebidos, automatización industrial y telecomunicaciones. Laboratorio de microcontroladores incluido.',
-      area: 'Ingeniería',
+          'Carrera orientada a sistemas embebidos, automatizaciÃ³n industrial y telecomunicaciones. Laboratorio de microcontroladores incluido.',
+      area: 'IngenierÃ­a',
       nivel: 'Universitario',
       duracionAnios: 5,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Ingeniero electrónico, automatizador, diseñador de hardware',
+          'Ingeniero electrÃ³nico, automatizador, diseÃ±ador de hardware',
       requisitos: 'Secundario completo',
       tag: 'BECAS',
       aprobada: true,
@@ -118,10 +120,10 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_utn_6',
       institucionUid: 'utn',
-      nombre: 'Licenciatura en Administración',
+      nombre: 'Licenciatura en AdministraciÃ³n',
       descripcion:
-          'Formación en gestión empresarial, recursos humanos y finanzas. Modalidad cursada flexible con horarios rotativos.',
-      area: 'Administración',
+          'FormaciÃ³n en gestiÃ³n empresarial, recursos humanos y finanzas. Modalidad cursada flexible con horarios rotativos.',
+      area: 'AdministraciÃ³n',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
@@ -140,14 +142,15 @@ Future<void> seedData() async {
       institucionUid: 'unlp',
       nombre: 'UNLP',
       descripcion:
-          'La Universidad Nacional de La Plata es una de las principales universidades públicas de Argentina, fundada en 1905.',
-      direccion: 'Av. 7 N° 776',
+          'La Universidad Nacional de La Plata es una de las principales universidades pÃºblicas de Argentina, fundada en 1905.',
+      direccion: 'Av. 7 NÂ° 776',
       ciudad: 'La Plata',
       provincia: 'Buenos Aires',
       telefono: '(0221) 423-6800',
       email: 'info@unlp.edu.ar',
       sitioWeb: 'https://www.unlp.edu.ar',
       logoURL: 'https://unlp.edu.ar/wp-content/uploads/2022/07/UNLP.png',
+      logoAsset: 'assets/imagenes/instituciones/unlp.png',
       latitud: -34.9186,
       longitud: -57.9561,
       estado: 'aprobada',
@@ -160,10 +163,10 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unlp_1',
       institucionUid: 'unlp',
-      nombre: 'Licenciatura en Sistemas de Información',
+      nombre: 'Licenciatura en Sistemas de InformaciÃ³n',
       descripcion:
-          'Formación en análisis, diseño y gestión de sistemas de información. Enfoque en ingeniería de software y tecnologías emergentes.',
-      area: 'Tecnología',
+          'FormaciÃ³n en anÃ¡lisis, diseÃ±o y gestiÃ³n de sistemas de informaciÃ³n. Enfoque en ingenierÃ­a de software y tecnologÃ­as emergentes.',
+      area: 'TecnologÃ­a',
       nivel: 'Universitario',
       duracionAnios: 5,
       modalidad: 'Presencial',
@@ -176,9 +179,9 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unlp_2',
       institucionUid: 'unlp',
-      nombre: 'Abogacía',
+      nombre: 'AbogacÃ­a',
       descripcion:
-          'Carrera clásica de la UNLP con orientación en derecho público y privado. Clínicas jurídicas para práctica profesional.',
+          'Carrera clÃ¡sica de la UNLP con orientaciÃ³n en derecho pÃºblico y privado. ClÃ­nicas jurÃ­dicas para prÃ¡ctica profesional.',
       area: 'Derecho',
       nivel: 'Universitario',
       duracionAnios: 5,
@@ -194,13 +197,13 @@ Future<void> seedData() async {
       institucionUid: 'unlp',
       nombre: 'Medicina',
       descripcion:
-          'Formación médica con énfasis en salud pública y atención primaria. Hospital escuela con residencias propias.',
+          'FormaciÃ³n mÃ©dica con Ã©nfasis en salud pÃºblica y atenciÃ³n primaria. Hospital escuela con residencias propias.',
       area: 'Salud',
       nivel: 'Universitario',
       duracionAnios: 6,
       modalidad: 'Presencial',
-      salidaLaboral: 'Médico general, especialista, investigador',
-      requisitos: 'Secundario completo. Examen de admisión.',
+      salidaLaboral: 'MÃ©dico general, especialista, investigador',
+      requisitos: 'Secundario completo. Examen de admisiÃ³n.',
       tag: 'FECHAS IMPORTANTES',
       aprobada: true,
       createdAt: DateTime(2026, 4, 15),
@@ -208,10 +211,10 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unlp_4',
       institucionUid: 'unlp',
-      nombre: 'Licenciatura en Economía',
+      nombre: 'Licenciatura en EconomÃ­a',
       descripcion:
-          'Análisis económico con base matemática sólida. Perspectiva de economía política y desarrollo regional.',
-      area: 'Economía',
+          'AnÃ¡lisis econÃ³mico con base matemÃ¡tica sÃ³lida. Perspectiva de economÃ­a polÃ­tica y desarrollo regional.',
+      area: 'EconomÃ­a',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
@@ -226,7 +229,7 @@ Future<void> seedData() async {
       institucionUid: 'unlp',
       nombre: 'Arquitectura',
       descripcion:
-          'Diseño arquitectónico con enfoque sustentable. Taller de diseño y госудancies con proyectos reales.',
+          'DiseÃ±o arquitectÃ³nico con enfoque sustentable. Taller de diseÃ±o y Ð³Ð¾ÑÑƒÐ´ancies con proyectos reales.',
       area: 'Creativa',
       nivel: 'Universitario',
       duracionAnios: 5,
@@ -242,7 +245,7 @@ Future<void> seedData() async {
       institucionUid: 'unlp',
       nombre: 'Licenciatura en Periodismo',
       descripcion:
-          'Formación en periodismo escrito, audiovisual y digital. Taller de noticias y prácticas en medios.',
+          'FormaciÃ³n en periodismo escrito, audiovisual y digital. Taller de noticias y prÃ¡cticas en medios.',
       area: 'Creativa',
       nivel: 'Universitario',
       duracionAnios: 4,
@@ -262,14 +265,16 @@ Future<void> seedData() async {
       institucionUid: 'unsam',
       nombre: 'UNSAM',
       descripcion:
-          'La Universidad Nacional de San Martín, fundada en 2009, se destaca por su enfoque interdisciplinario y producción de conocimiento.',
+          'La Universidad Nacional de San MartÃ­n, fundada en 2009, se destaca por su enfoque interdisciplinario y producciÃ³n de conocimiento.',
       direccion: '25 de Mayo y Francia',
-      ciudad: 'San Martín',
+      ciudad: 'San MartÃ­n',
       provincia: 'Buenos Aires',
       telefono: '(011) 4006-1500',
       email: 'rrectorado@unsam.edu.ar',
       sitioWeb: 'https://www.unsam.edu.ar',
       logoURL: 'https://www.unsam.edu.ar/img/logo-UNSAM.png',
+      logoAsset: 'assets/imagenes/instituciones/unsam.png',
+      logoContained: true,
       latitud: -34.5746,
       longitud: -58.5144,
       estado: 'aprobada',
@@ -282,15 +287,15 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unsam_1',
       institucionUid: 'unsam',
-      nombre: 'Tecnicatura en Producción Audiovisual',
+      nombre: 'Tecnicatura en ProducciÃ³n Audiovisual',
       descripcion:
-          'Formación en cine, televisión y producción digital. Equipamiento profesional y profesores del sector.',
+          'FormaciÃ³n en cine, televisiÃ³n y producciÃ³n digital. Equipamiento profesional y profesores del sector.',
       area: 'Creativa',
       nivel: 'Terciario',
       duracionAnios: 3,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Director, productor, editor, camarógrafo, sonidista',
+          'Director, productor, editor, camarÃ³grafo, sonidista',
       requisitos: 'Secundario completo. Portafolio recomendado.',
       tag: 'NUEVO',
       aprobada: true,
@@ -299,16 +304,16 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unsam_2',
       institucionUid: 'unsam',
-      nombre: 'Licenciatura en Biotecnología',
+      nombre: 'Licenciatura en BiotecnologÃ­a',
       descripcion:
-          'Carrera interdisciplinaria que combina biología molecular, química y bioinformática. Laboratorios de última generación.',
+          'Carrera interdisciplinaria que combina biologÃ­a molecular, quÃ­mica y bioinformÃ¡tica. Laboratorios de Ãºltima generaciÃ³n.',
       area: 'Salud',
       nivel: 'Universitario',
       duracionAnios: 5,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Biotecnólogo, investigador, analista en laboratorio',
-      requisitos: 'Secundario completo. Orientación en ciencias naturales.',
+          'BiotecnÃ³logo, investigador, analista en laboratorio',
+      requisitos: 'Secundario completo. OrientaciÃ³n en ciencias naturales.',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
       createdAt: DateTime(2026, 3, 20),
@@ -316,14 +321,14 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unsam_3',
       institucionUid: 'unsam',
-      nombre: 'Tecnicatura en Programación',
+      nombre: 'Tecnicatura en ProgramaciÃ³n',
       descripcion:
-          'Desarrollo de software con foco en buenas prácticas, testing y metodologías ágiles. Proyectos grupales reales.',
-      area: 'Tecnología',
+          'Desarrollo de software con foco en buenas prÃ¡cticas, testing y metodologÃ­as Ã¡giles. Proyectos grupales reales.',
+      area: 'TecnologÃ­a',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Presencial',
-      salidaLaboral: 'Programador, desarrollador web y móvil',
+      salidaLaboral: 'Programador, desarrollador web y mÃ³vil',
       requisitos: 'Secundario completo',
       tag: 'BECAS',
       aprobada: true,
@@ -334,13 +339,13 @@ Future<void> seedData() async {
       institucionUid: 'unsam',
       nombre: 'Licenciatura en Relaciones Internacionales',
       descripcion:
-          'Análisis de la política internacional, diplomacia y comercio exterior. Simulaciones de negociación y Model ONU.',
+          'AnÃ¡lisis de la polÃ­tica internacional, diplomacia y comercio exterior. Simulaciones de negociaciÃ³n y Model ONU.',
       area: 'Ciencias Sociales',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Relacionista internacional, diplomático, analista político',
+          'Relacionista internacional, diplomÃ¡tico, analista polÃ­tico',
       requisitos: 'Secundario completo',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
@@ -349,14 +354,14 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unsam_5',
       institucionUid: 'unsam',
-      nombre: 'Licenciatura en Sociología',
+      nombre: 'Licenciatura en SociologÃ­a',
       descripcion:
-          'Estudio de la sociedad contemporánea, procesos sociales y metodología de investigación cualitativa y cuantitativa.',
+          'Estudio de la sociedad contemporÃ¡nea, procesos sociales y metodologÃ­a de investigaciÃ³n cualitativa y cuantitativa.',
       area: 'Ciencias Sociales',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
-      salidaLaboral: 'Sociólogo, investigador, consultor social',
+      salidaLaboral: 'SociÃ³logo, investigador, consultor social',
       requisitos: 'Secundario completo',
       tag: 'FECHAS IMPORTANTES',
       aprobada: true,
@@ -365,15 +370,15 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unsam_6',
       institucionUid: 'unsam',
-      nombre: 'Tecnicatura en Energías Renovables',
+      nombre: 'Tecnicatura en EnergÃ­as Renovables',
       descripcion:
-          'Formación en instalación y mantenimiento de sistemas de energía solar, eólica y biomasa. Prácticas en plantas piloto.',
-      area: 'Ingeniería',
+          'FormaciÃ³n en instalaciÃ³n y mantenimiento de sistemas de energÃ­a solar, eÃ³lica y biomasa. PrÃ¡cticas en plantas piloto.',
+      area: 'IngenierÃ­a',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Técnico en energías renovables, instalador solar, consultor energético',
+          'TÃ©cnico en energÃ­as renovables, instalador solar, consultor energÃ©tico',
       requisitos: 'Secundario completo',
       tag: 'NUEVO',
       aprobada: true,
@@ -388,14 +393,16 @@ Future<void> seedData() async {
       institucionUid: 'unq',
       nombre: 'UNQ',
       descripcion:
-          'La Universidad Nacional de Quilmes es una universidad pública que se destaca por su compromiso con la inclusión social y la innovación pedagógica.',
-      direccion: 'Roque Sáenz Peña 352',
+          'La Universidad Nacional de Quilmes es una universidad pÃºblica que se destaca por su compromiso con la inclusiÃ³n social y la innovaciÃ³n pedagÃ³gica.',
+      direccion: 'Roque SÃ¡enz PeÃ±a 352',
       ciudad: 'Bernal',
       provincia: 'Buenos Aires',
       telefono: '(011) 4365-7100',
       email: 'info@unq.edu.ar',
       sitioWeb: 'https://www.unq.edu.ar',
       logoURL: 'https://www.unq.edu.ar/wp-content/uploads/2022/11/LOGO-UNQ.png',
+      logoAsset: 'assets/imagenes/instituciones/unq.png',
+      logoContained: true,
       latitud: -34.7078,
       longitud: -58.2811,
       estado: 'aprobada',
@@ -408,14 +415,14 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unq_1',
       institucionUid: 'unq',
-      nombre: 'Licenciatura en Sociología',
+      nombre: 'Licenciatura en SociologÃ­a',
       descripcion:
-          'Carrera de referencia en sociología con énfasis en estudios urbanos y políticas públicas. Investigación aplicada.',
+          'Carrera de referencia en sociologÃ­a con Ã©nfasis en estudios urbanos y polÃ­ticas pÃºblicas. InvestigaciÃ³n aplicada.',
       area: 'Ciencias Sociales',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
-      salidaLaboral: 'Sociólogo, analista de políticas públicas',
+      salidaLaboral: 'SociÃ³logo, analista de polÃ­ticas pÃºblicas',
       requisitos: 'Secundario completo. Ingreso libre.',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
@@ -424,15 +431,15 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unq_2',
       institucionUid: 'unq',
-      nombre: 'Tecnicatura en Regulación y Gestión de Servicios Públicos',
+      nombre: 'Tecnicatura en RegulaciÃ³n y GestiÃ³n de Servicios PÃºblicos',
       descripcion:
-          'Formación única en regulación de servicios públicos: agua, energía, transporte y telecomunicaciones.',
-      area: 'Administración',
+          'FormaciÃ³n Ãºnica en regulaciÃ³n de servicios pÃºblicos: agua, energÃ­a, transporte y telecomunicaciones.',
+      area: 'AdministraciÃ³n',
       nivel: 'Terciario',
       duracionAnios: 3,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Técnico regulador, consultor en servicios públicos',
+          'TÃ©cnico regulador, consultor en servicios pÃºblicos',
       requisitos: 'Secundario completo',
       tag: 'NUEVO',
       aprobada: true,
@@ -441,14 +448,14 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unq_3',
       institucionUid: 'unq',
-      nombre: 'Licenciatura en Economía',
+      nombre: 'Licenciatura en EconomÃ­a',
       descripcion:
-          'Economía con perspectiva crítica y enfoque en desarrollo productivo regional. Seminarios con especialistas.',
-      area: 'Economía',
+          'EconomÃ­a con perspectiva crÃ­tica y enfoque en desarrollo productivo regional. Seminarios con especialistas.',
+      area: 'EconomÃ­a',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
-      salidaLaboral: 'Economista, analista de riesgo, funcionario público',
+      salidaLaboral: 'Economista, analista de riesgo, funcionario pÃºblico',
       requisitos: 'Secundario completo',
       tag: 'BECAS',
       aprobada: true,
@@ -457,14 +464,14 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unq_4',
       institucionUid: 'unq',
-      nombre: 'Licenciatura en Diseño',
+      nombre: 'Licenciatura en DiseÃ±o',
       descripcion:
-          'Diseño gráfico, industrial y de interacción. Taller con proyectos reales para empresas y organismos públicos.',
+          'DiseÃ±o grÃ¡fico, industrial y de interacciÃ³n. Taller con proyectos reales para empresas y organismos pÃºblicos.',
       area: 'Creativa',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
-      salidaLaboral: 'Diseñador gráfico, UX designer, director de arte',
+      salidaLaboral: 'DiseÃ±ador grÃ¡fico, UX designer, director de arte',
       requisitos: 'Secundario completo. Muestra de trabajos.',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
@@ -473,9 +480,9 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unq_5',
       institucionUid: 'unq',
-      nombre: 'Tecnicatura en Producción Musical y Sonido',
+      nombre: 'Tecnicatura en ProducciÃ³n Musical y Sonido',
       descripcion:
-          'Formación en grabación, mezcla y producción musical. Estudio de grabación con equipamiento profesional.',
+          'FormaciÃ³n en grabaciÃ³n, mezcla y producciÃ³n musical. Estudio de grabaciÃ³n con equipamiento profesional.',
       area: 'Creativa',
       nivel: 'Terciario',
       duracionAnios: 2,
@@ -489,15 +496,15 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unq_6',
       institucionUid: 'unq',
-      nombre: 'Licenciatura en Política y Gestión Deportiva',
+      nombre: 'Licenciatura en PolÃ­tica y GestiÃ³n Deportiva',
       descripcion:
-          'Gestión de organizaciones deportivas, marketing deportivo y políticas públicas del deporte. Prácticas en clubes y federaciones.',
-      area: 'Administración',
+          'GestiÃ³n de organizaciones deportivas, marketing deportivo y polÃ­ticas pÃºblicas del deporte. PrÃ¡cticas en clubes y federaciones.',
+      area: 'AdministraciÃ³n',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Gestor deportivo, director de.entidades, asesor de políticas deportivas',
+          'Gestor deportivo, director de.entidades, asesor de polÃ­ticas deportivas',
       requisitos: 'Secundario completo',
       tag: 'FECHAS IMPORTANTES',
       aprobada: true,
@@ -512,7 +519,7 @@ Future<void> seedData() async {
       institucionUid: 'unicen',
       nombre: 'UNICEN',
       descripcion:
-          'La Universidad Nacional del Centro de la Provincia de Buenos Aires, con sedes en Tandil, Azul y Olavarría, ofrece formación de calidad.',
+          'La Universidad Nacional del Centro de la Provincia de Buenos Aires, con sedes en Tandil, Azul y OlavarrÃ­a, ofrece formaciÃ³n de calidad.',
       direccion: 'Gral. Pinto 399',
       ciudad: 'Tandil',
       provincia: 'Buenos Aires',
@@ -520,6 +527,8 @@ Future<void> seedData() async {
       email: 'info@unicen.edu.ar',
       sitioWeb: 'https://www.unicen.edu.ar',
       logoURL: 'https://www.unicen.edu.ar/sites/all/themes/unicen/images/logo-50.png',
+      logoAsset: 'assets/imagenes/instituciones/unicen.jpg',
+      logoContained: true,
       latitud: -37.3217,
       longitud: -59.1332,
       estado: 'aprobada',
@@ -532,14 +541,14 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unicen_1',
       institucionUid: 'unicen',
-      nombre: 'Licenciatura en Ciencias de la Computación',
+      nombre: 'Licenciatura en Ciencias de la ComputaciÃ³n',
       descripcion:
-          'Formación teórica y práctica en computación. Algoritmos, inteligencia artificial y ciencia de datos.',
-      area: 'Tecnología',
+          'FormaciÃ³n teÃ³rica y prÃ¡ctica en computaciÃ³n. Algoritmos, inteligencia artificial y ciencia de datos.',
+      area: 'TecnologÃ­a',
       nivel: 'Universitario',
       duracionAnios: 5,
       modalidad: 'Presencial',
-      salidaLaboral: 'Científico de datos, desarrollador, investigador',
+      salidaLaboral: 'CientÃ­fico de datos, desarrollador, investigador',
       requisitos: 'Secundario completo. Examen de ingreso en exactas.',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
@@ -548,16 +557,16 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unicen_2',
       institucionUid: 'unicen',
-      nombre: 'Tecnicatura en Instrumentación y Control',
+      nombre: 'Tecnicatura en InstrumentaciÃ³n y Control',
       descripcion:
-          'Medición, instrumentación y control de procesos industriales. Laboratorios con equipamiento industrial real.',
-      area: 'Ingeniería',
+          'MediciÃ³n, instrumentaciÃ³n y control de procesos industriales. Laboratorios con equipamiento industrial real.',
+      area: 'IngenierÃ­a',
       nivel: 'Terciario',
       duracionAnios: 3,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Técnico en instrumentación, control de procesos, automatización',
-      requisitos: 'Secundario completo. Orientación técnica.',
+          'TÃ©cnico en instrumentaciÃ³n, control de procesos, automatizaciÃ³n',
+      requisitos: 'Secundario completo. OrientaciÃ³n tÃ©cnica.',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
       createdAt: DateTime(2026, 3, 28),
@@ -567,7 +576,7 @@ Future<void> seedData() async {
       institucionUid: 'unicen',
       nombre: 'Licenciatura en Historia',
       descripcion:
-          'Estudio de procesos históricos argentinos, latinoamericanos y mundiales. Archivos y fuentes primarias.',
+          'Estudio de procesos histÃ³ricos argentinos, latinoamericanos y mundiales. Archivos y fuentes primarias.',
       area: 'Humanidades',
       nivel: 'Universitario',
       duracionAnios: 4,
@@ -581,15 +590,15 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unicen_4',
       institucionUid: 'unicen',
-      nombre: 'Tecnicatura en Gestión Ambiental',
+      nombre: 'Tecnicatura en GestiÃ³n Ambiental',
       descripcion:
-          'Gestión de residuos, auditoría ambiental y desarrollo sustentable. Trabajo de campo en parques naturales.',
+          'GestiÃ³n de residuos, auditorÃ­a ambiental y desarrollo sustentable. Trabajo de campo en parques naturales.',
       area: 'Ciencias Ambientales',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Técnico ambiental, auditor, gestor de residuos',
+          'TÃ©cnico ambiental, auditor, gestor de residuos',
       requisitos: 'Secundario completo',
       tag: 'NUEVO',
       aprobada: true,
@@ -600,13 +609,13 @@ Future<void> seedData() async {
       institucionUid: 'unicen',
       nombre: 'Licenciatura en Turismo',
       descripcion:
-          'Gestión turística, hotelería y desarrollo de destinos. Prácticas en hoteles y agencias de viajes de Tandil.',
-      area: 'Administración',
+          'GestiÃ³n turÃ­stica, hotelerÃ­a y desarrollo de destinos. PrÃ¡cticas en hoteles y agencias de viajes de Tandil.',
+      area: 'AdministraciÃ³n',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Gestor turístico, recepcionista, guía, emprendedor turístico',
+          'Gestor turÃ­stico, recepcionista, guÃ­a, emprendedor turÃ­stico',
       requisitos: 'Secundario completo',
       tag: 'FECHAS IMPORTANTES',
       aprobada: true,
@@ -615,16 +624,16 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unicen_6',
       institucionUid: 'unicen',
-      nombre: 'Ingeniería en Electrónica',
+      nombre: 'IngenierÃ­a en ElectrÃ³nica',
       descripcion:
-          'Diseño de circuitos, sistemas embebidos y robótica. Electrónica aplicada a la industria y la salud.',
-      area: 'Ingeniería',
+          'DiseÃ±o de circuitos, sistemas embebidos y robÃ³tica. ElectrÃ³nica aplicada a la industria y la salud.',
+      area: 'IngenierÃ­a',
       nivel: 'Universitario',
       duracionAnios: 5,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Ingeniero electrónico, diseñador de hardware, investigador',
-      requisitos: 'Secundario completo con orientación en exactas',
+          'Ingeniero electrÃ³nico, diseÃ±ador de hardware, investigador',
+      requisitos: 'Secundario completo con orientaciÃ³n en exactas',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
       createdAt: DateTime(2026, 3, 18),
@@ -646,6 +655,7 @@ Future<void> seedData() async {
       email: 'info@mdp.edu.ar',
       sitioWeb: 'https://www.mdp.edu.ar',
       logoURL: 'https://www.mdp.edu.ar/templates/unmdp/iconos/512.png',
+      logoAsset: 'assets/imagenes/instituciones/unmdp.png',
       latitud: -38.0055,
       longitud: -57.5426,
       estado: 'aprobada',
@@ -660,14 +670,14 @@ Future<void> seedData() async {
       institucionUid: 'unmdp',
       nombre: 'Licenciatura en Ciencias del Mar',
       descripcion:
-          'Formación en biología marina, oceanografía y gestión de recursos acuáticos. Prácticas en el Instituto de Biología Marina.',
+          'FormaciÃ³n en biologÃ­a marina, oceanografÃ­a y gestiÃ³n de recursos acuÃ¡ticos. PrÃ¡cticas en el Instituto de BiologÃ­a Marina.',
       area: 'Ciencias Ambientales',
       nivel: 'Universitario',
       duracionAnios: 5,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Científico marino, biólogo pesquero, gestor ambiental',
-      requisitos: 'Secundario completo. Orientación en ciencias naturales.',
+          'CientÃ­fico marino, biÃ³logo pesquero, gestor ambiental',
+      requisitos: 'Secundario completo. OrientaciÃ³n en ciencias naturales.',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
       createdAt: DateTime(2026, 4, 10),
@@ -675,9 +685,9 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unmdp_2',
       institucionUid: 'unmdp',
-      nombre: 'Tecnicatura en Enfermería',
+      nombre: 'Tecnicatura en EnfermerÃ­a',
       descripcion:
-          'Formación en cuidados enfermeros con rotaciones en hospitales públicos. Enfoque en salud comunitaria.',
+          'FormaciÃ³n en cuidados enfermeros con rotaciones en hospitales pÃºblicos. Enfoque en salud comunitaria.',
       area: 'Salud',
       nivel: 'Terciario',
       duracionAnios: 3,
@@ -691,15 +701,15 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unmdp_3',
       institucionUid: 'unmdp',
-      nombre: 'Licenciatura en Geografía',
+      nombre: 'Licenciatura en GeografÃ­a',
       descripcion:
-          'Estudio del territorio, SIG y cartografía. Trabajo de campo en la costa atlántica y regiones pampeanas.',
+          'Estudio del territorio, SIG y cartografÃ­a. Trabajo de campo en la costa atlÃ¡ntica y regiones pampeanas.',
       area: 'Ciencias Sociales',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Geógrafo, analista SIG, planificador territorial',
+          'GeÃ³grafo, analista SIG, planificador territorial',
       requisitos: 'Secundario completo',
       tag: 'BECAS',
       aprobada: true,
@@ -708,14 +718,14 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unmdp_4',
       institucionUid: 'unmdp',
-      nombre: 'Tecnicatura en Gastronomía',
+      nombre: 'Tecnicatura en GastronomÃ­a',
       descripcion:
-          'Cocina argentina e internacional, pastelería y gestión de gastronomía. Prácticas en restaurantes de Mar del Plata.',
+          'Cocina argentina e internacional, pastelerÃ­a y gestiÃ³n de gastronomÃ­a. PrÃ¡cticas en restaurantes de Mar del Plata.',
       area: 'Creativa',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Presencial',
-      salidaLaboral: 'Chef, pastelero, consultor gastronómico',
+      salidaLaboral: 'Chef, pastelero, consultor gastronÃ³mico',
       requisitos: 'Secundario completo. Entrevista personal.',
       tag: 'NUEVO',
       aprobada: true,
@@ -724,9 +734,9 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unmdp_5',
       institucionUid: 'unmdp',
-      nombre: 'Licenciatura en Comunicación',
+      nombre: 'Licenciatura en ComunicaciÃ³n',
       descripcion:
-          'Comunicación social, periodismo digital y producción de contenidos. Laboratorio de medios digitales.',
+          'ComunicaciÃ³n social, periodismo digital y producciÃ³n de contenidos. Laboratorio de medios digitales.',
       area: 'Creativa',
       nivel: 'Universitario',
       duracionAnios: 4,
@@ -740,14 +750,14 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unmdp_6',
       institucionUid: 'unmdp',
-      nombre: 'Licenciatura en Economía',
+      nombre: 'Licenciatura en EconomÃ­a',
       descripcion:
-          'Economía con foco en recursos naturales y turismo. Análisis económico regional.',
-      area: 'Economía',
+          'EconomÃ­a con foco en recursos naturales y turismo. AnÃ¡lisis econÃ³mico regional.',
+      area: 'EconomÃ­a',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
-      salidaLaboral: 'Economista, analista, funcionario público',
+      salidaLaboral: 'Economista, analista, funcionario pÃºblico',
       requisitos: 'Secundario completo',
       tag: 'BECAS',
       aprobada: true,
@@ -762,14 +772,16 @@ Future<void> seedData() async {
       institucionUid: 'ungs',
       nombre: 'UNGS',
       descripcion:
-          'La Universidad Nacional de General Sarmiento, en Los Polvorines, se especializa en ciencias sociales, tecnología y formación docente.',
-      direccion: 'Juan María Gutiérrez 1150',
+          'La Universidad Nacional de General Sarmiento, en Los Polvorines, se especializa en ciencias sociales, tecnologÃ­a y formaciÃ³n docente.',
+      direccion: 'Juan MarÃ­a GutiÃ©rrez 1150',
       ciudad: 'Los Polvorines',
       provincia: 'Buenos Aires',
       telefono: '(011) 4469-7500',
       email: 'info@campus.ungs.edu.ar',
       sitioWeb: 'https://www.ungs.edu.ar',
       logoURL: 'https://www.ungs.edu.ar/wp-content/uploads/2024/06/logo_ungs_512.png',
+      logoAsset: 'assets/imagenes/instituciones/ungs.png',
+      fotoCampus: 'assets/imagenes/campus/ungs.jpg',
       latitud: -34.5267,
       longitud: -58.6988,
       estado: 'aprobada',
@@ -784,7 +796,7 @@ Future<void> seedData() async {
       institucionUid: 'ungs',
       nombre: 'Licenciatura en Urbanismo',
       descripcion:
-          'Planificación urbana, diseño de espacios públicos y gestión municipal. Taller con proyectos para el GCBA.',
+          'PlanificaciÃ³n urbana, diseÃ±o de espacios pÃºblicos y gestiÃ³n municipal. Taller con proyectos para el GCBA.',
       area: 'Ciencias Sociales',
       nivel: 'Universitario',
       duracionAnios: 5,
@@ -798,16 +810,16 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_ungs_2',
       institucionUid: 'ungs',
-      nombre: 'Tecnicatura en Mecatrónica',
+      nombre: 'Tecnicatura en MecatrÃ³nica',
       descripcion:
-          'Automatización, robótica y sistemas mecatrónicos. Laboratorio con robots industriales y PLCs.',
-      area: 'Ingeniería',
+          'AutomatizaciÃ³n, robÃ³tica y sistemas mecatrÃ³nicos. Laboratorio con robots industriales y PLCs.',
+      area: 'IngenierÃ­a',
       nivel: 'Terciario',
       duracionAnios: 3,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Técnico mecatrónico, automatizador, programador de PLCs',
-      requisitos: 'Secundario completo. Orientación técnica.',
+          'TÃ©cnico mecatrÃ³nico, automatizador, programador de PLCs',
+      requisitos: 'Secundario completo. OrientaciÃ³n tÃ©cnica.',
       tag: 'NUEVO',
       aprobada: true,
       createdAt: DateTime(2026, 4, 10),
@@ -817,13 +829,13 @@ Future<void> seedData() async {
       institucionUid: 'ungs',
       nombre: 'Licenciatura en Trabajo Social',
       descripcion:
-          'Formación en intervención social, políticas públicas y trabajo comunitario. Prácticas en organizaciones sociales.',
+          'FormaciÃ³n en intervenciÃ³n social, polÃ­ticas pÃºblicas y trabajo comunitario. PrÃ¡cticas en organizaciones sociales.',
       area: 'Ciencias Sociales',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Trabajador social, asistente social, gestor de políticas',
+          'Trabajador social, asistente social, gestor de polÃ­ticas',
       requisitos: 'Secundario completo',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
@@ -832,15 +844,15 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_ungs_4',
       institucionUid: 'ungs',
-      nombre: 'Licenciatura en Ciencias Políticas',
+      nombre: 'Licenciatura en Ciencias PolÃ­ticas',
       descripcion:
-          'Análisis político, gobierno y gestión pública. Simulaciones de debate y Model ONU.',
+          'AnÃ¡lisis polÃ­tico, gobierno y gestiÃ³n pÃºblica. Simulaciones de debate y Model ONU.',
       area: 'Ciencias Sociales',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Cientista político, funcionario, asesor legislativo',
+          'Cientista polÃ­tico, funcionario, asesor legislativo',
       requisitos: 'Secundario completo',
       tag: 'FECHAS IMPORTANTES',
       aprobada: true,
@@ -849,14 +861,14 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_ungs_5',
       institucionUid: 'ungs',
-      nombre: 'Tecnicatura en Programación',
+      nombre: 'Tecnicatura en ProgramaciÃ³n',
       descripcion:
-          'Desarrollo de software con metodologías ágiles. Frameworks modernos y buenas prácticas.',
-      area: 'Tecnología',
+          'Desarrollo de software con metodologÃ­as Ã¡giles. Frameworks modernos y buenas prÃ¡cticas.',
+      area: 'TecnologÃ­a',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Presencial',
-      salidaLaboral: 'Programador, desarrollador web y móvil',
+      salidaLaboral: 'Programador, desarrollador web y mÃ³vil',
       requisitos: 'Secundario completo',
       tag: 'BECAS',
       aprobada: true,
@@ -865,14 +877,14 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_ungs_6',
       institucionUid: 'ungs',
-      nombre: 'Licenciatura en Diseño Industrial',
+      nombre: 'Licenciatura en DiseÃ±o Industrial',
       descripcion:
-          'Diseño de productos industriales con enfoque en sustentabilidad. Taller con prototipado digital.',
+          'DiseÃ±o de productos industriales con enfoque en sustentabilidad. Taller con prototipado digital.',
       area: 'Creativa',
       nivel: 'Universitario',
       duracionAnios: 5,
       modalidad: 'Presencial',
-      salidaLaboral: 'Diseñador industrial, prototipador, consultor',
+      salidaLaboral: 'DiseÃ±ador industrial, prototipador, consultor',
       requisitos: 'Secundario completo. Examen de aptitud.',
       tag: 'NUEVO',
       aprobada: true,
@@ -895,6 +907,8 @@ Future<void> seedData() async {
       email: 'info@unlz.edu.ar',
       sitioWeb: 'https://www.unlz.edu.ar',
       logoURL: 'https://www.unlz.edu.ar/wp-content/uploads/2023/12/unlz-logo-png.png',
+      logoAsset: 'assets/imagenes/instituciones/unlz.png',
+      logoContained: true,
       latitud: -34.7649,
       longitud: -58.3963,
       estado: 'aprobada',
@@ -907,9 +921,9 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unlz_1',
       institucionUid: 'unlz',
-      nombre: 'Abogacía',
+      nombre: 'AbogacÃ­a',
       descripcion:
-          'Formación en derecho con énfasis en derechos humanos y justicia social. Clínicas jurídicas en zonas vulnerables.',
+          'FormaciÃ³n en derecho con Ã©nfasis en derechos humanos y justicia social. ClÃ­nicas jurÃ­dicas en zonas vulnerables.',
       area: 'Derecho',
       nivel: 'Universitario',
       duracionAnios: 5,
@@ -923,10 +937,10 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unlz_2',
       institucionUid: 'unlz',
-      nombre: 'Licenciatura en Ciencias Económicas',
+      nombre: 'Licenciatura en Ciencias EconÃ³micas',
       descripcion:
-          'Economía, contabilidad y finanzas públicas. Enfoque en economía social y solidaria.',
-      area: 'Economía',
+          'EconomÃ­a, contabilidad y finanzas pÃºblicas. Enfoque en economÃ­a social y solidaria.',
+      area: 'EconomÃ­a',
       nivel: 'Universitario',
       duracionAnios: 5,
       modalidad: 'Presencial',
@@ -939,9 +953,9 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unlz_3',
       institucionUid: 'unlz',
-      nombre: 'Licenciatura en Comunicación Social',
+      nombre: 'Licenciatura en ComunicaciÃ³n Social',
       descripcion:
-          'Periodismo, comunicación institucional y medios digitales. Producción de contenido en la FM de la universidad.',
+          'Periodismo, comunicaciÃ³n institucional y medios digitales. ProducciÃ³n de contenido en la FM de la universidad.',
       area: 'Creativa',
       nivel: 'Universitario',
       duracionAnios: 4,
@@ -957,13 +971,13 @@ Future<void> seedData() async {
       institucionUid: 'unlz',
       nombre: 'Tecnicatura en Recursos Humanos',
       descripcion:
-          'Gestión de personal, reclutamiento, capacitación y legislación laboral. Prácticas en empresas del sur del GBA.',
-      area: 'Administración',
+          'GestiÃ³n de personal, reclutamiento, capacitaciÃ³n y legislaciÃ³n laboral. PrÃ¡cticas en empresas del sur del GBA.',
+      area: 'AdministraciÃ³n',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Técnico en RRHH, selector de personal, capacitador',
+          'TÃ©cnico en RRHH, selector de personal, capacitador',
       requisitos: 'Secundario completo',
       tag: 'FECHAS IMPORTANTES',
       aprobada: true,
@@ -972,14 +986,14 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unlz_5',
       institucionUid: 'unlz',
-      nombre: 'Licenciatura en Educación',
+      nombre: 'Licenciatura en EducaciÃ³n',
       descripcion:
-          'Formación docente con enfoque en tecnología educativa y pedagogía crítica. Prácticas en escuelas del conurbano.',
-      area: 'Educación',
+          'FormaciÃ³n docente con enfoque en tecnologÃ­a educativa y pedagogÃ­a crÃ­tica. PrÃ¡cticas en escuelas del conurbano.',
+      area: 'EducaciÃ³n',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
-      salidaLaboral: 'Docente, pedagogo, diseñador curricular',
+      salidaLaboral: 'Docente, pedagogo, diseÃ±ador curricular',
       requisitos: 'Secundario completo',
       tag: 'BECAS',
       aprobada: true,
@@ -990,34 +1004,37 @@ Future<void> seedData() async {
       institucionUid: 'unlz',
       nombre: 'Tecnicatura en Desarrollo de Software',
       descripcion:
-          'Programación web, móvil y bases de datos. Proyecto integrador con empresa real en el último semestre.',
-      area: 'Tecnología',
+          'ProgramaciÃ³n web, mÃ³vil y bases de datos. Proyecto integrador con empresa real en el Ãºltimo semestre.',
+      area: 'TecnologÃ­a',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Presencial',
       salidaLaboral: 'Desarrollador, programador, tester',
-      requisitos: 'Secundario completo. Examen de ingreso en lógica.',
+      requisitos: 'Secundario completo. Examen de ingreso en lÃ³gica.',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
       createdAt: DateTime(2026, 4, 3),
     ),
   ]);
 
-  // --- UNPAZ (Universidad Nacional de José C. Paz) ---
+  // --- UNPAZ (Universidad Nacional de JosÃ© C. Paz) ---
   batch.set(
     firestore.collection('instituciones').doc('unpaz'),
     InstitucionModel(
       institucionUid: 'unpaz',
       nombre: 'UNPAZ',
       descripcion:
-          'La Universidad Nacional de José Clemente Paz, fundada en 2009, es una universidad pública de acceso irrestricto con enfoque interdisciplinario y compromiso social.',
+          'La Universidad Nacional de JosÃ© Clemente Paz, fundada en 2009, es una universidad pÃºblica de acceso irrestricto con enfoque interdisciplinario y compromiso social.',
       direccion: 'Leandro N. Alem 4731',
-      ciudad: 'José C. Paz',
+      ciudad: 'JosÃ© C. Paz',
       provincia: 'Buenos Aires',
       telefono: '(02320) 649025',
       email: 'comunicacion@unpaz.edu.ar',
       sitioWeb: 'https://www.unpaz.edu.ar',
       logoURL: 'https://www.unpaz.edu.ar/sites/default/files/Logo%20Unpaz.png',
+      logoAsset: 'assets/imagenes/instituciones/unpaz.png',
+      logoContained: true,
+      fotoCampus: 'assets/imagenes/campus/unpaz.jpg',
       latitud: -34.5204,
       longitud: -58.7456,
       estado: 'aprobada',
@@ -1026,14 +1043,23 @@ Future<void> seedData() async {
     SetOptions(merge: false),
   );
 
+  // --- USAL e ISFDyT NÂ°35 ---
+  for (final inst in institucionesNuevas()) {
+    batch.set(
+      firestore.collection('instituciones').doc(inst.institucionUid),
+      inst.toMap(),
+      SetOptions(merge: false),
+    );
+  }
+
   // --- ISFT 184 (Pilar) ---
   batch.set(
     firestore.collection('instituciones').doc('isft184'),
     InstitucionModel(
       institucionUid: 'isft184',
-      nombre: 'ISFT N°184',
+      nombre: 'ISFT NÂ°184',
       descripcion:
-          'Instituto Superior de Formación Técnica Nº 184 "Lic. Jorge Pugliese" de Pilar. Más de 34 años formando profesionales con títulos de validez nacional.',
+          'Instituto Superior de FormaciÃ³n TÃ©cnica NÂº 184 "Lic. Jorge Pugliese" de Pilar. MÃ¡s de 34 aÃ±os formando profesionales con tÃ­tulos de validez nacional.',
       direccion: 'Sanguinetti 521',
       ciudad: 'Pilar',
       provincia: 'Buenos Aires',
@@ -1041,6 +1067,7 @@ Future<void> seedData() async {
       email: 'isft184oficial@gmail.com',
       sitioWeb: 'https://isft184.wixsite.com/inicio',
       logoURL: 'https://isft184-bue.infd.edu.ar/sitio/wp-content/uploads/2020/10/icono-184.jpg',
+      logoAsset: 'assets/imagenes/instituciones/isft184.jpg',
       latitud: -34.4547,
       longitud: -58.9103,
       estado: 'aprobada',
@@ -1054,9 +1081,9 @@ Future<void> seedData() async {
     firestore.collection('instituciones').doc('isft182'),
     InstitucionModel(
       institucionUid: 'isft182',
-      nombre: 'ISFT N°182',
+      nombre: 'ISFT NÂ°182',
       descripcion:
-          'Instituto Superior de Formación Técnica Nº 182 "Nos Importa el Mañana" de San Miguel. Ofrece tecnicaturas en Análisis de Sistemas, Enfermería, RRHH y más.',
+          'Instituto Superior de FormaciÃ³n TÃ©cnica NÂº 182 "Nos Importa el MaÃ±ana" de San Miguel. Ofrece tecnicaturas en AnÃ¡lisis de Sistemas, EnfermerÃ­a, RRHH y mÃ¡s.',
       direccion: 'Rta. 8 y Avellaneda, Bo. Sgto. Cabral',
       ciudad: 'San Miguel',
       provincia: 'Buenos Aires',
@@ -1064,6 +1091,8 @@ Future<void> seedData() async {
       email: '182informes@gmail.com',
       sitioWeb: 'https://isft182.edu.ar',
       logoURL: 'https://isft182-bue.infd.edu.ar/sitio/wp-content/uploads/2018/09/isft182_logo.png',
+      logoAsset: 'assets/imagenes/instituciones/isft182.jpg',
+      logoContained: true,
       latitud: -34.5348,
       longitud: -58.6941,
       estado: 'aprobada',
@@ -1077,9 +1106,9 @@ Future<void> seedData() async {
     firestore.collection('instituciones').doc('isft234'),
     InstitucionModel(
       institucionUid: 'isft234',
-      nombre: 'ISFT N°234',
+      nombre: 'ISFT NÂ°234',
       descripcion:
-          'Instituto Superior de Formación Técnica Nº 234 de Malvinas Argentinas. Carreras bimodales con títulos oficiales avalados por la Dirección General de Cultura y Educación.',
+          'Instituto Superior de FormaciÃ³n TÃ©cnica NÂº 234 de Malvinas Argentinas. Carreras bimodales con tÃ­tulos oficiales avalados por la DirecciÃ³n General de Cultura y EducaciÃ³n.',
       direccion: '25 de Mayo 3084',
       ciudad: 'Los Polvorines, Malvinas Argentinas',
       provincia: 'Buenos Aires',
@@ -1087,6 +1116,8 @@ Future<void> seedData() async {
       email: 'isft234@gmail.com',
       sitioWeb: 'https://isft234.edu.ar',
       logoURL: 'https://isft234.edu.ar/wp-content/uploads/2021/11/INSTITUTO-SUPERIOR-234.png',
+      logoAsset: 'assets/imagenes/instituciones/isft234.jpg',
+      logoContained: true,
       latitud: -34.5200,
       longitud: -58.6950,
       estado: 'aprobada',
@@ -1100,10 +1131,10 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_isft184_1',
       institucionUid: 'isft184',
-      nombre: 'Tecnicatura Superior en Administración',
+      nombre: 'Tecnicatura Superior en AdministraciÃ³n',
       descripcion:
-          'Formación en gestión empresarial, contabilidad y recursos humanos. Títulos de validez nacional.',
-      area: 'Administración',
+          'FormaciÃ³n en gestiÃ³n empresarial, contabilidad y recursos humanos. TÃ­tulos de validez nacional.',
+      area: 'AdministraciÃ³n',
       nivel: 'Terciario',
       duracionAnios: 3,
       modalidad: 'Presencial',
@@ -1116,10 +1147,10 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_isft182_1',
       institucionUid: 'isft182',
-      nombre: 'Tecnicatura Superior en Análisis de Sistemas',
+      nombre: 'Tecnicatura Superior en AnÃ¡lisis de Sistemas',
       descripcion:
-          'Formación en análisis, diseño e implementación de sistemas informáticos. Prácticas en empresas del sector.',
-      area: 'Tecnología',
+          'FormaciÃ³n en anÃ¡lisis, diseÃ±o e implementaciÃ³n de sistemas informÃ¡ticos. PrÃ¡cticas en empresas del sector.',
+      area: 'TecnologÃ­a',
       nivel: 'Terciario',
       duracionAnios: 3,
       modalidad: 'Presencial',
@@ -1132,14 +1163,14 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_isft234_1',
       institucionUid: 'isft234',
-      nombre: 'Tecnicatura Superior en Construcción Sustentable',
+      nombre: 'Tecnicatura Superior en ConstrucciÃ³n Sustentable',
       descripcion:
-          'Formación en construcción con enfoque sustentable, eficiencia energética y materiales ecológicos.',
-      area: 'Ingeniería',
+          'FormaciÃ³n en construcciÃ³n con enfoque sustentable, eficiencia energÃ©tica y materiales ecolÃ³gicos.',
+      area: 'IngenierÃ­a',
       nivel: 'Terciario',
       duracionAnios: 3,
       modalidad: 'Bimodal',
-      salidaLaboral: 'Técnico en construcción, proyectista, supervisor de obras',
+      salidaLaboral: 'TÃ©cnico en construcciÃ³n, proyectista, supervisor de obras',
       requisitos: 'Secundario completo',
       tag: 'NUEVO',
       aprobada: true,
@@ -1148,9 +1179,9 @@ Future<void> seedData() async {
     OfertaModel(
       ofertaId: 'oferta_unpaz_1',
       institucionUid: 'unpaz',
-      nombre: 'Licenciatura en Enfermería',
+      nombre: 'Licenciatura en EnfermerÃ­a',
       descripcion:
-          'Formación médica con énfasis en salud pública y atención primaria. Prácticas en hospitales de la zona.',
+          'FormaciÃ³n mÃ©dica con Ã©nfasis en salud pÃºblica y atenciÃ³n primaria. PrÃ¡cticas en hospitales de la zona.',
       area: 'Salud',
       nivel: 'Universitario',
       duracionAnios: 5,
@@ -1189,14 +1220,14 @@ Future<void> seedCarrerasCompletas() async {
     OfertaModel(
       ofertaId: 'oferta_unpaz_2',
       institucionUid: 'unpaz',
-      nombre: 'Abogacía',
+      nombre: 'AbogacÃ­a',
       descripcion:
-          'Formación en derecho con énfasis en derechos humanos, procesos de integración regional y acceso a la justicia. Clínicas jurídicas gratuitas para la comunidad.',
+          'FormaciÃ³n en derecho con Ã©nfasis en derechos humanos, procesos de integraciÃ³n regional y acceso a la justicia. ClÃ­nicas jurÃ­dicas gratuitas para la comunidad.',
       area: 'Derecho',
       nivel: 'Universitario',
       duracionAnios: 5,
       modalidad: 'Presencial',
-      salidaLaboral: 'Abogado/a, defensor/a público/a, asesor/a legal, mediador/a',
+      salidaLaboral: 'Abogado/a, defensor/a pÃºblico/a, asesor/a legal, mediador/a',
       requisitos: 'Secundario completo. Ingreso irrestricto.',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
@@ -1207,13 +1238,13 @@ Future<void> seedCarrerasCompletas() async {
       institucionUid: 'unpaz',
       nombre: 'Licenciatura en Trabajo Social',
       descripcion:
-          'Formación en intervención social, políticas públicas y trabajo territorial. Prácticas en organizaciones sociales del distrito.',
+          'FormaciÃ³n en intervenciÃ³n social, polÃ­ticas pÃºblicas y trabajo territorial. PrÃ¡cticas en organizaciones sociales del distrito.',
       area: 'Ciencias Sociales',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Trabajador/a social, gestor/a de políticas, referente territorial',
+          'Trabajador/a social, gestor/a de polÃ­ticas, referente territorial',
       requisitos: 'Secundario completo. Ingreso irrestricto.',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
@@ -1222,10 +1253,10 @@ Future<void> seedCarrerasCompletas() async {
     OfertaModel(
       ofertaId: 'oferta_unpaz_4',
       institucionUid: 'unpaz',
-      nombre: 'Licenciatura en Administración',
+      nombre: 'Licenciatura en AdministraciÃ³n',
       descripcion:
-          'Gestión de organizaciones públicas y privadas, economía social y desarrollo local. Proyectos con PyMEs de la región.',
-      area: 'Administración',
+          'GestiÃ³n de organizaciones pÃºblicas y privadas, economÃ­a social y desarrollo local. Proyectos con PyMEs de la regiÃ³n.',
+      area: 'AdministraciÃ³n',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
@@ -1239,15 +1270,15 @@ Future<void> seedCarrerasCompletas() async {
     OfertaModel(
       ofertaId: 'oferta_unpaz_5',
       institucionUid: 'unpaz',
-      nombre: 'Licenciatura en Educación',
+      nombre: 'Licenciatura en EducaciÃ³n',
       descripcion:
-          'Formación de profesionales de la educación con enfoque en inclusión, tecnología educativa y políticas de niñez y juventud.',
-      area: 'Educación',
+          'FormaciÃ³n de profesionales de la educaciÃ³n con enfoque en inclusiÃ³n, tecnologÃ­a educativa y polÃ­ticas de niÃ±ez y juventud.',
+      area: 'EducaciÃ³n',
       nivel: 'Universitario',
       duracionAnios: 4,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Docente, pedagogo/a, diseñador/a curricular, gestor/a educativo/a',
+          'Docente, pedagogo/a, diseÃ±ador/a curricular, gestor/a educativo/a',
       requisitos: 'Secundario completo. Ingreso irrestricto.',
       tag: 'BECAS',
       aprobada: true,
@@ -1256,15 +1287,15 @@ Future<void> seedCarrerasCompletas() async {
     OfertaModel(
       ofertaId: 'oferta_unpaz_6',
       institucionUid: 'unpaz',
-      nombre: 'Contador Público',
+      nombre: 'Contador PÃºblico',
       descripcion:
-          'Formación en contabilidad, auditoría, impuestos y finanzas con perspectiva de desarrollo regional. Prácticas en estudios contables.',
-      area: 'Economía',
+          'FormaciÃ³n en contabilidad, auditorÃ­a, impuestos y finanzas con perspectiva de desarrollo regional. PrÃ¡cticas en estudios contables.',
+      area: 'EconomÃ­a',
       nivel: 'Universitario',
       duracionAnios: 5,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Contador/a público/a, auditor/a, asesor/a impositivo/a',
+          'Contador/a pÃºblico/a, auditor/a, asesor/a impositivo/a',
       requisitos: 'Secundario completo. Ingreso irrestricto.',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
@@ -1274,9 +1305,9 @@ Future<void> seedCarrerasCompletas() async {
     OfertaModel(
       ofertaId: 'oferta_isft182_2',
       institucionUid: 'isft182',
-      nombre: 'Tecnicatura Superior en Enfermería',
+      nombre: 'Tecnicatura Superior en EnfermerÃ­a',
       descripcion:
-          'Formación en cuidados enfermeros con rotaciones hospitalarias y atención primaria de la salud. Enfoque comunitario.',
+          'FormaciÃ³n en cuidados enfermeros con rotaciones hospitalarias y atenciÃ³n primaria de la salud. Enfoque comunitario.',
       area: 'Salud',
       nivel: 'Terciario',
       duracionAnios: 3,
@@ -1293,13 +1324,13 @@ Future<void> seedCarrerasCompletas() async {
       institucionUid: 'isft182',
       nombre: 'Tecnicatura Superior en Recursos Humanos',
       descripcion:
-          'Gestión del capital humano: selección, capacitación, liquidación de sueldos y administración de personal.',
-      area: 'Administración',
+          'GestiÃ³n del capital humano: selecciÃ³n, capacitaciÃ³n, liquidaciÃ³n de sueldos y administraciÃ³n de personal.',
+      area: 'AdministraciÃ³n',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Técnico/a en RRHH, selector/a de personal, capacitador/a, liquidador/a',
+          'TÃ©cnico/a en RRHH, selector/a de personal, capacitador/a, liquidador/a',
       requisitos: 'Secundario completo',
       tag: 'NUEVO',
       aprobada: true,
@@ -1308,9 +1339,9 @@ Future<void> seedCarrerasCompletas() async {
     OfertaModel(
       ofertaId: 'oferta_isft182_4',
       institucionUid: 'isft182',
-      nombre: 'Tecnicatura Superior en Bibliotecología',
+      nombre: 'Tecnicatura Superior en BibliotecologÃ­a',
       descripcion:
-          'Organización, gestión y difusión de colecciones bibliográficas y recursos de información en bibliotecas, archivos y centros de documentación.',
+          'OrganizaciÃ³n, gestiÃ³n y difusiÃ³n de colecciones bibliogrÃ¡ficas y recursos de informaciÃ³n en bibliotecas, archivos y centros de documentaciÃ³n.',
       area: 'Humanidades',
       nivel: 'Terciario',
       duracionAnios: 2,
@@ -1327,13 +1358,13 @@ Future<void> seedCarrerasCompletas() async {
       institucionUid: 'isft182',
       nombre: 'Tecnicatura Superior en Higiene y Seguridad en el Trabajo',
       descripcion:
-          'Prevención de riesgos laborales, control de condiciones ambientales y confección de planes de evacuación.',
-      area: 'Ingeniería',
+          'PrevenciÃ³n de riesgos laborales, control de condiciones ambientales y confecciÃ³n de planes de evacuaciÃ³n.',
+      area: 'IngenierÃ­a',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Técnico/a en higiene y seguridad, asesor/a de prevención, auditor/a',
+          'TÃ©cnico/a en higiene y seguridad, asesor/a de prevenciÃ³n, auditor/a',
       requisitos: 'Secundario completo',
       tag: 'FECHAS IMPORTANTES',
       aprobada: true,
@@ -1345,8 +1376,8 @@ Future<void> seedCarrerasCompletas() async {
       institucionUid: 'isft184',
       nombre: 'Tecnicatura Superior en Coaching Educativo',
       descripcion:
-          'Formación para acompañar procesos de aprendizaje y desarrollo personal en ámbitos educativos y organizacionales.',
-      area: 'Educación',
+          'FormaciÃ³n para acompaÃ±ar procesos de aprendizaje y desarrollo personal en Ã¡mbitos educativos y organizacionales.',
+      area: 'EducaciÃ³n',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Presencial',
@@ -1362,13 +1393,13 @@ Future<void> seedCarrerasCompletas() async {
       institucionUid: 'isft184',
       nombre: 'Tecnicatura Superior en Contabilidad',
       descripcion:
-          'Registración contable, liquidación de impuestos y cierres de ejercicio. Prácticas en estudios contables de la zona.',
-      area: 'Economía',
+          'RegistraciÃ³n contable, liquidaciÃ³n de impuestos y cierres de ejercicio. PrÃ¡cticas en estudios contables de la zona.',
+      area: 'EconomÃ­a',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Técnico/a contable, auxiliar impositivo/a, liquidador/a',
+          'TÃ©cnico/a contable, auxiliar impositivo/a, liquidador/a',
       requisitos: 'Secundario completo',
       tag: 'BECAS',
       aprobada: true,
@@ -1379,13 +1410,13 @@ Future<void> seedCarrerasCompletas() async {
       institucionUid: 'isft184',
       nombre: 'Tecnicatura Superior en Comercio Internacional',
       descripcion:
-          'Negocios internacionales, logística, aduana y operaciones de exportación e importación. Simulaciones de comercio exterior.',
-      area: 'Administración',
+          'Negocios internacionales, logÃ­stica, aduana y operaciones de exportaciÃ³n e importaciÃ³n. Simulaciones de comercio exterior.',
+      area: 'AdministraciÃ³n',
       nivel: 'Terciario',
       duracionAnios: 3,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Despachante de aduana, operador/a de comercio exterior, logístico/a',
+          'Despachante de aduana, operador/a de comercio exterior, logÃ­stico/a',
       requisitos: 'Secundario completo',
       tag: 'NUEVO',
       aprobada: true,
@@ -1394,15 +1425,15 @@ Future<void> seedCarrerasCompletas() async {
     OfertaModel(
       ofertaId: 'oferta_isft184_5',
       institucionUid: 'isft184',
-      nombre: 'Tecnicatura Superior en Gestión Ambiental',
+      nombre: 'Tecnicatura Superior en GestiÃ³n Ambiental',
       descripcion:
-          'Gestión de residuos, auditoría ambiental y sustentabilidad en organizaciones. Trabajo de campo en el corredor del Río Luján.',
+          'GestiÃ³n de residuos, auditorÃ­a ambiental y sustentabilidad en organizaciones. Trabajo de campo en el corredor del RÃ­o LujÃ¡n.',
       area: 'Ciencias Ambientales',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Técnico/a ambiental, auditor/a, gestor/a de residuos',
+          'TÃ©cnico/a ambiental, auditor/a, gestor/a de residuos',
       requisitos: 'Secundario completo',
       tag: 'FECHAS IMPORTANTES',
       aprobada: true,
@@ -1413,13 +1444,13 @@ Future<void> seedCarrerasCompletas() async {
       institucionUid: 'isft184',
       nombre: 'Tecnicatura Superior en Seguridad e Higiene',
       descripcion:
-          'Prevención de accidentes laborales y enfermedades profesionales en plantas industriales y obras.',
-      area: 'Ingeniería',
+          'PrevenciÃ³n de accidentes laborales y enfermedades profesionales en plantas industriales y obras.',
+      area: 'IngenierÃ­a',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Presencial',
       salidaLaboral:
-          'Técnico/a en higiene y seguridad, supervisor/a de obra',
+          'TÃ©cnico/a en higiene y seguridad, supervisor/a de obra',
       requisitos: 'Secundario completo',
       tag: 'INSCRIPCIONES ABIERTAS',
       aprobada: true,
@@ -1429,7 +1460,7 @@ Future<void> seedCarrerasCompletas() async {
     OfertaModel(
       ofertaId: 'oferta_isft234_2',
       institucionUid: 'isft234',
-      nombre: 'Tecnicatura Superior en Enfermería',
+      nombre: 'Tecnicatura Superior en EnfermerÃ­a',
       descripcion:
           'Cuidados enfermeros con rotaciones en el Hospital Mercante y en la red de salud del distrito. Modalidad bimodal.',
       area: 'Salud',
@@ -1446,10 +1477,10 @@ Future<void> seedCarrerasCompletas() async {
     OfertaModel(
       ofertaId: 'oferta_isft234_3',
       institucionUid: 'isft234',
-      nombre: 'Tecnicatura Superior en Análisis de Sistemas',
+      nombre: 'Tecnicatura Superior en AnÃ¡lisis de Sistemas',
       descripcion:
-          'Análisis, diseño e implementación de sistemas informáticos. Prácticas profesionalizantes en el polo tecnológico de la zona.',
-      area: 'Tecnología',
+          'AnÃ¡lisis, diseÃ±o e implementaciÃ³n de sistemas informÃ¡ticos. PrÃ¡cticas profesionalizantes en el polo tecnolÃ³gico de la zona.',
+      area: 'TecnologÃ­a',
       nivel: 'Terciario',
       duracionAnios: 3,
       modalidad: 'Bimodal',
@@ -1465,7 +1496,7 @@ Future<void> seedCarrerasCompletas() async {
       institucionUid: 'isft234',
       nombre: 'Tecnicatura Superior en Periodismo Deportivo',
       descripcion:
-          'Periodismo deportivo en radio, televisión y medios digitales. Relatos, crónicas y coberturas en vivo.',
+          'Periodismo deportivo en radio, televisiÃ³n y medios digitales. Relatos, crÃ³nicas y coberturas en vivo.',
       area: 'Creativa',
       nivel: 'Terciario',
       duracionAnios: 2,
@@ -1480,15 +1511,15 @@ Future<void> seedCarrerasCompletas() async {
     OfertaModel(
       ofertaId: 'oferta_isft234_5',
       institucionUid: 'isft234',
-      nombre: 'Tecnicatura Superior en Acompañamiento Terapéutico',
+      nombre: 'Tecnicatura Superior en AcompaÃ±amiento TerapÃ©utico',
       descripcion:
-          'Acompañamiento de personas con padecimientos subjetivos en el marco de equipos interdisciplinarios de salud.',
+          'AcompaÃ±amiento de personas con padecimientos subjetivos en el marco de equipos interdisciplinarios de salud.',
       area: 'Salud',
       nivel: 'Terciario',
       duracionAnios: 3,
       modalidad: 'Bimodal',
       salidaLaboral:
-          'Acompañante terapéutico/a, integrante de equipos de salud',
+          'AcompaÃ±ante terapÃ©utico/a, integrante de equipos de salud',
       requisitos: 'Secundario completo',
       tag: 'BECAS',
       aprobada: true,
@@ -1499,13 +1530,13 @@ Future<void> seedCarrerasCompletas() async {
       institucionUid: 'isft234',
       nombre: 'Tecnicatura Superior en Recursos Humanos',
       descripcion:
-          'Selección, capacitación y administración de personal. Prácticas en empresas del Parque Industrial de Malvinas Argentinas.',
-      area: 'Administración',
+          'SelecciÃ³n, capacitaciÃ³n y administraciÃ³n de personal. PrÃ¡cticas en empresas del Parque Industrial de Malvinas Argentinas.',
+      area: 'AdministraciÃ³n',
       nivel: 'Terciario',
       duracionAnios: 2,
       modalidad: 'Bimodal',
       salidaLaboral:
-          'Técnico/a en RRHH, selector/a de personal, capacitador/a',
+          'TÃ©cnico/a en RRHH, selector/a de personal, capacitador/a',
       requisitos: 'Secundario completo',
       tag: 'FECHAS IMPORTANTES',
       aprobada: true,
@@ -1557,7 +1588,7 @@ Future<void> eliminarIsft180() async {
 
   await batch.commit();
   debugPrint(
-      'eliminarIsft180: ${ofertasSnap.docs.length} ofertas y la institución eliminadas');
+      'eliminarIsft180: ${ofertasSnap.docs.length} ofertas y la instituciÃ³n eliminadas');
 }
 
 Future<void> seedLogosStorage() async {
@@ -1640,11 +1671,10 @@ const Map<String, String> _logosPorNombre = {
   'tres de febrero': 'https://upload.wikimedia.org/wikipedia/commons/7/75/Untref_logo.png',
   'del salvador': 'https://www.usal.edu.ar/images/logo.png',
   'universidad del salvador': 'https://www.usal.edu.ar/images/logo.png',
-  'usal': 'https://www.usal.edu.ar/images/logo.png',
 };
 
 String _normalizarNombre(String nombre) {
-  const conAcentos = 'áéíóúüñ';
+  const conAcentos = 'Ã¡Ã©Ã­Ã³ÃºÃ¼Ã±';
   const sinAcentos = 'aeioun';
   final lower = nombre.toLowerCase().trim();
   final buffer = StringBuffer();
@@ -1680,6 +1710,130 @@ Future<void> patchInstitucionesSinLogo() async {
   debugPrint('patchInstitucionesSinLogo: $actualizadas instituciones actualizadas');
 }
 
+/// Instituciones agregadas despues del seed original. Se definen aparte para que
+/// el parche pueda crearlas en bases ya sembradas, donde seedData() ya corrio.
+/// Instituciones que alguna vez se sembraron aparte. Hoy la app usa el
+/// catalogo externo, asi que ya no se crean desde aca: si se volvieran a
+/// sembrar, resucitarian instituciones que se borraron (USAL, ISFDyT N°35).
+List<InstitucionModel> institucionesNuevas() => [];
+
+/// Logo de la Facultad de Ciencias Juridicas de la USAL. Es vertical, asi que
+/// va con logoContained para que no se recorte en los avatares circulares.
+const String _logoUsalRemoto =
+    'https://i0.wp.com/cedaeonline.com.ar/wp-content/uploads/2018/10/logo-USAL-ciencias-jurÃ­dicas.jpg?ssl=1';
+
+const Map<String, String> _logosAssetPorUid = {
+  'utn': 'assets/imagenes/instituciones/utn.jpg',
+  'unlp': 'assets/imagenes/instituciones/unlp.png',
+  'unsam': 'assets/imagenes/instituciones/unsam.png',
+  'unq': 'assets/imagenes/instituciones/unq.png',
+  'unicen': 'assets/imagenes/instituciones/unicen.jpg',
+  'unmdp': 'assets/imagenes/instituciones/unmdp.png',
+  'ungs': 'assets/imagenes/instituciones/ungs.png',
+  'unlz': 'assets/imagenes/instituciones/unlz.png',
+  'unpaz': 'assets/imagenes/instituciones/unpaz.png',
+  'isft184': 'assets/imagenes/instituciones/isft184.jpg',
+  'isft182': 'assets/imagenes/instituciones/isft182.jpg',
+  'isft234': 'assets/imagenes/instituciones/isft234.png',
+  'isfdyt35': 'assets/imagenes/instituciones/isfdyt35.jpg',
+  // Instituciones que viven solo en Firestore, sembradas por otras vias.
+  // Los nombres de doc no coinciden con el nombre de la institucion.
+  'austral_pilar': 'assets/imagenes/instituciones/austral.png',
+  'ub_tigre': 'assets/imagenes/instituciones/belgrano.jpg',
+  'uai_tigre': 'assets/imagenes/instituciones/uai.jpg',
+  'uba_cbc_tigre': 'assets/imagenes/instituciones/uba.png',
+  'uces_tigre': 'assets/imagenes/instituciones/uces.png',
+  'udesa': 'assets/imagenes/instituciones/udesa.png',
+  'unlu_sanmiguel': 'assets/imagenes/instituciones/unlu.png',
+};
+
+/// Instituciones cuyo logo es vertical o apaisado y por lo tanto se muestra
+/// completo con BoxFit.contain sobre fondo, en vez de recortarse con cover.
+const Set<String> _uidsLogoContained = {
+  'usal',
+  'utn',
+  'unlz',
+  'unq',
+  'unicen',
+  'isfdyt35',
+  'unsam',
+  'unpaz',
+  'isft182',
+  'isft234',
+  'austral_pilar',
+  'ub_tigre',
+  'uai_tigre',
+  'uba_cbc_tigre',
+  'uces_tigre',
+  'udesa',
+  'unlu_sanmiguel',
+};
+
+const Map<String, String> _fotosCampusPorUid = {
+  'unpaz': 'assets/imagenes/campus/unpaz.jpg',
+  'ungs': 'assets/imagenes/campus/ungs.jpg',
+  'usal': 'assets/imagenes/campus/usal.jpg',
+  'isfdyt35': 'assets/imagenes/campus/isfdyt35.jpg',
+};
+
+/// Rellena logoAsset y fotoCampus en documentos ya sembrados antes de que
+/// existieran estos campos, para no depender de re-sembrar todo el seed.
+Future<void> patchInstitucionesAssetsLocales() async {
+  final firestore = FirebaseFirestore.instance;
+
+  // Instituciones agregadas despues del seed original: crearlas si faltan.
+  var creadas = 0;
+  for (final inst in institucionesNuevas()) {
+    final ref = firestore.collection('instituciones').doc(inst.institucionUid);
+    final doc = await ref.get();
+    if (!doc.exists) {
+      await ref.set(inst.toMap());
+      creadas++;
+    }
+  }
+
+  final snapshot = await firestore.collection('instituciones').get();
+  final batch = firestore.batch();
+  var actualizadas = 0;
+  for (final doc in snapshot.docs) {
+    final data = doc.data();
+    final uid = doc.id;
+    final cambios = <String, dynamic>{};
+    // Comparar contra la ruta y no solo contra vacio: los archivos se renombran
+    // (utn.png -> utn.jpg) y la ruta vieja en Firestore quedaria colgada.
+    final logoAsset = _logosAssetPorUid[uid];
+    if (logoAsset != null && (data['logoAsset'] as String? ?? '') != logoAsset) {
+      cambios['logoAsset'] = logoAsset;
+    }
+    final foto = _fotosCampusPorUid[uid];
+    if (foto != null && (data['fotoCampus'] as String? ?? '').trim().isEmpty) {
+      cambios['fotoCampus'] = foto;
+    }
+    // Logos verticales o apaisados: mostrarlos completos, sin recorte.
+    if (_uidsLogoContained.contains(uid) && data['logoContained'] != true) {
+      cambios['logoContained'] = true;
+    }
+    // USAL paso a logo remoto de la facultad: hay que SACAR el asset local
+    // aunque ya este puesto, y forzar la URL, no solo rellenar vacios.
+    if (uid == 'usal') {
+      if ((data['logoURL'] as String? ?? '') != _logoUsalRemoto) {
+        cambios['logoURL'] = _logoUsalRemoto;
+      }
+      if ((data['logoAsset'] as String? ?? '').isNotEmpty) {
+        cambios['logoAsset'] = '';
+      }
+    }
+    if (cambios.isEmpty) continue;
+    batch.update(doc.reference, cambios);
+    actualizadas++;
+  }
+  if (actualizadas > 0) {
+    await batch.commit();
+  }
+  debugPrint(
+      'patchInstitucionesAssetsLocales: $creadas creadas, $actualizadas con asset local');
+}
+
 Future<void> seedAvisos() async {
   final firestore = FirebaseFirestore.instance;
   final batch = firestore.batch();
@@ -1688,7 +1842,7 @@ Future<void> seedAvisos() async {
     {
       'titulo': 'Inscripciones abiertas 2027',
       'mensaje':
-          'Se encuentran abiertas las inscripciones para el ciclo lectivo 2027 en las universidades de la región. Consultá las fechas de cada institución.',
+          'Se encuentran abiertas las inscripciones para el ciclo lectivo 2027 en las universidades de la regiÃ³n. ConsultÃ¡ las fechas de cada instituciÃ³n.',
       'tipo': 'inscripcion',
       'link': '/map',
       'publicado': DateTime(2026, 9, 12),
@@ -1696,15 +1850,15 @@ Future<void> seedAvisos() async {
     {
       'titulo': 'Nuevas fechas de ingreso en zona norte',
       'mensaje':
-          'Las universidades de la zona norte confirmaron nuevas fechas de ingreso e inscripción. Ingresá y revisá los requisitos por carrera.',
+          'Las universidades de la zona norte confirmaron nuevas fechas de ingreso e inscripciÃ³n. IngresÃ¡ y revisÃ¡ los requisitos por carrera.',
       'tipo': 'noticia',
       'link': '/map',
       'publicado': DateTime(2026, 9, 5),
     },
     {
-      'titulo': '¿Todavía no hacés tu test vocacional?',
+      'titulo': 'Â¿TodavÃ­a no hacÃ©s tu test vocacional?',
       'mensaje':
-          'Descubrí qué carrera se ajusta a tus intereses con nuestro test vocacional gratuito. Te lleva menos de 5 minutos.',
+          'DescubrÃ­ quÃ© carrera se ajusta a tus intereses con nuestro test vocacional gratuito. Te lleva menos de 5 minutos.',
       'tipo': 'consejo',
       'link': '/test',
       'publicado': DateTime(2026, 8, 28),
