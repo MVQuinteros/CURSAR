@@ -5,6 +5,7 @@ class AvisoModel {
   final String tipo;
   final String? link;
   final DateTime? publicado;
+  final bool destacado;
 
   AvisoModel({
     required this.avisoId,
@@ -13,6 +14,7 @@ class AvisoModel {
     required this.tipo,
     this.link,
     this.publicado,
+    this.destacado = false,
   });
 
   factory AvisoModel.fromMap(String id, Map<String, dynamic> map) {
@@ -23,6 +25,7 @@ class AvisoModel {
       tipo: map['tipo'] ?? '',
       link: map['link'],
       publicado: (map['publicado'] as dynamic)?.toDate(),
+      destacado: map['destacado'] == true,
     );
   }
 
@@ -34,6 +37,7 @@ class AvisoModel {
       'tipo': tipo,
       'link': link,
       'publicado': publicado,
+      'destacado': destacado,
     };
   }
 }

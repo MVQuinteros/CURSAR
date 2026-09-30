@@ -42,7 +42,7 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
     }
     if (mounted) {
       setState(() {
-        _avisos = avisos;
+        _avisos = avisos.where((a) => a.titulo.trim().isNotEmpty).toList();
         _avisosLeidos = leidos;
       });
     }

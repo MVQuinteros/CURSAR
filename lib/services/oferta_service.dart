@@ -16,7 +16,8 @@ class OfertaService {
   }
 
   Future<List<OfertaModel>> obtenerOfertas() async {
-    final snapshot = await _ofertas.get();
+    final snapshot =
+        await _ofertas.where('institucionUid', isGreaterThan: '').get();
     return snapshot.docs
         .map((doc) =>
             OfertaModel.fromMap(doc.id, doc.data() as Map<String, dynamic>))
@@ -34,7 +35,7 @@ class OfertaService {
   }
 
   Stream<QuerySnapshot> ofertasStream() {
-    return _ofertas.snapshots();
+    return _ofertas.where('institucionUid', isGreaterThan: '').snapshots();
   }
 
   Future<void> actualizarOferta(String id, Map<String, dynamic> datos) async {

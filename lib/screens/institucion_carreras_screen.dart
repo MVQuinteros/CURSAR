@@ -393,9 +393,7 @@ class _InstitucionCarrerasScreenState extends State<InstitucionCarrerasScreen> {
                 child: Icon(
                   esFavorita ? Icons.favorite : Icons.favorite_border,
                   size: 24,
-                  color: esFavorita
-                      ? context.colors.accentPrimary
-                      : context.colors.iconNormal,
+                  color: esFavorita ? Colors.red : context.colors.iconNormal,
                 ),
               ),
             ),
