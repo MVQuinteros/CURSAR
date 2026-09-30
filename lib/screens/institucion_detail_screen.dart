@@ -9,6 +9,7 @@ import '../models/oferta_model.dart';
 import '../services/historial_service.dart';
 import '../services/ubicacion_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/favorito_institucion_boton.dart';
 import '../widgets/institucion_imagen.dart';
 
 class InstitucionDetailScreen extends StatefulWidget {
@@ -240,6 +241,10 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
               icon: const Icon(Icons.language),
               tooltip: 'Sitio web',
             ),
+          FavoritoInstitucionBoton(
+            institucionUid: inst.institucionUid,
+            colorInactivo: null,
+          ),
         ],
       ),
       body: SingleChildScrollView(

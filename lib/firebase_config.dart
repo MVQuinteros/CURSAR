@@ -5,7 +5,10 @@ const FirebaseOptions firebaseOptions = FirebaseOptions(
   apiKey: 'AIzaSyDi9eDrS4MupboINvALOnzE63EsLW8xDLE', // La encuentras en "Ver las instrucciones del SDK"
   authDomain: 'proyecto-app.firebaseapp.com',
   projectId: 'proyecto-app-a77c8',
-  storageBucket: 'proyecto-app.appspot.com',
+  // Tiene que coincidir con "storage_bucket" de android/app/google-services.json.
+  // Si diverge, la app escribe en un bucket que no es el del proyecto y las
+  // descargas fallan con object-not-found aunque la subida parezca correcta.
+  storageBucket: 'proyecto-app-a77c8.firebasestorage.app',
   messagingSenderId: '642247955799', // Extraído de tu ID de app
   appId: '1:642247955799:android:da24b0de4e913bef475a12', // Extraído de tu captura
 );

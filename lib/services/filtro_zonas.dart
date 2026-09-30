@@ -1,17 +1,28 @@
 import '../models/institucion_model.dart';
 
-/// Filtro temporal por zona. Mientras la base tenga instituciones de todo el
-/// pais, el inicio y "Explorar por institucion" muestran solo las del area de
-/// influencia de la app: San Miguel, Jose C. Paz y Malvinas Argentinas.
+/// Filtro de instituciones, con dos partes bien separadas.
 ///
-/// Se decide por el campo ciudad, que es el unico que distingue a las
-/// instituciones entre si: provincia dice "Buenos Aires" para todas.
+/// La primera ([aplicar]) es de higiene: saca los docs que no son
+/// instituciones reales (marcadores de parches), las que estan ocultas a
+/// proposito y las que no tienen nombre. Esa parte no se puede desactivar.
 ///
-/// Para revertir y volver a mostrar todo, poner soloZonasObjetivo en false.
+/// La segunda es el recorte geografico por zona, que hoy esta **apagada**.
+///
+/// Estuvo encendida porque la base tiene instituciones de todo el pais y el
+/// inicio y "Explorar por institucion" mostraban solo las del area de influencia
+/// de la app. El problema es que ese recorte se aplicaba al armar las listas, sin
+/// que el usuario lo supiera: apagar el toggle "Solo dentro de mi area" en el mapa
+/// no cambiaba nada, porque lo que el filtro habia eliminado ya no llegaba a
+/// pintarse. Ese toggle es ahora el unico que recorta, y lo hace por radio y
+/// distancia reales.
+///
+/// Si en algun momento hay que volver a recortar por zona, poner
+/// `soloZonasObjetivo` en true: el toggle de radio y este filtro seiban juntos.
 class FiltroZonas {
   const FiltroZonas._();
 
-  static const bool soloZonasObjetivo = true;
+  /// Apagado: el mapa y el inicio muestran todas las instituciones de la base.
+  static const bool soloZonasObjetivo = false;
 
   /// Los docs que no son instituciones reales (marcadores de parches).
   static const Set<String> _uidsTecnicos = {
@@ -23,6 +34,7 @@ class FiltroZonas {
     'patch_assets_locales_v4',
     'patch_assets_locales_v5',
     'patch_assets_locales_v6',
+    'seed_instituciones_nuevas_v1',
   };
 
   /// Instituciones reales que por ahora no se muestran, sin borrarlas de la

@@ -43,6 +43,10 @@ void main() async {
     seedCarrerasCompletas,
   );
   await _conSeed('instituciones/eliminar_isft180_v1', eliminarIsft180);
+  await _conSeed(
+    'instituciones/seed_instituciones_nuevas_v1',
+    seedInstitucionesNuevas,
+  );
   await _conSeed('instituciones/logos_storage_v1', seedLogosStorage);
   await _conSeed('avisos/avisos_seed_v1', seedAvisos);
 

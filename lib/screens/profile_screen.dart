@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,17 +21,95 @@ class _ProfileScreenState extends State<ProfileScreen> {
   PreferenciasModel _preferencias = const PreferenciasModel();
   final int _selectedIndex = 3;
 
+  String _userName = '';
+  String _userEmail = '';
+
   static const Color _azulGradienteInicio = Color(0xFF1B74E4);
   static const Color _azulGradienteFin = Color(0xFF58B2FF);
 
+  @override
+  void initState() {
+    super.initState();
+    _sembrarDesdeAuth();
+    _cargarDatosUsuario();
+  }
+
+  void _sembrarDesdeAuth() {
+    final user = FirebaseAuth.instance.currentUser;
+    _userName = user?.displayName?.trim() ?? '';
+    _userEmail = user?.email ?? '';
+  }
+
+  Future<void> _cargarDatosUsuario() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(user.uid)
+          .get();
+      final datos = doc.data() ?? {};
+
+      var nombre = _userName;
+      if (nombre.isEmpty) {
+        final completo =
+            '${datos['nombre']?.toString() ?? ''} '
+            '${datos['apellido']?.toString() ?? ''}'.trim();
+        if (completo.isNotEmpty) nombre = completo;
+      }
+      final email = _userEmail.isNotEmpty
+          ? _userEmail
+          : datos['email']?.toString() ?? '';
+
+      if (!mounted) return;
+      setState(() {
+        _userName = nombre;
+        _userEmail = email;
+        _preferencias = PreferenciasModel.fromMap(datos);
+      });
+    } catch (e) {
+      debugPrint('Error cargando datos del usuario: $e');
+    }
+  }
+
+  /// Bucket de Storage. Tiene que coincidir con "storage_bucket" de
+  /// android/app/google-services.json.
+  static const String _bucket = 'proyecto-app-a77c8.firebasestorage.app';
+
+  /// Pide la URL de descarga reintentando.
+  ///
+  /// Recién terminado el upload, el endpoint de descarga puede tardar un
+  /// instante en resolver y responder 404. Es una carrera de propagacion, no
+  /// un dato roto, asi que se reintenta con espera creciente. Ojo: si la causa
+  /// real es un permiso denegado, el retry no la arregla, solo suma ~1,2 s antes
+  /// de fallar. Por eso el log marca cada paso por separado.
+  Future<String> _downloadUrlConReintentos(Reference ref) async {
+    const intentos = 3;
+    var intento = 0;
+    while (true) {
+      try {
+        return await ref.getDownloadURL();
+      } catch (_) {
+        intento++;
+        if (intento >= intentos) rethrow;
+        await Future<void>.delayed(Duration(milliseconds: 400 * intento));
+      }
+    }
+  }
+
   Future<void> _pickImage() async {
+    // Solo se libera la previsualizacion local si la foto quedo de verdad
+    // publicada. Si algo falla, el avatar sigue mostrando lo que elegiste.
+    var publicada = false;
+
     try {
       final XFile? pickedFile =
           await _picker.pickImage(source: ImageSource.gallery);
       if (pickedFile == null) return;
 
+      final archivo = File(pickedFile.path);
       setState(() {
-        _imageFile = File(pickedFile.path);
+        _imageFile = archivo;
         _isLoadingImage = true;
       });
 
@@ -40,22 +119,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
             "No hay un usuario autenticado. Inicia sesión primero.");
       }
 
-      final storageRef = FirebaseStorage.instance
+      // instanceFor y no instance: deja el bucket explicito y con el nombre
+      // que declara android/app/google-services.json, sin depender de cual
+      // inicializacion haya quedado activa primero.
+      final ref = FirebaseStorage.instanceFor(bucket: _bucket)
           .ref()
           .child('profile_images')
           .child('${user.uid}.jpg');
 
-      // Ejecutar la subida y ESPERAR a que termine por completo
-      final UploadTask uploadTask = storageRef.putFile(_imageFile!);
-      final TaskSnapshot snapshot = await uploadTask;
+      debugPrint('[PERFIL] bucket=${ref.bucket} path=${ref.fullPath}');
 
-      // Obtener la URL solo después de confirmar que se subió
-      final String downloadUrl = await snapshot.ref.getDownloadURL();
+      final TaskSnapshot snapshot = await ref.putFile(archivo);
+      debugPrint('[PERFIL] putFile OK  bytes=${snapshot.totalBytes}');
 
-      // Actualizar el perfil del usuario en FirebaseAuth
+      final String downloadUrl = await _downloadUrlConReintentos(ref);
+      debugPrint('[PERFIL] getDownloadURL OK  $downloadUrl');
+
+      await FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(user.uid)
+          .set({'fotoURL': downloadUrl}, SetOptions(merge: true));
+      debugPrint('[PERFIL] Firestore OK  usuarios/${user.uid}.fotoURL');
+
       await user.updatePhotoURL(downloadUrl);
+      publicada = true;
+      debugPrint('[PERFIL] Auth OK  photoURL actualizado');
 
-      // (Opcional) Mostrar mensaje de éxito
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -64,17 +153,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         );
       }
-    } catch (e) {
-      debugPrint("Error subiendo imagen: $e");
+    } catch (e, st) {
+      debugPrint('[PERFIL] FALLO tipo=${e.runtimeType}  $e');
+      debugPrint('[PERFIL] stack: $st');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text('No se pudo subir la foto. Intentá de nuevo.'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
       if (mounted) {
         setState(() {
           _isLoadingImage = false;
+          if (publicada) _imageFile = null;
         });
       }
     }
@@ -159,31 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  CircleAvatar(
-                    radius: avatarRadius,
-                    backgroundColor: Colors.white,
-                    child: CircleAvatar(
-                      radius: avatarRadius - 4,
-                      backgroundColor: Colors.grey[300],
-                      backgroundImage: _imageFile != null
-                          ? FileImage(_imageFile!) as ImageProvider
-                          : (FirebaseAuth.instance.currentUser?.photoURL != null
-                              ? NetworkImage(
-                                  FirebaseAuth.instance.currentUser!.photoURL!)
-                              : null),
-                      child: _isLoadingImage
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : (_imageFile == null &&
-                                  FirebaseAuth
-                                      .instance.currentUser?.photoURL == null)
-                              ? const Icon(
-                                  Icons.person,
-                                  size: 55,
-                                  color: Colors.white,
-                                )
-                              : null,
-                    ),
-                  ),
+                  _buildAvatar(avatarRadius),
                   // Botón de cámara
                   Positioned(
                     bottom: 0,
@@ -215,14 +285,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             // 3. DATOS DEL USUARIO
             const SizedBox(height: 15),
-            const Text(
-              "Lola Lopez",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            Text(
+              _userName.isEmpty ? 'Usuario' : _userName,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 5),
-            const Text(
-              "lola12@gmail.com",
-              style: TextStyle(color: Colors.grey, fontSize: 14),
+            Text(
+              _userEmail,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.grey, fontSize: 14),
             ),
 
             // 4. MENÚ
@@ -271,6 +343,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  /// Avatar con el anillo blanco y la imagen del usuario adentro.
+  ///
+  /// La foto de red se arma con `Image.network` y no con `NetworkImage` como
+  /// `backgroundImage` del `CircleAvatar`. La diferencia es el `errorBuilder`:
+  /// un `ImageProvider` no lo tiene, asi que con `NetworkImage` una URL vencida
+  /// deja el avatar vacio o rompe el build en silencio. Con `Image.network` una
+  /// foto que no carga cae al ícono de persona, que es lo que se quiere ver.
+  Widget _buildAvatar(double radius) {
+    final archivo = _imageFile;
+    final url = FirebaseAuth.instance.currentUser?.photoURL;
+    final lado = (radius - 4) * 2;
+    const fallback = Icon(Icons.person, size: 55, color: Colors.white);
+
+    Widget imagen;
+    if (archivo != null) {
+      imagen = Image.file(archivo, width: lado, height: lado, fit: BoxFit.cover);
+    } else if (url != null && url.isNotEmpty) {
+      imagen = Image.network(
+        url,
+        width: lado,
+        height: lado,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => fallback,
+      );
+    } else {
+      imagen = fallback;
+    }
+
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: Colors.white,
+      child: CircleAvatar(
+        radius: radius - 4,
+        backgroundColor: Colors.grey[300],
+        child: _isLoadingImage
+            ? const CircularProgressIndicator(color: Colors.white)
+            : ClipOval(child: imagen),
+      ),
+    );
+  }
+
   Future<void> _cerrarSesion() async {
     await FirebaseAuth.instance.signOut();
     if (mounted) {
@@ -279,7 +392,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _abrirEditarPerfil() async {
-    await Navigator.pushNamed(context, '/editar-perfil');
+    final cambios = await Navigator.pushNamed(context, '/editar-perfil');
+    if (cambios == true) {
+      await FirebaseAuth.instance.currentUser?.reload();
+      if (mounted) setState(_sembrarDesdeAuth);
+      await _cargarDatosUsuario();
+    }
   }
 
   void _abrirNotificaciones() {

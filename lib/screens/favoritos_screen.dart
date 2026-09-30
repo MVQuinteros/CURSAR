@@ -11,13 +11,18 @@ class _FavoritoItem {
   final String favoriteDocId;
   final OfertaModel? oferta;
   final InstitucionModel? institucion;
+  final bool esInstitucion;
 
   const _FavoritoItem({
     required this.favoriteDocId,
     this.oferta,
     this.institucion,
+    this.esInstitucion = false,
   });
 }
+
+/// Pestana activa del filtro de favoritos.
+enum _FiltroFavoritos { carreras, instituciones }
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
@@ -29,9 +34,21 @@ class FavoritesScreen extends StatefulWidget {
 class _FavoritesScreenState extends State<FavoritesScreen> {
   static const Color _azulGradienteInicio = Color(0xFF1B74E4);
   static const Color _azulGradienteFin = Color(0xFF58B2FF);
+  static const Color _celesteFiltro = Color(0xFFE3F2FD);
+  static const Color _blancoSegmento = Color(0xFFFFFFFF);
 
   final FavoritoService _favoritoService = FavoritoService();
   final Map<String, InstitucionModel> _instCache = {};
+
+  /// Items ya resueltos, por id de documento de favorito. Evita volver a pedir
+  /// a Firestore lo que ya se sabe cuando cambia la pestana activa.
+  final Map<String, _FavoritoItem> _itemsCache = {};
+
+  _FiltroFavoritos _filtro = _FiltroFavoritos.carreras;
+
+  /// La pestana se autoelige una sola vez, con el primer lote de favoritos con
+  /// contenido. Despues el usuario manda.
+  bool _yaElijoPestana = false;
 
   void _navegar(int index) {
     if (index == 0) {
@@ -58,23 +75,31 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     return inst;
   }
 
+  /// Resuelve todos los favoritos en paralelo. Cada item necesita a lo sumo dos
+  /// lecturas (oferta + institucion), asi que en vez de esperarlas de a una se
+  /// lanzan juntas con [Future.wait].
   Future<List<_FavoritoItem>> _resolverFavoritos(
     List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
   ) async {
-    final items = <_FavoritoItem>[];
-    for (final doc in docs) {
-      try {
-        items.add(await _construirItem(doc));
-      } catch (e) {
-        debugPrint('Favoritos: se omitió el favorito ${doc.id} por dato inválido: $e');
-      }
-    }
-    return items;
+    final resueltos = await Future.wait(
+      docs.map((doc) async {
+        try {
+          return await _construirItem(doc);
+        } catch (e) {
+          debugPrint('Favoritos: se omitió el favorito ${doc.id} por dato inválido: $e');
+          return null;
+        }
+      }),
+    );
+    return resueltos.whereType<_FavoritoItem>().toList();
   }
 
   Future<_FavoritoItem> _construirItem(
     QueryDocumentSnapshot<Map<String, dynamic>> doc,
   ) async {
+    final cacheado = _itemsCache[doc.id];
+    if (cacheado != null) return cacheado;
+
     final data = doc.data();
 
     final ofertaId = _extraerOfertaId(data);
@@ -93,11 +118,43 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
     final inst = await _obtenerInstitucion(institucionUid ?? '');
 
-    return _FavoritoItem(
+    final item = _FavoritoItem(
       favoriteDocId: doc.id,
       oferta: oferta,
       institucion: inst,
+      esInstitucion: FavoritoService.esFavoritoDeInstitucion(doc.id, data),
     );
+    _itemsCache[doc.id] = item;
+    return item;
+  }
+
+  /// Si el documento de favorito corresponde a una institucion.
+  bool _esDocInstitucion(QueryDocumentSnapshot<Map<String, dynamic>> doc) =>
+      FavoritoService.esFavoritoDeInstitucion(doc.id, doc.data());
+
+  /// Si el usuario solo guardo una de las dos categorias, arranca en esa.
+  /// Se resuelve una sola vez y con `addPostFrameCallback` porque no se puede
+  /// llamar a `setState` mientras se construye.
+  void _asegurarPestanaInicial(
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+  ) {
+    if (_yaElijoPestana || docs.isEmpty) return;
+    _yaElijoPestana = true;
+
+    if (docs.any((d) => !_esDocInstitucion(d))) return;
+
+    final destino = _filtro == _FiltroFavoritos.carreras
+        ? _FiltroFavoritos.instituciones
+        : _FiltroFavoritos.carreras;
+    if (destino == _FiltroFavoritos.instituciones &&
+        !docs.any(_esDocInstitucion)) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() => _filtro = destino);
+    });
   }
 
   /// Extrae el `ofertaId` aceptando el formato viejo (String plano) y el nuevo (Map).
@@ -131,6 +188,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
     await _favoritoService.eliminarFavorito(user.uid, item.favoriteDocId);
+    _itemsCache.remove(item.favoriteDocId);
   }
 
   void _abrirFavorito(_FavoritoItem item) {
@@ -206,11 +264,23 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   }
 
   String _tituloCarrera(_FavoritoItem item) {
-    return item.oferta?.nombre ?? 'Carrera';
+    if (item.oferta != null) return item.oferta!.nombre;
+    return item.institucion?.nombre ?? 'Carrera';
   }
 
+  /// Subtítulo de la tarjeta. En una carrera muestra la institución que la
+  /// ofrece; en un favorito de institución el nombre ya está en el título, así
+  /// que se aprovecha para ubicar al usuario.
   String _nombreInstitucion(_FavoritoItem item) {
-    return item.institucion?.nombre ?? 'Institución';
+    final inst = item.institucion;
+    if (item.esInstitucion) {
+      final ciudad = inst?.ciudad.trim() ?? '';
+      if (ciudad.isNotEmpty) return ciudad;
+      final provincia = inst?.provincia.trim() ?? '';
+      if (provincia.isNotEmpty) return provincia;
+      return 'Ubicación no informada';
+    }
+    return inst?.nombre ?? 'Institución';
   }
 
   List<String> _detalles(_FavoritoItem item) {
@@ -346,31 +416,208 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     );
   }
 
+  /// Control segmentado de dos opciones. El relleno de la pestana activa se
+  /// desliza con `AnimatedAlign`; el contenedor usa celeste en claro y un tinte
+  /// del acento en oscuro, que es lo unico que se ve bien en los dos temas.
+  Widget _buildFiltro() {
+    final esOscuro = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      height: 44,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: esOscuro
+            ? context.colors.accentPrimary.withValues(alpha: 0.12)
+            : _celesteFiltro,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final anchoSegmento = constraints.maxWidth / 2;
+          return Stack(
+            children: [
+              AnimatedAlign(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
+                alignment: _filtro == _FiltroFavoritos.carreras
+                    ? Alignment.centerLeft
+                    : Alignment.centerRight,
+                child: Container(
+                  width: anchoSegmento,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: _azulGradienteInicio,
+                    borderRadius: BorderRadius.circular(11),
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: _pestana(_FiltroFavoritos.carreras, 'Carreras'),
+                  ),
+                  Expanded(
+                    child: _pestana(
+                      _FiltroFavoritos.instituciones,
+                      'Instituciones',
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _pestana(_FiltroFavoritos filtro, String etiqueta) {
+    final activa = _filtro == filtro;
+    return Semantics(
+      button: true,
+      selected: activa,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => setState(() => _filtro = filtro),
+        child: Center(
+          child: AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 200),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: activa ? FontWeight.w600 : FontWeight.w500,
+              color: activa ? _blancoSegmento : context.colors.textSecondary,
+            ),
+            child: Text(
+              etiqueta,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Título de la sección y conteo de lo que hay en la pestana activa.
+  Widget _buildResumen(int cantidad) {
+    final esCarreras = _filtro == _FiltroFavoritos.carreras;
+    final sustantivo = esCarreras
+        ? (cantidad == 1 ? 'carrera' : 'carreras')
+        : (cantidad == 1 ? 'institución' : 'instituciones');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          esCarreras ? 'Mis carreras guardadas' : 'Mis instituciones guardadas',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: context.colors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          '$cantidad $sustantivo',
+          style: TextStyle(
+            fontSize: 13,
+            color: context.colors.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Estado vacio de una pestana en concreto. Es distinto del vacio global:
+  /// el usuario tiene favoritos, solo que de la otra categoria.
+  Widget _buildVacioPestana() {
+    final esCarreras = _filtro == _FiltroFavoritos.carreras;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              esCarreras
+                  ? Icons.menu_book_outlined
+                  : Icons.account_balance_outlined,
+              size: 48,
+              color: context.colors.iconNormal,
+            ),
+            const SizedBox(height: 14),
+            Text(
+              esCarreras
+                  ? 'No guardaste carreras'
+                  : 'No guardaste instituciones',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                color: context.colors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              esCarreras
+                  ? 'Tocá el corazón en una carrera y va a aparecer en esta pestaña.'
+                  : 'Tocá el corazón en una institución y va a aparecer en esta pestaña.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: context.colors.textSecondary,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildListaFavoritos(
     List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
   ) {
+    _asegurarPestanaInicial(docs);
+
+    // Se filtra sobre los documentos crudos, no sobre los items resueltos: el
+    // tipo de favorito ya esta en el propio documento, asi que cambiar de
+    // pestana no obliga a volver a leer de Firestore lo de la otra categoria.
+    final esInstituciones = _filtro == _FiltroFavoritos.instituciones;
+    final docsFiltrados =
+        docs.where((d) => _esDocInstitucion(d) == esInstituciones).toList();
+
     return FutureBuilder<List<_FavoritoItem>>(
-      future: _resolverFavoritos(docs),
+      future: _resolverFavoritos(docsFiltrados),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        final items = snapshot.data ?? [];
-        if (items.isEmpty) {
-          return _buildVacio();
-        }
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            // Resiliencia: si este favorito no se pudo resolver (sin oferta
-            // ni institución), se omite el card en lugar de romper la lista.
-            if (item.oferta == null && item.institucion == null) {
-              return const SizedBox.shrink();
-            }
-            return _cardFavorito(item);
-          },
+        // Los que no se pudieron resolver (ni oferta ni institucion) se
+        // descartan aca para que el conteo y el itemCount coincidan con las
+        // tarjetas que se ven.
+        final items = (snapshot.data ?? const <_FavoritoItem>[])
+            .where((i) => i.oferta != null || i.institucion != null)
+            .toList();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: _buildFiltro(),
+            ),
+            if (items.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                child: _buildResumen(items.length),
+              ),
+            Expanded(
+              child: items.isEmpty
+                  ? _buildVacioPestana()
+                  : ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      itemCount: items.length,
+                      itemBuilder: (context, index) => _cardFavorito(items[index]),
+                    ),
+            ),
+          ],
         );
       },
     );

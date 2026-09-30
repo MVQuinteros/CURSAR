@@ -4,6 +4,7 @@ import '../models/institucion_model.dart';
 import '../services/ubicacion_service.dart';
 import '../services/filtro_zonas.dart';
 import '../theme/app_theme.dart';
+import '../widgets/favorito_institucion_boton.dart';
 import '../widgets/institucion_imagen.dart';
 
 class ExploreInstitucionesScreen extends StatefulWidget {
@@ -33,6 +34,7 @@ class _ExploreInstitucionesScreenState extends State<ExploreInstitucionesScreen>
   Future<List<_InstDist>> _cargarLista() async {
     final snap = await FirebaseFirestore.instance
         .collection('instituciones')
+        .where('nombre', isGreaterThan: '')
         .get();
     final todas = snap.docs
         .map((doc) => InstitucionModel.fromMap(doc.id, doc.data()))
@@ -214,6 +216,7 @@ class _ExploreInstitucionesScreenState extends State<ExploreInstitucionesScreen>
               ),
             ),
             const SizedBox(width: 4),
+            FavoritoInstitucionBoton(institucionUid: inst.institucionUid),
             Icon(
               Icons.chevron_right,
               color: context.colors.iconNormal,

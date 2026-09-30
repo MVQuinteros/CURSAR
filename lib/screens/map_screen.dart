@@ -44,8 +44,13 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _cargarDatos() async {
-    final snapshot =
-        await FirebaseFirestore.instance.collection('instituciones').get();
+    // Source.server: esta pantalla lee una sola vez y no se suscribe a cambios,
+    // asi que no tiene forma de corregir sola una lectura vieja. Sin esto, un
+    // cache local desactualizado la deja mostrando datos que ya cambiaron.
+    final snapshot = await FirebaseFirestore.instance
+        .collection('instituciones')
+        .where('nombre', isGreaterThan: '')
+        .get(const GetOptions(source: Source.server));
 
     final todas = snapshot.docs
         .map((doc) => InstitucionModel.fromMap(doc.id, doc.data()))
@@ -65,6 +70,11 @@ class _MapScreenState extends State<MapScreen> {
         _loading = false;
       });
     }
+
+    debugPrint('[MAPA] docs=${snapshot.docs.length} '
+        'postFiltro=${instituciones.length} '
+        'conCoordenadas=${_conDistancia.length} '
+        'marcadores=${_visibles.length}');
   }
 
   List<_InstDist> _calcularDistancias(

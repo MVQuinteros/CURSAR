@@ -6,11 +6,11 @@ class AvisoService {
       FirebaseFirestore.instance.collection('avisos');
 
   Stream<QuerySnapshot> avisosStream() {
-    return _avisos.snapshots();
+    return _avisos.where('titulo', isGreaterThan: '').snapshots();
   }
 
   Future<List<AvisoModel>> obtenerAvisos() async {
-    final snapshot = await _avisos.get();
+    final snapshot = await _avisos.where('titulo', isGreaterThan: '').get();
     return snapshot.docs
         .map((doc) =>
             AvisoModel.fromMap(doc.id, doc.data() as Map<String, dynamic>))

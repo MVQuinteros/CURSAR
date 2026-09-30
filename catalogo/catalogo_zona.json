@@ -3,7 +3,9 @@
     "Catálogo de educación superior de San Miguel, Malvinas Argentinas y José C. Paz.",
     "Solo se cargan carreras confirmadas. Lo que no se pudo verificar no se cargó.",
     "reemplazarOfertas: borra las ofertas previas de esa institución antes de cargar.",
-    "Duración 0 = no confirmada, la app no la muestra."
+    "Duración 0 = no confirmada, la app no la muestra.",
+    "Lote 2026-09-30: se agregaron Modelo de Bella Vista, Británico, Paramédico y San José de Muñiz. Van sin logo ni foto de campus todavía.",
+    "La Escuela de Guardavidas del Instituto Modelo se cargó con nivel \"Curso\", que no estaba en el vocabulario."
   ],
   "instituciones": [
     {
@@ -1931,6 +1933,232 @@
       "fotoCampus": "",
       "estado": "aprobada",
       "logoContained": true
+    },
+    {
+      "id": "modelo_bellavista",
+      "nombre": "Instituto Superior Modelo de Bella Vista",
+      "descripcion": "Instituto superior de Bella Vista, partido de San Miguel. Su oferta de nivel superior se orienta a la formación docente en educación física y a la capacitación de guardavidas.",
+      "direccion": "Av. Santa Fe 1226",
+      "ciudad": "Bella Vista, San Miguel",
+      "provincia": "Buenos Aires",
+      "telefono": "",
+      "email": "",
+      "sitioWeb": "",
+      "logoAsset": "assets/imagenes/instituciones/modelo_bellavista.png",
+      "reemplazarOfertas": true,
+      "ofertas": [
+        {
+          "nombre": "Profesorado de Educación Física",
+          "area": "Educación",
+          "nivel": "Profesorado",
+          "duracionAnios": 4,
+          "modalidad": "",
+          "requisitos": "Título secundario completo.",
+          "descripcion": "",
+          "salidaLaboral": "",
+          "tag": ""
+        },
+        {
+          "nombre": "Escuela de Guardavidas",
+          "area": "Salud",
+          "nivel": "Curso",
+          "duracionAnios": 1,
+          "modalidad": "",
+          "requisitos": "Título secundario completo.",
+          "descripcion": "",
+          "salidaLaboral": "",
+          "tag": ""
+        }
+      ],
+      "logoURL": "",
+      "fotoCampus": "",
+      "estado": "aprobada"
+    },
+    {
+      "id": "britanico_sanmiguel",
+      "nombre": "Instituto Superior Cultural Británico",
+      "descripcion": "Instituto superior de San Miguel dedicado a la enseñanza del inglés. Su carrera de nivel superior es el Profesorado de Inglés; además ofrece cursos de inglés para niños, adolescentes y adultos y preparación para exámenes Cambridge, que no son carreras terciarias.",
+      "direccion": "Maestro Ángel D'Elía 1564/1566",
+      "ciudad": "San Miguel",
+      "provincia": "Buenos Aires",
+      "telefono": "",
+      "email": "",
+      "sitioWeb": "",
+      "logoAsset": "assets/imagenes/instituciones/britanico.jpg",
+      "reemplazarOfertas": true,
+      "ofertas": [
+        {
+          "nombre": "Profesorado de Inglés",
+          "area": "Educación",
+          "nivel": "Profesorado",
+          "duracionAnios": 4,
+          "modalidad": "Presencial",
+          "requisitos": "Título secundario completo.",
+          "descripcion": "",
+          "salidaLaboral": "",
+          "tag": ""
+        }
+      ],
+      "logoURL": "",
+      "fotoCampus": "",
+      "estado": "aprobada"
+    },
+    {
+      "id": "paramedico_sanmiguel",
+      "nombre": "Instituto Superior Paramédico",
+      "descripcion": "Instituto superior de San Miguel dedicado a las profesiones de la salud. Su catálogo actual son nueve tecnicaturas superiores: radiología, laboratorio de análisis clínicos, enfermería, instrumentación quirúrgica, logística, acompañamiento terapéutico, higiene y seguridad laboral, prótesis dental y emergencias de salud.",
+      "direccion": "Av. Pte. J. D. Perón 1823/25",
+      "ciudad": "San Miguel",
+      "provincia": "Buenos Aires",
+      "telefono": "",
+      "email": "",
+      "sitioWeb": "",
+      "logoAsset": "assets/imagenes/instituciones/paramedico.jpg",
+      "reemplazarOfertas": true,
+      "ofertas": [
+        {
+          "nombre": "Tecnicatura Superior en Salud con Especialidad en Radiología",
+          "area": "Salud",
+          "nivel": "Tecnicatura Superior",
+          "duracionAnios": 0,
+          "modalidad": "",
+          "requisitos": "Título secundario completo.",
+          "descripcion": "",
+          "salidaLaboral": "",
+          "tag": ""
+        },
+        {
+          "nombre": "Tecnicatura Superior en Logística",
+          "area": "Salud",
+          "nivel": "Tecnicatura Superior",
+          "duracionAnios": 0,
+          "modalidad": "",
+          "requisitos": "Título secundario completo.",
+          "descripcion": "",
+          "salidaLaboral": "",
+          "tag": ""
+        },
+        {
+          "nombre": "Tecnicatura Superior en Acompañamiento Terapéutico",
+          "area": "Salud",
+          "nivel": "Tecnicatura Superior",
+          "duracionAnios": 0,
+          "modalidad": "",
+          "requisitos": "Título secundario completo.",
+          "descripcion": "",
+          "salidaLaboral": "",
+          "tag": ""
+        },
+        {
+          "nombre": "Tecnicatura Superior en Higiene, Seguridad y Ambiente Laboral",
+          "area": "Tecnología",
+          "nivel": "Tecnicatura Superior",
+          "duracionAnios": 0,
+          "modalidad": "",
+          "requisitos": "Título secundario completo.",
+          "descripcion": "",
+          "salidaLaboral": "",
+          "tag": ""
+        },
+        {
+          "nombre": "Tecnicatura Superior en Salud con Especialidad en Laboratorio de Análisis Clínicos",
+          "area": "Salud",
+          "nivel": "Tecnicatura Superior",
+          "duracionAnios": 0,
+          "modalidad": "",
+          "requisitos": "Título secundario completo.",
+          "descripcion": "",
+          "salidaLaboral": "",
+          "tag": ""
+        },
+        {
+          "nombre": "Tecnicatura Superior en Prótesis Dental",
+          "area": "Salud",
+          "nivel": "Tecnicatura Superior",
+          "duracionAnios": 0,
+          "modalidad": "",
+          "requisitos": "Título secundario completo.",
+          "descripcion": "",
+          "salidaLaboral": "",
+          "tag": ""
+        },
+        {
+          "nombre": "Tecnicatura Superior en Emergencias de Salud",
+          "area": "Salud",
+          "nivel": "Tecnicatura Superior",
+          "duracionAnios": 0,
+          "modalidad": "",
+          "requisitos": "Título secundario completo.",
+          "descripcion": "",
+          "salidaLaboral": "",
+          "tag": ""
+        },
+        {
+          "nombre": "Tecnicatura Superior en Salud con Especialidad en Enfermería",
+          "area": "Salud",
+          "nivel": "Tecnicatura Superior",
+          "duracionAnios": 0,
+          "modalidad": "",
+          "requisitos": "Título secundario completo.",
+          "descripcion": "",
+          "salidaLaboral": "",
+          "tag": ""
+        },
+        {
+          "nombre": "Tecnicatura Superior en Salud con Especialidad en Instrumentación Quirúrgica",
+          "area": "Salud",
+          "nivel": "Tecnicatura Superior",
+          "duracionAnios": 0,
+          "modalidad": "",
+          "requisitos": "Título secundario completo.",
+          "descripcion": "",
+          "salidaLaboral": "",
+          "tag": ""
+        }
+      ],
+      "logoURL": "",
+      "fotoCampus": "",
+      "estado": "aprobada"
+    },
+    {
+      "id": "sanjose_muniz",
+      "nombre": "Instituto San José",
+      "descripcion": "Instituto San José de Muñiz, partido de San Miguel, con nivel terciario. Su oferta de nivel superior son dos profesorados de educación. Es el de Muñiz: hay otros institutos con el mismo nombre en el país que ofrecen carreras distintas.",
+      "direccion": "Av. Pte. Juan D. Perón 734",
+      "ciudad": "Muñiz, San Miguel",
+      "provincia": "Buenos Aires",
+      "telefono": "",
+      "email": "",
+      "sitioWeb": "",
+      "logoAsset": "assets/imagenes/instituciones/sanjose_muniz.jpg",
+      "reemplazarOfertas": true,
+      "ofertas": [
+        {
+          "nombre": "Profesorado de Educación Inicial",
+          "area": "Educación",
+          "nivel": "Profesorado",
+          "duracionAnios": 0,
+          "modalidad": "",
+          "requisitos": "Título secundario completo.",
+          "descripcion": "",
+          "salidaLaboral": "",
+          "tag": ""
+        },
+        {
+          "nombre": "Profesorado de Educación Primaria",
+          "area": "Educación",
+          "nivel": "Profesorado",
+          "duracionAnios": 0,
+          "modalidad": "",
+          "requisitos": "Título secundario completo.",
+          "descripcion": "",
+          "salidaLaboral": "",
+          "tag": ""
+        }
+      ],
+      "logoURL": "",
+      "fotoCampus": "",
+      "estado": "aprobada"
     }
   ]
 }

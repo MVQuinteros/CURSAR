@@ -222,10 +222,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          _formatearFechaAviso(aviso.publicado),
+                          aviso.destacado
+                              ? 'Destacado'
+                              : _formatearFechaAviso(aviso.publicado),
                           style: TextStyle(
-                            color: context.colors.textSecondary,
+                            color: aviso.destacado
+                                ? context.colors.accentPrimary
+                                : context.colors.textSecondary,
                             fontSize: 11,
+                            fontWeight: aviso.destacado
+                                ? FontWeight.w600
+                                : FontWeight.normal,
                           ),
                         ),
                       ],
@@ -240,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: context.colors.textSecondary,
                   fontSize: 12,
                 ),
-                maxLines: 2,
+                maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
             ],
@@ -254,6 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_institucionesCache != null) return _institucionesCache!;
     final snapshot = await FirebaseFirestore.instance
         .collection('instituciones')
+        .where('nombre', isGreaterThan: '')
         .get();
     final todas = snapshot.docs
         .map((doc) => InstitucionModel.fromMap(doc.id, doc.data()))
@@ -301,6 +309,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return Icons.celebration;
       case 'test':
         return Icons.school;
+      case 'perfil':
+        return Icons.manage_accounts_outlined;
       default:
         return Icons.notifications;
     }
@@ -316,6 +326,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return const Color(0xFFF9A825);
       case 'bienvenida':
         return const Color(0xFF6A1B9A);
+      case 'perfil':
+        return const Color(0xFF00897B);
       default:
         return context.colors.accentPrimary;
     }
@@ -458,20 +470,26 @@ class _HomeScreenState extends State<HomeScreen> {
                           if (docs.isEmpty) {
                             return const SizedBox.shrink();
                           }
-                          final avisos =
-                              docs
-                                  .map(
-                                    (doc) => AvisoModel.fromMap(
-                                      doc.id,
-                                      doc.data() as Map<String, dynamic>,
-                                    ),
-                                  )
-                                  .toList()
-                                ..sort((a, b) {
-                                  final aDate = a.publicado ?? DateTime(0);
-                                  final bDate = b.publicado ?? DateTime(0);
-                                  return bDate.compareTo(aDate);
-                                });
+                          final avisos = <AvisoModel>[];
+                          for (final doc in docs) {
+                            final data = doc.data();
+                            if (data is! Map<String, dynamic>) continue;
+                            final titulo = data['titulo'];
+                            if (titulo is! String || titulo.trim().isEmpty) {
+                              continue;
+                            }
+                            try {
+                              avisos.add(AvisoModel.fromMap(doc.id, data));
+                            } catch (e) {
+                              debugPrint('Aviso mal formado omitido '
+                                  '(${doc.id}): $e');
+                            }
+                          }
+                          avisos.sort((a, b) {
+                            final aDate = a.publicado ?? DateTime(0);
+                            final bDate = b.publicado ?? DateTime(0);
+                            return bDate.compareTo(aDate);
+                          });
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
