@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../models/test_vocacional_model.dart';
+import '../services/ia_vocacional_service.dart';
 import '../services/test_service.dart';
 import '../theme/app_theme.dart';
 
@@ -12,9 +16,19 @@ class TestVocacionalScreen extends StatefulWidget {
 
 class _OpcionTest {
   final String texto;
-  final IconData icono;
 
-  const _OpcionTest(this.texto, this.icono);
+  /// Area a la que suma esta opcion. La decide la IA (o el respaldo), no la
+  /// posicion en la lista.
+  final AreaInteres area;
+
+  const _OpcionTest(this.texto, this.area);
+
+  /// Slot 0..3 que espera TestService.calcularResultado / obtenerConteoAreas.
+  /// Coincide con el orden del enum AreaInteres (tecnologia, salud, educacion,
+  /// creativa). Si alguien reordena ese enum, el puntaje se rompe en silencio.
+  int get slot => area.index;
+
+  IconData get icono => area.icono;
 }
 
 class _PreguntaTest {
@@ -29,63 +43,67 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
   static const Color _azulGradienteFin = Color(0xFF58B2FF);
 
   final TestService _testService = TestService();
+  final IaVocacionalService _iaService = IaVocacionalService();
 
-  final List<_PreguntaTest> _preguntas = [
+  /// Preguntas de respaldo: se usan si Gemini falla, tarda demasiado o
+  /// devuelve un JSON que no pasa la validacion. El orden de las opciones ya
+  /// es tecnologia, salud, educacion, creativa (una por area).
+  static const List<_PreguntaTest> _preguntasRespaldo = [
     _PreguntaTest(
       '¿Qué actividad disfrutás más hacer en tu tiempo libre?',
-      const [
+      [
         _OpcionTest(
           'Resolver problemas lógicos o usar la tecnología',
-          Icons.computer,
+          AreaInteres.tecnologia,
         ),
         _OpcionTest(
           'Ayudar a otras personas o cuidar su bienestar',
-          Icons.favorite,
+          AreaInteres.salud,
         ),
         _OpcionTest(
           'Enseñar, explicar o liderar equipos',
-          Icons.people,
+          AreaInteres.educacion,
         ),
         _OpcionTest(
           'Crear contenidos, diseñar o expresarme',
-          Icons.palette,
+          AreaInteres.creativa,
         ),
       ],
     ),
     _PreguntaTest(
       '¿Qué materia preferías en la escuela?',
-      const [
-        _OpcionTest('Matemática o computación', Icons.calculate),
-        _OpcionTest('Biología o salud', Icons.biotech),
-        _OpcionTest('Historia o ciudadanía', Icons.history_edu),
-        _OpcionTest('Arte o literatura', Icons.palette),
+      [
+        _OpcionTest('Matemática o computación', AreaInteres.tecnologia),
+        _OpcionTest('Biología o salud', AreaInteres.salud),
+        _OpcionTest('Historia o ciudadanía', AreaInteres.educacion),
+        _OpcionTest('Arte o literatura', AreaInteres.creativa),
       ],
     ),
     _PreguntaTest(
       '¿Cómo te imaginás tu trabajo ideal?',
-      const [
-        _OpcionTest('Resolviendo problemas técnicos', Icons.terminal),
-        _OpcionTest('Ayudando a las personas', Icons.volunteer_activism),
-        _OpcionTest('Dirigiendo un equipo', Icons.groups),
-        _OpcionTest('Creando algo original', Icons.brush),
+      [
+        _OpcionTest('Resolviendo problemas técnicos', AreaInteres.tecnologia),
+        _OpcionTest('Ayudando a las personas', AreaInteres.salud),
+        _OpcionTest('Dirigiendo un equipo', AreaInteres.educacion),
+        _OpcionTest('Creando algo original', AreaInteres.creativa),
       ],
     ),
     _PreguntaTest(
       '¿Qué tarea te resulta más natural?',
-      const [
-        _OpcionTest('Analizar datos o armar sistemas', Icons.analytics),
-        _OpcionTest('Escuchar y contener a otros', Icons.favorite),
-        _OpcionTest('Explicar y organizar', Icons.school),
-        _OpcionTest('Dibujar, escribir o filmar', Icons.edit),
+      [
+        _OpcionTest('Analizar datos o armar sistemas', AreaInteres.tecnologia),
+        _OpcionTest('Escuchar y contener a otros', AreaInteres.salud),
+        _OpcionTest('Explicar y organizar', AreaInteres.educacion),
+        _OpcionTest('Dibujar, escribir o filmar', AreaInteres.creativa),
       ],
     ),
     _PreguntaTest(
       '¿En qué situación rendís mejor?',
-      const [
-        _OpcionTest('Con un desafío lógico', Icons.extension),
-        _OpcionTest('Ayudando a alguien en apuros', Icons.volunteer_activism),
-        _OpcionTest('Coordinando un grupo', Icons.groups),
-        _OpcionTest('Con un proyecto creativo', Icons.design_services),
+      [
+        _OpcionTest('Con un desafío lógico', AreaInteres.tecnologia),
+        _OpcionTest('Ayudando a alguien en apuros', AreaInteres.salud),
+        _OpcionTest('Coordinando un grupo', AreaInteres.educacion),
+        _OpcionTest('Con un proyecto creativo', AreaInteres.creativa),
       ],
     ),
   ];
@@ -93,12 +111,96 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
   int _indiceActual = 0;
   bool _guardando = false;
 
-  late final List<int?> _selecciones =
-      List<int?>.filled(_preguntas.length, null);
+  /// Mientras es true se muestra "Generando tu test personalizado...".
+  bool _generandoTest = true;
 
-  void _seleccionarOpcion(int indexOpcion) {
+  List<_PreguntaTest> _preguntas = [];
+  List<int?> _selecciones = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarPreguntas();
+  }
+
+  /// Pide las 5 preguntas a Gemini y, si algo falla, usa el respaldo.
+  ///
+  /// Nunca deja la pantalla sin preguntas: el test siempre se puede hacer.
+  Future<void> _cargarPreguntas() async {
+    List<_PreguntaTest>? generadas;
+    try {
+      final crudo = await _iaService.generarPreguntasTest();
+      if (crudo != null) generadas = _parsearPreguntas(crudo);
+    } catch (e) {
+      debugPrint('[TEST IA] No se pudieron generar las preguntas: $e');
+    }
+
+    final preguntas = generadas ?? _preguntasRespaldo;
+    if (!mounted) return;
     setState(() {
-      _selecciones[_indiceActual] = indexOpcion;
+      _preguntas = preguntas;
+      _selecciones = List<int?>.filled(preguntas.length, null);
+      _indiceActual = 0;
+      _generandoTest = false;
+    });
+  }
+
+  /// Convierte la clave de area que devuelve la IA en el enum de la app.
+  AreaInteres? _areaDesdeClave(String? clave) {
+    switch (clave?.trim().toLowerCase()) {
+      case 'tecnologia':
+        return AreaInteres.tecnologia;
+      case 'salud':
+        return AreaInteres.salud;
+      case 'educacion':
+        return AreaInteres.educacion;
+      case 'creativa':
+        return AreaInteres.creativa;
+      default:
+        return null;
+    }
+  }
+
+  /// Parsea y valida el JSON de Gemini. Devuelve `null` si no cumple el
+  /// contrato (5 preguntas, 4 opciones, las 4 areas distintas en cada una).
+  List<_PreguntaTest>? _parsearPreguntas(String crudo) {
+    try {
+      final dynamic datos = jsonDecode(crudo);
+      if (datos is! List || datos.length != 5) return null;
+
+      final preguntas = <_PreguntaTest>[];
+      for (final item in datos) {
+        if (item is! Map) return null;
+        final texto = item['texto']?.toString().trim() ?? '';
+        final crudas = item['opciones'];
+        if (texto.isEmpty || crudas is! List || crudas.length != 4) {
+          return null;
+        }
+
+        final opciones = <_OpcionTest>[];
+        final areasVistas = <AreaInteres>{};
+        for (final o in crudas) {
+          if (o is! Map) return null;
+          final textoOpcion = o['texto']?.toString().trim() ?? '';
+          final area = _areaDesdeClave(o['area']?.toString());
+          // Texto vacio, area desconocida o area repetida: JSON invalido.
+          if (textoOpcion.isEmpty || area == null || !areasVistas.add(area)) {
+            return null;
+          }
+          opciones.add(_OpcionTest(textoOpcion, area));
+        }
+        preguntas.add(_PreguntaTest(texto, opciones));
+      }
+      return preguntas;
+    } catch (e) {
+      debugPrint('[TEST IA] JSON de preguntas invalido: $e');
+      return null;
+    }
+  }
+
+  void _seleccionarOpcion(int slot) {
+    setState(() {
+      _selecciones[_indiceActual] = slot;
     });
   }
 
@@ -131,6 +233,24 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
     }
   }
 
+  /// Arma los pares "pregunta -> opcion elegida" para mandarle a la IA.
+  ///
+  /// `_selecciones` guarda el slot del area (0..3), no la posicion de la
+  /// opcion, asi que hay que buscar cual opcion corresponde a ese slot.
+  List<String> _respuestasTexto() {
+    final lista = <String>[];
+    for (var i = 0; i < _preguntas.length; i++) {
+      final slot = _selecciones[i];
+      if (slot == null) continue;
+      final opcion = _preguntas[i].opciones.firstWhere(
+            (o) => o.slot == slot,
+            orElse: () => _preguntas[i].opciones.first,
+          );
+      lista.add('${_preguntas[i].texto} -> ${opcion.texto}');
+    }
+    return lista;
+  }
+
   Future<void> _finalizarTest() async {
     setState(() => _guardando = true);
 
@@ -158,6 +278,27 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
         ofertasRecomendadas: ofertasIds,
       );
 
+      // Ofertas reales del area para "anclar" la respuesta de la IA: se le
+      // pasan formateadas (con el nombre real de la institucion y su ciudad)
+      // para que recomiende cosas que existen en la app y no invente.
+      final ofertasLocales = await _testService.formatearParaIA(ofertas);
+
+      // La IA va aparte a proposito: si falla, el test igual llega a
+      // resultados, solo que sin el perfil personalizado.
+      String? perfilIa;
+      try {
+        perfilIa = await _iaService.generarPerfil(
+          respuestas: _respuestasTexto(),
+          areaPrincipal: areaInteres.nombre,
+          aciertosArea:
+              _testService.obtenerConteoAreas(_selecciones)[areaInteres] ?? 0,
+          totalRespuestas: _selecciones.where((s) => s != null).length,
+          ofertasLocales: ofertasLocales,
+        );
+      } catch (e) {
+        debugPrint('[TEST IA] No se pudo generar el perfil: $e');
+      }
+
       if (mounted) {
         Navigator.pushReplacementNamed(
           context,
@@ -165,6 +306,7 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
           arguments: {
             'areaInteres': areaInteres,
             'selecciones': _selecciones,
+            'perfilIa': perfilIa,
           },
         );
       }
@@ -196,6 +338,24 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Mientras se espera el test de la IA, se reemplaza toda la pantalla por
+    // el indicador.
+    if (_generandoTest) {
+      return _buildPantallaCarga(
+        'Generando tu test personalizado...',
+        'Estamos armando 5 preguntas para vos.',
+      );
+    }
+
+    // Mientras se guarda y se le pide el perfil a la IA, se reemplaza toda la
+    // pantalla por el indicador: evita que se toquen opciones a mitad de camino.
+    if (_guardando) {
+      return _buildPantallaCarga(
+        'Analizando tu perfil...',
+        'Estamos generando una recomendación personalizada para vos.',
+      );
+    }
+
     final pregunta = _preguntas[_indiceActual];
     final seleccion = _selecciones[_indiceActual];
     final esUltima = _indiceActual == _preguntas.length - 1;
@@ -265,6 +425,57 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
             label: 'Perfil',
           ),
         ],
+      ),
+    );
+  }
+
+  /// Pantalla completa de carga: se usa mientras Gemini arma el test o el
+  /// perfil. Sin barra de navegacion a proposito: no conviene que el usuario
+  /// se vaya a mitad del proceso.
+  Widget _buildPantallaCarga(String titulo, String subtitulo) {
+    return Scaffold(
+      backgroundColor: context.colors.bgMain,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: 1),
+            duration: const Duration(milliseconds: 450),
+            builder: (context, valor, child) => Opacity(
+              opacity: valor,
+              child: Transform.scale(scale: 0.9 + 0.1 * valor, child: child),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  width: 72,
+                  height: 72,
+                  child: CircularProgressIndicator(strokeWidth: 5),
+                ),
+                const SizedBox(height: 28),
+                Text(
+                  titulo,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  subtitulo,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: context.colors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -374,11 +585,11 @@ class _TestVocacionalScreenState extends State<TestVocacionalScreen> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          for (var i = 0; i < pregunta.opciones.length; i++) ...[
+          for (final opcion in pregunta.opciones) ...[
             _buildOpcion(
-              pregunta.opciones[i],
-              seleccion == i,
-              () => _seleccionarOpcion(i),
+              opcion,
+              seleccion == opcion.slot,
+              () => _seleccionarOpcion(opcion.slot),
             ),
           ],
         ],

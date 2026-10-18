@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/test_vocacional_model.dart';
 import '../models/oferta_model.dart';
+import '../models/institucion_model.dart';
+import 'filtro_zonas.dart';
 
 class TestService {
   CollectionReference _testRef(String subcol) =>
@@ -129,6 +131,77 @@ class TestService {
     return snapshot.docs
         .map((doc) => OfertaModel.fromMap(doc.id, doc.data()))
         .toList();
+  }
+
+  /// Arma las ofertas para que la IA las use como unica fuente (grounding).
+  ///
+  /// Se resuelve el NOMBRE real de la institucion y su ciudad: `OfertaModel`
+  /// solo trae `institucionUid`, y si se le manda ese uid opaco el modelo
+  /// termina inventando el lugar donde se estudia. El texto que devuelve este
+  /// metodo es el MISMO que va al `enum` del schema del perfil, asi que lo que
+  /// responde el modelo se puede mapear 1 a 1 contra la base.
+  Future<List<String>> formatearParaIA(
+    List<OfertaModel> ofertas, {
+    int limite = 15,
+  }) async {
+    if (ofertas.isEmpty) return const [];
+
+    final instituciones = await _institucionesPorUid();
+    final seleccionadas = ofertas.take(limite).toList();
+
+    // Las del area de influencia primero: el modelo tiende a elegirlas sin que
+    // el prompt nombre ninguna institucion (nombrarlas es lo que antes lo
+    // llevaba a inventar universidades "tipicas" del conurbano).
+    seleccionadas.sort((a, b) {
+      final ia = instituciones[a.institucionUid];
+      final ib = instituciones[b.institucionUid];
+      final za = ia != null && FiltroZonas.esDeZonaObjetivo(ia);
+      final zb = ib != null && FiltroZonas.esDeZonaObjetivo(ib);
+      if (za == zb) return 0;
+      return za ? -1 : 1;
+    });
+
+    // Deduplicado: el `enum` del schema no admite valores repetidos.
+    final labels = <String>[];
+    for (final o in seleccionadas) {
+      final inst = instituciones[o.institucionUid];
+      final nombre = (inst?.nombre ?? '').trim();
+      final ciudad = (inst?.ciudad ?? '').trim();
+      final label = nombre.isEmpty
+          ? o.nombre
+          : '${o.nombre} — $nombre${ciudad.isEmpty ? '' : ' ($ciudad)'}';
+      if (!labels.contains(label)) labels.add(label);
+    }
+    return labels;
+  }
+
+  /// Mapa uid -> nombre real de la institucion, para poder mostrar el nombre
+  /// en la UI en lugar del uid. Sólo resuelve los uids que se le piden.
+  Future<Map<String, String>> nombresDeInstituciones(
+    Iterable<String> uids,
+  ) async {
+    final pedidos =
+        uids.map((u) => u.trim()).where((u) => u.isNotEmpty).toSet();
+    if (pedidos.isEmpty) return const {};
+
+    final instituciones = await _institucionesPorUid();
+    final nombres = <String, String>{};
+    for (final uid in pedidos) {
+      final nombre = (instituciones[uid]?.nombre ?? '').trim();
+      if (nombre.isNotEmpty) nombres[uid] = nombre;
+    }
+    return nombres;
+  }
+
+  /// Mapa uid -> institucion. Se traen todas de una (son pocas) para no topar
+  /// con el limite de 10 valores de `whereIn`.
+  Future<Map<String, InstitucionModel>> _institucionesPorUid() async {
+    final snapshot =
+        await FirebaseFirestore.instance.collection('instituciones').get();
+    return {
+      for (final doc in snapshot.docs)
+        doc.id: InstitucionModel.fromMap(doc.id, doc.data()),
+    };
   }
 
   Future<void> guardarResultadoCompleto({

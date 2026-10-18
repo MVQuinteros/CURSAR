@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import '../services/google_auth_service.dart';
 import '../theme/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,6 +13,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
+  bool _cargandoGoogle = false;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -77,20 +78,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _loginWithGoogle() async {
+    if (_cargandoGoogle) return;
+    setState(() => _cargandoGoogle = true);
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn.instance;
-      try {
-        await googleSignIn.initialize(
-          serverClientId:
-              '642247955799-3k5f6fdlk5n53u64a8cop90puql0q9h0.apps.googleusercontent.com',
-        );
-      } catch (_) {}
-      final GoogleSignInAccount googleUser = await googleSignIn.authenticate();
-      final credential = GoogleAuthProvider.credential(
-        idToken: googleUser.authentication.idToken,
-      );
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      final user = FirebaseAuth.instance.currentUser;
+      final credential = await GoogleAuthService.instance.iniciarSesion();
+      final user = credential.user;
       if (user != null) {
         final doc = await FirebaseFirestore.instance
             .collection('usuarios')
@@ -113,9 +105,21 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/home');
       }
+    } on GoogleAuthException catch (e) {
+      _mostrarError(e.mensaje, cancelado: e.cancelado);
     } catch (e) {
-      debugPrint("Error: $e");
+      debugPrint('Error de Google: $e');
+      _mostrarError('No se pudo iniciar sesión con Google. Intentá de nuevo.');
+    } finally {
+      if (mounted) setState(() => _cargandoGoogle = false);
     }
+  }
+
+  void _mostrarError(String mensaje, {bool cancelado = false}) {
+    if (!mounted || cancelado) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(mensaje)),
+    );
   }
 
   @override
@@ -319,7 +323,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                   const SizedBox(height: 24),
                                   OutlinedButton(
-                                    onPressed: _loginWithGoogle,
+                                    onPressed:
+                                        _cargandoGoogle ? null : _loginWithGoogle,
                                     style: OutlinedButton.styleFrom(
                                       backgroundColor: context.colors.bgSurface,
                                       foregroundColor: context.colors.textPrimary,
@@ -337,12 +342,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        const Image(
-                                          image: AssetImage(
-                                            'assets/imagenes/logoGoogle.png',
+                                        if (_cargandoGoogle)
+                                          SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: context.colors.textPrimary,
+                                            ),
+                                          )
+                                        else
+                                          const Image(
+                                            image: AssetImage(
+                                              'assets/imagenes/logoGoogle.png',
+                                            ),
+                                            height: 24,
                                           ),
-                                          height: 24,
-                                        ),
                                         const SizedBox(width: 12),
                                         Text(
                                           'Continuar con Google',

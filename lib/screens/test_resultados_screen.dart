@@ -18,6 +18,8 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
   List<int?> _selecciones = [];
   Map<AreaInteres, int> _conteoAreas = {};
   List<OfertaModel> _ofertasRecomendadas = [];
+  Map<String, String> _nombresInstituciones = {};
+  String? _perfilIa;
   bool _cargando = true;
 
   @override
@@ -28,6 +30,7 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
       if (args is Map<String, dynamic>) {
         _areaInteres = args['areaInteres'] as AreaInteres;
         _selecciones = args['selecciones'] as List<int?>;
+        _perfilIa = args['perfilIa'] as String?;
       }
       _cargarResultados();
     }
@@ -39,6 +42,10 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
     try {
       _conteoAreas = _testService.obtenerConteoAreas(_selecciones);
       _ofertasRecomendadas = await _testService.obtenerOfertasPorArea(_areaInteres!);
+      // Nombres reales de las instituciones, para no mostrar el uid en la UI.
+      _nombresInstituciones = await _testService.nombresDeInstituciones(
+        _ofertasRecomendadas.map((o) => o.institucionUid),
+      );
     } catch (e) {
       debugPrint('Error al cargar resultados: $e');
     } finally {
@@ -88,6 +95,10 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildTarjetaResultado(area, porcentaje),
+                  if (_perfilIa != null && _perfilIa!.trim().isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    _buildPerfilIa(),
+                  ],
                   const SizedBox(height: 24),
                   _buildDistribucion(),
                   const SizedBox(height: 24),
@@ -265,6 +276,83 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
     );
   }
 
+  /// Perfil vocacional generado por Gemini en el paso anterior del test.
+  /// Se renderiza como texto plano: los saltos de linea del prompt se respetan
+  /// partiendo la respuesta renglon por renglon.
+  Widget _buildPerfilIa() {
+    final lineas = _perfilIa!.trim().split('\n');
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.colors.bgSurface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: context.colors.borderSubtle),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.auto_awesome,
+                color: context.colors.accentPrimary,
+                size: 22,
+              ),
+              const SizedBox(width: 8),
+              const Expanded(
+                child: Text(
+                  'Tu perfil vocacional',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: context.colors.accentPrimary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              'Generado con IA',
+              style: TextStyle(
+                color: context.colors.accentPrimary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          ...lineas.map((linea) {
+            final texto = linea.trim();
+            if (texto.isEmpty) return const SizedBox(height: 6);
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(
+                texto,
+                style: TextStyle(
+                  color: context.colors.textPrimary,
+                  fontSize: 14.5,
+                  height: 1.45,
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
   Widget _buildDistribucion() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -404,6 +492,33 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
     );
   }
 
+  /// Abre la ficha de la institucion, mostrando esa oferta en particular.
+  ///
+  /// Si la oferta no trae institucion, avisa en vez de abrir una pantalla en
+  /// blanco: el detalle se carga a partir del uid de la institucion.
+  void _abrirInstitucion(OfertaModel oferta) {
+    final uid = oferta.institucionUid.trim();
+    if (uid.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Esta oferta no tiene una institución asociada'),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    Navigator.pushNamed(
+      context,
+      '/institucion',
+      arguments: {
+        'institucionUid': uid,
+        'ofertaId': oferta.ofertaId,
+      },
+    );
+  }
+
   Widget _buildTarjetaOferta(OfertaModel oferta) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -439,7 +554,8 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
                     const SizedBox(height: 4),
                     Text(
                       [
-                        oferta.institucionUid.toUpperCase(),
+                        _nombresInstituciones[oferta.institucionUid] ??
+                            oferta.institucionUid.toUpperCase(),
                         if (oferta.nivel.trim().isNotEmpty) oferta.nivel,
                       ].join(' · '),
                       style: TextStyle(
@@ -497,9 +613,7 @@ class _TestResultadosScreenState extends State<TestResultadosScreen> {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/home');
-              },
+              onPressed: () => _abrirInstitucion(oferta),
               style: OutlinedButton.styleFrom(
                 foregroundColor: context.colors.accentPrimary,
                 side: BorderSide(color: context.colors.accentPrimary),

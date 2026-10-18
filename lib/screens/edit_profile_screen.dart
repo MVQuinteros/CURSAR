@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../services/foto_perfil_service.dart';
 import '../services/preferencias_service.dart';
 import '../services/theme_controller.dart';
 import '../theme/app_theme.dart';
@@ -33,6 +34,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _modoOscuro = false;
   bool _cargando = true;
   bool _guardando = false;
+  bool _tieneFoto = false;
+  bool _eliminandoFoto = false;
 
   @override
   void initState() {
@@ -59,6 +62,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _nombreController.text = datos['nombre']?.toString() ?? '';
         _apellidoController.text = datos['apellido']?.toString() ?? '';
         _email = datos['email']?.toString() ?? user.email ?? '';
+        final fotoFirestore = datos['fotoURL']?.toString() ?? '';
+        _tieneFoto = (user.photoURL?.isNotEmpty ?? false) ||
+            fotoFirestore.isNotEmpty;
         _localidadController.text = prefs.localidad;
         _radioBusqueda = prefs.radioBusqueda;
         _modalidad = _opcionesModalidad.contains(prefs.modalidad)
@@ -116,6 +122,73 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         setState(() => _guardando = false);
         _mensaje('Ocurrió un error al guardar: $e');
       }
+    }
+  }
+
+  Future<void> _eliminarFoto() async {
+    final confirmado = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Eliminar foto de perfil'),
+        content: const Text(
+          '¿Estás seguro de que querés eliminar tu foto de perfil?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+    if (confirmado != true) return;
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      _mensaje('No se pudo identificar al usuario');
+      return;
+    }
+
+    setState(() => _eliminandoFoto = true);
+    try {
+      // 1) Storage: borra profile_images/{uid}.jpg
+      await FotoPerfilService.eliminar(user.uid);
+
+      // 2) Firestore: quita el campo fotoURL del documento.
+      await FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(user.uid)
+          .set({'fotoURL': FieldValue.delete()}, SetOptions(merge: true));
+
+      // 3) Auth: limpia la foto del perfil.
+      await user.updatePhotoURL(null);
+
+      if (!mounted) return;
+      setState(() {
+        _tieneFoto = false;
+        _eliminandoFoto = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Foto de perfil eliminada'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e, st) {
+      debugPrint('[PERFIL] FALLO eliminando foto tipo=${e.runtimeType}  $e');
+      debugPrint('[PERFIL] stack: $st');
+      if (!mounted) return;
+      setState(() => _eliminandoFoto = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No se pudo eliminar la foto. Intentá de nuevo.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -190,6 +263,38 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 readOnly: true,
                 decoration: _decoration('Email', Icons.email_outlined),
               ),
+              if (_tieneFoto) ...[
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: _eliminandoFoto ? null : _eliminarFoto,
+                  icon: _eliminandoFoto
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.red,
+                          ),
+                        )
+                      : const Icon(Icons.delete_outline, color: Colors.red),
+                  label: Text(
+                    _eliminandoFoto
+                        ? 'Eliminando…'
+                        : 'Eliminar foto de perfil',
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.red),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 24),
               _seccionTitulo(context, 'Preferencias de búsqueda'),
               const SizedBox(height: 4),

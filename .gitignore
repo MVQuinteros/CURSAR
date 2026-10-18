@@ -1,3 +1,6 @@
+# Secretos locales (API key de Gemini). Ver .env.example para la plantilla.
+.env
+
 # Miscellaneous
 *.class
 

@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../models/preferencias_model.dart';
+import '../services/foto_perfil_service.dart';
 import '../theme/app_theme.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -23,6 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String _userName = '';
   String _userEmail = '';
+  String _fotoURL = '';
 
   static const Color _azulGradienteInicio = Color(0xFF1B74E4);
   static const Color _azulGradienteFin = Color(0xFF58B2FF);
@@ -65,16 +67,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         _userName = nombre;
         _userEmail = email;
+        _fotoURL = datos['fotoURL']?.toString() ?? '';
         _preferencias = PreferenciasModel.fromMap(datos);
       });
     } catch (e) {
       debugPrint('Error cargando datos del usuario: $e');
     }
   }
-
-  /// Bucket de Storage. Tiene que coincidir con "storage_bucket" de
-  /// android/app/google-services.json.
-  static const String _bucket = 'proyecto-app-a77c8.firebasestorage.app';
 
   /// Pide la URL de descarga reintentando.
   ///
@@ -97,11 +96,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<void> _pickImage() async {
-    // Solo se libera la previsualizacion local si la foto quedo de verdad
-    // publicada. Si algo falla, el avatar sigue mostrando lo que elegiste.
-    var publicada = false;
+  /// Traduce el error de subida a un mensaje amigable para el usuario.
+  String _mensajeErrorFoto(Object e) {
+    if (e is FirebaseException) {
+      switch (e.code) {
+        case 'unauthorized':
+        case 'permission-denied':
+          return 'No tenés permiso para subir la foto. '
+              'Revisá las reglas de Storage.';
+        case 'unavailable':
+        case 'network-request-failed':
+          return 'Sin conexión. Revisá tu internet e intentá de nuevo.';
+        case 'canceled':
+          return 'Subida cancelada.';
+      }
+    }
+    return 'No se pudo subir la foto. Intentá de nuevo.';
+  }
 
+  Future<void> _pickImage() async {
     try {
       final XFile? pickedFile =
           await _picker.pickImage(source: ImageSource.gallery);
@@ -119,13 +132,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             "No hay un usuario autenticado. Inicia sesión primero.");
       }
 
-      // instanceFor y no instance: deja el bucket explicito y con el nombre
-      // que declara android/app/google-services.json, sin depender de cual
-      // inicializacion haya quedado activa primero.
-      final ref = FirebaseStorage.instanceFor(bucket: _bucket)
-          .ref()
-          .child('profile_images')
-          .child('${user.uid}.jpg');
+      // FotoPerfilService deja el bucket explicito y con el nombre que declara
+      // android/app/google-services.json, sin depender de cual inicializacion
+      // haya quedado activa primero.
+      final ref = FotoPerfilService.refDe(user.uid);
 
       debugPrint('[PERFIL] bucket=${ref.bucket} path=${ref.fullPath}');
 
@@ -142,7 +152,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       debugPrint('[PERFIL] Firestore OK  usuarios/${user.uid}.fotoURL');
 
       await user.updatePhotoURL(downloadUrl);
-      publicada = true;
       debugPrint('[PERFIL] Auth OK  photoURL actualizado');
 
       if (mounted) {
@@ -158,8 +167,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       debugPrint('[PERFIL] stack: $st');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No se pudo subir la foto. Intentá de nuevo.'),
+          SnackBar(
+            content: Text(_mensajeErrorFoto(e)),
             backgroundColor: Colors.red,
           ),
         );
@@ -168,7 +177,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         setState(() {
           _isLoadingImage = false;
-          if (publicada) _imageFile = null;
+          // Suelta la previsualizacion local: si subio bien el avatar pasa a
+          // la foto de red; si fallo, vuelve a la foto anterior o a la inicial.
+          _imageFile = null;
         });
       }
     }
@@ -345,21 +356,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   /// Avatar con el anillo blanco y la imagen del usuario adentro.
   ///
-  /// La foto de red se arma con `Image.network` y no con `NetworkImage` como
-  /// `backgroundImage` del `CircleAvatar`. La diferencia es el `errorBuilder`:
-  /// un `ImageProvider` no lo tiene, asi que con `NetworkImage` una URL vencida
-  /// deja el avatar vacio o rompe el build en silencio. Con `Image.network` una
-  /// foto que no carga cae al ícono de persona, que es lo que se quiere ver.
+  /// Prioridad de la imagen: 1) previsualizacion local (`_imageFile`),
+  /// 2) `photoURL` de FirebaseAuth, 3) `fotoURL` de Firestore y 4) la letra
+  /// inicial del nombre.
+  ///
+  /// Se usa `Image.network` + `errorBuilder` y no `NetworkImage` como
+  /// `backgroundImage`: un `ImageProvider` no admite fallback, asi que una URL
+  /// vencida dejaria el avatar vacio. Aca una foto que no carga cae a la inicial.
   Widget _buildAvatar(double radius) {
     final archivo = _imageFile;
-    final url = FirebaseAuth.instance.currentUser?.photoURL;
+    final user = FirebaseAuth.instance.currentUser;
+    final urlAuth = user?.photoURL;
+    final url = (urlAuth != null && urlAuth.isNotEmpty) ? urlAuth : _fotoURL;
     final lado = (radius - 4) * 2;
-    const fallback = Icon(Icons.person, size: 55, color: Colors.white);
+
+    final String base;
+    if (_userName.isNotEmpty) {
+      base = _userName;
+    } else if ((user?.displayName ?? '').isNotEmpty) {
+      base = user!.displayName!;
+    } else {
+      base = user?.email ?? 'Usuario';
+    }
+    final letra = base.trim();
+    final inicial = (letra.isEmpty ? 'U' : letra.characters.first)
+        .toUpperCase();
+
+    final fallback = Center(
+      child: Text(
+        inicial,
+        style: TextStyle(
+          fontSize: radius * 0.8,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+    );
 
     Widget imagen;
     if (archivo != null) {
-      imagen = Image.file(archivo, width: lado, height: lado, fit: BoxFit.cover);
-    } else if (url != null && url.isNotEmpty) {
+      imagen = Image.file(
+        archivo,
+        width: lado,
+        height: lado,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => fallback,
+      );
+    } else if (url.isNotEmpty) {
       imagen = Image.network(
         url,
         width: lado,
@@ -376,7 +419,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: Colors.white,
       child: CircleAvatar(
         radius: radius - 4,
-        backgroundColor: Colors.grey[300],
+        backgroundColor: context.colors.accentPrimary,
         child: _isLoadingImage
             ? const CircularProgressIndicator(color: Colors.white)
             : ClipOval(child: imagen),
@@ -392,12 +435,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _abrirEditarPerfil() async {
-    final cambios = await Navigator.pushNamed(context, '/editar-perfil');
-    if (cambios == true) {
-      await FirebaseAuth.instance.currentUser?.reload();
-      if (mounted) setState(_sembrarDesdeAuth);
-      await _cargarDatosUsuario();
-    }
+    // Se recarga siempre al volver (no sólo si Guardar devolvió true) para que
+    // el avatar refleje también cambios como eliminar la foto de perfil.
+    await Navigator.pushNamed(context, '/editar-perfil');
+    await FirebaseAuth.instance.currentUser?.reload();
+    if (mounted) setState(_sembrarDesdeAuth);
+    await _cargarDatosUsuario();
   }
 
   void _abrirNotificaciones() {

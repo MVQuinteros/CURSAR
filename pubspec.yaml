@@ -35,6 +35,7 @@ dependencies:
   cloud_firestore: ^6.4.1
   firebase_storage: ^13.4.3
   http: ^1.2.2
+  flutter_dotenv: ^6.0.1  # Lee la API key de Gemini desde .env (no versionado)
   google_sign_in: ^7.2.0  # Versión estable que ya probamos
   cupertino_icons: ^1.0.8
   flutter_map: ^7.0.2
@@ -75,6 +76,8 @@ flutter:
     # Flutter no incluye subcarpetas de forma recursiva: hay que declararlas
     - assets/imagenes/instituciones/
     - assets/imagenes/campus/
+    # Secretos locales (GEMINI_API_KEY). El archivo no se versiona: ver .env.example
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

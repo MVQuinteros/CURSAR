@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_config.dart';
 import 'home_screen.dart';
 import 'screens/login_screen.dart';
@@ -25,6 +26,15 @@ import 'seed_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Carga la API key de Gemini desde .env. Si falta el archivo, la app tiene
+  // que arrancar igual: el test vocacional simplemente no generara el perfil.
+  try {
+    await dotenv.load();
+  } catch (e) {
+    debugPrint('No se pudo cargar .env: $e');
+  }
+
   await initializeFirebase();
 
   // Las siembras son best-effort: si las reglas de Firestore no dejan leer o

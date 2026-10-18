@@ -23,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   String _userName = 'Usuario';
+  String _fotoURL = '';
   Position? _userPosition;
   List<InstitucionModel>? _institucionesCache;
   Set<String>? _avisosLeidos;
@@ -146,22 +147,81 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _cargarNombreUsuario() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
-    if (user.displayName != null && user.displayName!.trim().isNotEmpty) {
-      setState(() => _userName = user.displayName!);
+
+    final nombreAuth = user.displayName?.trim() ?? '';
+    final fotoAuth = user.photoURL ?? '';
+
+    // Si ya tengo nombre y foto desde Auth, no hace falta ir a Firestore.
+    if (nombreAuth.isNotEmpty && fotoAuth.isNotEmpty) {
+      if (!mounted) return;
+      setState(() {
+        _userName = nombreAuth;
+        _fotoURL = fotoAuth;
+      });
       return;
     }
+
     final doc = await FirebaseFirestore.instance
         .collection('usuarios')
         .doc(user.uid)
         .get();
-    if (doc.exists) {
-      final nombre = doc.data()?['nombre'] ?? '';
-      final apellido = doc.data()?['apellido'] ?? '';
-      final completo = '$nombre $apellido'.trim();
-      if (completo.isNotEmpty) {
-        setState(() => _userName = completo);
+    final datos = doc.data() ?? {};
+    final completo =
+        '${datos['nombre'] ?? ''} ${datos['apellido'] ?? ''}'.trim();
+    final fotoDoc = datos['fotoURL']?.toString() ?? '';
+
+    if (!mounted) return;
+    setState(() {
+      if (nombreAuth.isNotEmpty) {
+        _userName = nombreAuth;
+      } else if (completo.isNotEmpty) {
+        _userName = completo;
       }
+      // Auth manda; si no hay, se usa la foto guardada en Firestore.
+      _fotoURL = fotoAuth.isNotEmpty ? fotoAuth : fotoDoc;
+    });
+  }
+
+  /// Avatar del saludo: foto de perfil o, si no hay o falla, la letra inicial
+  /// del nombre. Se usa `Image.network` + `errorBuilder` y no `NetworkImage`,
+  /// porque un `ImageProvider` no admite fallback y el avatar quedaria vacio.
+  Widget _buildAvatarInicio() {
+    const double radius = 40;
+    final lado = radius * 2;
+
+    final letra = _userName.trim();
+    final inicial =
+        (letra.isEmpty ? 'U' : letra.characters.first).toUpperCase();
+
+    final fallback = Center(
+      child: Text(
+        inicial,
+        style: TextStyle(
+          fontSize: radius * 0.9,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+    );
+
+    Widget imagen;
+    if (_fotoURL.isNotEmpty) {
+      imagen = Image.network(
+        _fotoURL,
+        width: lado,
+        height: lado,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => fallback,
+      );
+    } else {
+      imagen = fallback;
     }
+
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: context.colors.accentPrimary,
+      child: ClipOval(child: imagen),
+    );
   }
 
   Widget _cardAviso(AvisoModel aviso) {
@@ -343,7 +403,8 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
     if (index == 3) {
-      Navigator.pushNamed(context, '/profile');
+      Navigator.pushNamed(context, '/profile')
+          .then((_) => _cargarNombreUsuario());
       return;
     }
     setState(() {
@@ -414,36 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-                          Stack(
-                            children: [
-                              CircleAvatar(
-                                radius: 40,
-                                backgroundColor: context.colors.bgSurface,
-                                child: const Icon(
-                                  Icons.person,
-                                  size: 40,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Container(
-                                  width: 24,
-                                  height: 24,
-                                  decoration: BoxDecoration(
-                                    color: context.colors.accentPrimary,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.camera_alt,
-                                    size: 14,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                          _buildAvatarInicio(),
                         ],
                       ),
                     ],
