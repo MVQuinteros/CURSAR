@@ -76,7 +76,7 @@ flutter:
     # Flutter no incluye subcarpetas de forma recursiva: hay que declararlas
     - assets/imagenes/instituciones/
     - assets/imagenes/campus/
-    # Secretos locales (GEMINI_API_KEY). El archivo no se versiona: ver .env.example
+    # Secretos locales (GEMINI_API_KEY): un solo .env en la raiz, no versionado
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

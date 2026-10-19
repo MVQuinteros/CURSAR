@@ -1,4 +1,5 @@
-# Secretos locales (API key de Gemini). Ver .env.example para la plantilla.
+# Secretos locales (API key de Gemini). Solo existe un .env, en la raiz del
+# proyecto: se edita directamente ahi y no se versiona.
 .env
 
 # Miscellaneous
