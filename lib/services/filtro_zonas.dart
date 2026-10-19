@@ -11,13 +11,13 @@ import '../models/institucion_model.dart';
 /// Estuvo encendida porque la base tiene instituciones de todo el pais y el
 /// inicio y "Explorar por institucion" mostraban solo las del area de influencia
 /// de la app. El problema es que ese recorte se aplicaba al armar las listas, sin
-/// que el usuario lo supiera: apagar el toggle "Solo dentro de mi area" en el mapa
-/// no cambiaba nada, porque lo que el filtro habia eliminado ya no llegaba a
-/// pintarse. Ese toggle es ahora el unico que recorta, y lo hace por radio y
-/// distancia reales.
+/// que el usuario lo supiera. El unico filtro que llego a recortar en pantalla
+/// fue el toggle "Solo dentro de mi area" del mapa, por radio y distancia
+/// reales, y ya no existe: hoy no se recorta nada y el mapa pinta todas las
+/// instituciones.
 ///
 /// Si en algun momento hay que volver a recortar por zona, poner
-/// `soloZonasObjetivo` en true: el toggle de radio y este filtro seiban juntos.
+/// `soloZonasObjetivo` en true.
 class FiltroZonas {
   const FiltroZonas._();
 

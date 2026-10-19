@@ -31,7 +31,6 @@ class _MapScreenState extends State<MapScreen> {
   double? _userLat;
   double? _userLng;
   int _radioKm = 20;
-  bool _modoArea = true;
   bool _mostrarCercaDeMi = false;
   bool _loading = true;
 
@@ -101,12 +100,8 @@ class _MapScreenState extends State<MapScreen> {
     return lista;
   }
 
-  List<_InstDist> get _visibles {
-    if (_modoArea && _userLat != null && _userLng != null) {
-      return _conDistancia.where((x) => (x.km ?? double.infinity) <= _radioKm).toList();
-    }
-    return _conDistancia;
-  }
+  /// El mapa pinta todas las instituciones: no hay recorte por radio.
+  List<_InstDist> get _visibles => _conDistancia;
 
   void _centrarEnMiUbicacion() {
     if (_userLat != null && _userLng != null) {
@@ -562,38 +557,6 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ],
           ),
-          if (tieneUbicacion)
-            Positioned(
-              top: 8,
-              left: 12,
-              right: 12,
-              child: Material(
-                color: context.colors.bgSurface,
-                elevation: 2,
-                borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Row(
-                    children: [
-                      Icon(Icons.travel_explore,
-                          size: 18, color: context.colors.accentPrimary),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Solo dentro de mi área',
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ),
-                      Switch(
-                        value: _modoArea,
-                        activeThumbColor: context.colors.accentPrimary,
-                        onChanged: (v) => setState(() => _modoArea = v),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
           Positioned(
             right: 16,
             bottom: 24,
