@@ -109,6 +109,10 @@ class _AyudaSoporteScreenState extends State<AyudaSoporteScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            _AccesoMisReportes(
+              onTap: () => Navigator.pushNamed(context, '/mis-reportes'),
+            ),
+            const SizedBox(height: 20),
             Text(
               'Preguntas frecuentes',
               style: TextStyle(
@@ -256,6 +260,68 @@ class _AyudaSoporteScreenState extends State<AyudaSoporteScreen> {
               ),
             ),
             const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Entrada a "Mis reportes" desde la ayuda: ahí el usuario ve la respuesta que
+/// le dejó el equipo de soporte.
+class _AccesoMisReportes extends StatelessWidget {
+  const _AccesoMisReportes({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colores = context.colors;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: colores.bgSurface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: colores.borderSubtle),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.inbox_outlined, color: colores.accentPrimary),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Mis reportes',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: colores.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Mirá lo que respondimos a tus reportes',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colores.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: colores.textSecondary),
           ],
         ),
       ),
