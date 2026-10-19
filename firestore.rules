@@ -1,0 +1,112 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =====================================================================
+    // 1) Colecciones PUBLICAS - solo lectura para todos.
+    //    (Mapa, explorador, favoritos y test.)
+    //    La escritura queda DENEGADA a proposito: las altas y correcciones
+    //    se hacen desde la consola de Firebase o con una herramienta
+    //    administrativa. Las semillas de seed_data.dart son best-effort:
+    //    si no pueden escribir, la app arranca igual.
+    // =====================================================================
+    match /instituciones/{docId} {
+      allow read: if true;
+    }
+
+    match /ofertas/{docId} {
+      allow read: if true;
+    }
+
+    match /avisos/{docId} {
+      allow read: if true;
+    }
+
+    match /tags/{docId} {
+      allow read: if true;
+    }
+
+    match /testVocacional/data/preguntas/{docId} {
+      allow read: if true;
+    }
+
+    // =====================================================================
+    // 2) soporte - tickets de soporte. SOLO el dueno del ticket.
+    //    `resource.data` = documento existente (read/update/delete).
+    //    `request.resource.data` = documento resultante (create).
+    //    El campo de propiedad es `userUid` (los modelos y servicios ya lo
+    //    escriben asi) y es el patron comprobable en listados: la consulta
+    //    `where('userUid', isEqualTo: request.auth.uid)` queda autorizada
+    //    sin leer los documentos.
+    // =====================================================================
+    match /soporte/{docId} {
+      allow read: if request.auth != null
+                  && resource.data.userUid == request.auth.uid;
+      allow create: if request.auth != null
+                    && request.resource.data.userUid == request.auth.uid;
+      allow update, delete: if request.auth != null
+                            && resource.data.userUid == request.auth.uid;
+    }
+
+    // =====================================================================
+    // 3) Datos personales con propiedad por campo `userUid`
+    //    (mismo patron comprobable que soporte).
+    // =====================================================================
+    match /notificaciones/{docId} {
+      allow read: if request.auth != null
+                  && resource.data.userUid == request.auth.uid;
+      allow create: if request.auth != null
+                    && request.resource.data.userUid == request.auth.uid;
+      allow update, delete: if request.auth != null
+                            && resource.data.userUid == request.auth.uid;
+    }
+
+    match /mensajes/{docId} {
+      allow read: if request.auth != null
+                  && resource.data.userUid == request.auth.uid;
+      allow create: if request.auth != null
+                    && request.resource.data.userUid == request.auth.uid;
+      allow update, delete: if request.auth != null
+                            && resource.data.userUid == request.auth.uid;
+    }
+
+    match /testVocacional/data/respuestas/{docId} {
+      allow read: if request.auth != null
+                  && resource.data.userUid == request.auth.uid;
+      allow create: if request.auth != null
+                    && request.resource.data.userUid == request.auth.uid;
+      allow update, delete: if request.auth != null
+                            && resource.data.userUid == request.auth.uid;
+    }
+
+    match /testVocacional/data/resultados/{docId} {
+      allow read: if request.auth != null
+                  && resource.data.userUid == request.auth.uid;
+      allow create: if request.auth != null
+                    && request.resource.data.userUid == request.auth.uid;
+      allow update, delete: if request.auth != null
+                            && resource.data.userUid == request.auth.uid;
+    }
+
+    // =====================================================================
+    // 4) Datos personales con propiedad por RUTA (doc id == uid dueno).
+    //    Acceso total del dueno; para los demas, nada.
+    //    (Incluye seeds de favoritos demo: se escriben bajo el uid del
+    //    usuario logueado, asi que siguen funcionando.)
+    // =====================================================================
+    match /usuarios/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    match /usuarios/{uid}/favoritos/{docId} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    match /usuarios/{uid}/historial/{docId} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Toda coleccion no listada arriba queda DENEGADA por defecto.
+  }
+}

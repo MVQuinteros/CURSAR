@@ -33,22 +33,39 @@ import 'package:proyecto_app/firebase_config.dart';
 /// Se toman como [latitud, longitud]. Son aproximadas a la manzana: alcanzan
 /// para colocar el marcador y ordenar por distancia, que es lo que usa la app.
 const Map<String, List<double>> _coordenadas = {
-  'uba_cbc_sanmiguel': [-34.5423, -58.7133],
-  'isfd112': [-34.5435, -58.7152],
-  'isfd243': [-34.4988, -58.6944],
-  'isfdyt36': [-34.5165, -58.7665],
-  'isfdyt42': [-34.5418, -58.7148],
-  'isnarcangel': [-34.5420, -58.7125],
-  'itm_jcp': [-34.5140, -58.7660],
-  'ucasal_sanmiguel': [-34.5440, -58.7160],
-  'utn_pui_jcp': [-34.5150, -58.7670],
-  'siglo21_sanmiguel': [-34.5430, -58.7120],
-  'uflo_sanmiguel': [-34.5405, -58.7110],
-  // Nuevas instituciones
-  'modelo_bellavista': [-34.543, -58.712],
-  'britanico_sanmiguel': [-34.544, -58.714],
-  'paramedico_sanmiguel': [-34.543, -58.713],
-  'sanjose_muniz': [-34.533, -58.703],
+  // --- San Miguel (coordenadas decodificadas de los Plus Codes exactos de
+  // Google Maps cuando hay; si no, de Nominatim/OSM o el pin del listing) ---
+  // CBC UBA Sede San Miguel, Gelly y Obes 1351 (Plus Code C7XM+WJ)
+  'uba_cbc_sanmiguel': [-34.55019, -58.71594],
+  // ISFD N°112 ENS "Domingo Faustino Sarmiento", Paunero 2031 (Plus Code F76M+V8)
+  'isfd112': [-34.53781, -58.71669],
+  // ISFDyT N°42 "Leopoldo Marechal", Serrano 1326 (Plus Code F75V+JM)
+  'isfdyt42': [-34.54094, -58.70581],
+  // Instituto Superior San Miguel Arcangel, Av. Papa Francisco 3226
+  'isnarcangel': [-34.5582794, -58.7301502],
+  // UCASAL Sede San Miguel, Av. Dr. Ricardo Balbin 1660 (Plus Code F73M+XW)
+  'ucasal_sanmiguel': [-34.54506, -58.71519],
+  // UNLu Centro Regional San Miguel, Av. Ricardo Balbin 1617 (esq. Farias)
+  'unlu_sanmiguel': [-34.5454544, -58.7148239],
+  // Universidad Siglo 21 CAU San Miguel, Av. Leon Gallardo 207
+  'siglo21_sanmiguel': [-34.552371, -58.698436],
+  // UFLO Anexo San Miguel, Av. Belgrano 1528
+  'uflo_sanmiguel': [-34.545116, -58.713626],
+  // Instituto Superior Modelo de Bella Vista, Av. Santa Fe 1226
+  // Coordenada decodificada del Plus Code de Google Maps: C8V5+QW (= 48Q3C8V5+QW)
+  'modelo_bellavista': [-34.55556, -58.69019],
+  // Instituto Superior Cultural Britanico, M. Angel D'Elia 1564 (Plus Code F75Q+HX)
+  'britanico_sanmiguel': [-34.54106, -58.71006],
+  // Instituto Paramedico, Av. Pte. J. D. Peron 1823 (Plus Code F75M+XV)
+  'paramedico_sanmiguel': [-34.54006, -58.71531],
+  // Instituto San Jose, Av. Pte. J. D. Peron 734, Muniz (Plus Code F72W+HQ)
+  'sanjose_muniz': [-34.54856, -58.70306],
+
+  // --- Fuera de San Miguel ---
+  'isfd243': [-34.48806, -58.70156], // Pablo Nogues (Plus Code G76X+Q9)
+  'isfdyt36': [-34.5165, -58.7665], // Jose C. Paz
+  'itm_jcp': [-34.5140, -58.7660], // Jose C. Paz
+  'utn_pui_jcp': [-34.5150, -58.7670], // Jose C. Paz
 };
 
 /// Lotes de escritura, para no mandar 2000 operaciones en un solo commit.

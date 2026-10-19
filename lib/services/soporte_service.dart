@@ -2,31 +2,34 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/reporte_model.dart';
 
 class SoporteService {
+  static const String _coleccion = 'soporte';
+
   Future<void> enviarReporte(ReporteModel reporte) async {
     final mapa = reporte.toMap();
     mapa['createdAt'] = FieldValue.serverTimestamp();
-    await FirebaseFirestore.instance.collection('soporte').add(mapa);
+    await FirebaseFirestore.instance.collection(_coleccion).add(mapa);
   }
 
-  /// Los reportes que envió [uid], del más nuevo al más viejo.
+  /// Historial de reportes del usuario, más recientes primero.
   ///
-  /// Filtra solo por `uid` (la regla de lectura exige que la consulta incluya
-  /// esa condición) y ordena en memoria, así no hace falta un índice compuesto.
-  Stream<List<ReporteModel>> misReportes(String uid) {
+  /// Stream para que la pantalla se actualice sola cuando un administrador
+  /// cambia el estado o responde un reporte.
+  Stream<List<ReporteModel>> getReportesUsuario(String uid) {
     return FirebaseFirestore.instance
-        .collection('soporte')
-        .where('uid', isEqualTo: uid)
+        .collection(_coleccion)
+        .where('userUid', isEqualTo: uid)
+        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) {
-      final reportes = snapshot.docs
-          .map((doc) => ReporteModel.fromMap(doc.id, doc.data()))
-          .toList();
-      reportes.sort((a, b) {
-        final fechaA = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-        final fechaB = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-        return fechaB.compareTo(fechaA);
-      });
-      return reportes;
-    });
+        .map(
+          (snap) => snap.docs
+              .map((doc) => ReporteModel.fromFirestore(doc.id, doc.data()))
+              .toList(),
+        );
+  }
+
+  /// Misma consulta que [getReportesUsuario] pero devolviendo solo el total,
+  /// para el badge de la pantalla de ayuda.
+  Stream<int> contarReportesUsuario(String uid) {
+    return getReportesUsuario(uid).map((reportes) => reportes.length);
   }
 }

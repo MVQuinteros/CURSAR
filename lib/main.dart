@@ -11,7 +11,6 @@ import 'screens/profile_screen.dart';
 import 'screens/edit_profile_screen.dart';
 import 'screens/historial_screen.dart';
 import 'screens/configuracion_screen.dart';
-import 'screens/mis_reportes_screen.dart';
 import 'screens/ayuda_soporte_screen.dart';
 import 'screens/notificaciones_screen.dart';
 import 'screens/test_vocacional_screen.dart';
@@ -133,7 +132,6 @@ class MyApp extends StatelessWidget {
         },
         '/configuracion': (context) => const ConfiguracionScreen(),
         '/soporte': (context) => const AyudaSoporteScreen(),
-        '/mis-reportes': (context) => const MisReportesScreen(),
         '/notificaciones': (context) => const NotificacionesScreen(),
         '/test': (context) => const TestVocacionalScreen(),
         '/test-resultados': (context) => const TestResultadosScreen(),

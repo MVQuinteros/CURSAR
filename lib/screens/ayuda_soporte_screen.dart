@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/reporte_model.dart';
 import '../services/soporte_service.dart';
 import '../theme/app_theme.dart';
+import 'solicitudes_historial_screen.dart';
 
 class AyudaSoporteScreen extends StatefulWidget {
   const AyudaSoporteScreen({super.key});
@@ -69,7 +70,7 @@ class _AyudaSoporteScreenState extends State<AyudaSoporteScreen> {
     try {
       await SoporteService().enviarReporte(
         ReporteModel(
-          uid: user?.uid,
+          userUid: user?.uid,
           email: _emailController.text.trim(),
           tipo: _tipo,
           mensaje: _mensajeController.text.trim(),
@@ -110,7 +111,12 @@ class _AyudaSoporteScreenState extends State<AyudaSoporteScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _AccesoMisReportes(
-              onTap: () => Navigator.pushNamed(context, '/mis-reportes'),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SolicitudesHistorialScreen(),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             Text(
@@ -166,6 +172,84 @@ class _AyudaSoporteScreenState extends State<AyudaSoporteScreen> {
                   ),
                 );
               },
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Solicitudes y Reportes',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: context.colors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              decoration: BoxDecoration(
+                color: context.colors.bgSurface,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: context.colors.borderSubtle),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(14),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SolicitudesHistorialScreen(),
+                    ),
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.inbox,
+                        size: 28,
+                        color: context.colors.accentPrimary,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Mis solicitudes y reportes',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: context.colors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Ver estado y respuestas de tus envíos',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: context.colors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _BadgeSolicitudes(),
+                      const SizedBox(width: 6),
+                      Icon(
+                        Icons.chevron_right,
+                        color: context.colors.textSecondary,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 24),
             Text(
@@ -325,6 +409,49 @@ class _AccesoMisReportes extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Badge con la cantidad de solicitudes del usuario, en vivo desde Firestore.
+/// Se oculta si no hay reportes; en verde si hay respuestas del admin.
+class _BadgeSolicitudes extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return const SizedBox.shrink();
+
+    return StreamBuilder<List<ReporteModel>>(
+      stream: SoporteService().getReportesUsuario(user.uid),
+      builder: (context, snapshot) {
+        final reportes = snapshot.data;
+        if (reportes == null || reportes.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        final respondidos =
+            reportes.where((r) => r.estado == 'respondido').length;
+        final hayNovedades = respondidos > 0;
+        final color = hayNovedades ? Colors.green : context.colors.accentPrimary;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            hayNovedades
+                ? '$respondidos ${respondidos == 1 ? 'respuesta' : 'respuestas'}'
+                : '${reportes.length} ${reportes.length == 1 ? 'envío' : 'envíos'}',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        );
+      },
     );
   }
 }

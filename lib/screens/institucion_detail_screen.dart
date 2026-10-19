@@ -367,15 +367,17 @@ class _InstitucionDetailScreenState extends State<InstitucionDetailScreen> {
                   const SizedBox(height: 20),
                   ..._buildSeccionComoLlegar(inst),
                   const SizedBox(height: 24),
-                  Text(
-                    'Ofertas académicas',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: context.colors.textPrimary,
+                  if (_ofertas.length > 1) ...[
+                    Text(
+                      'Ofertas académicas',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: context.colors.textPrimary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
+                    const SizedBox(height: 12),
+                  ],
                   if (_ofertas.isEmpty)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20),
