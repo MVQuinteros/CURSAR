@@ -186,7 +186,7 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: [
         if (_avisos.isNotEmpty) ...[
-          const _SeccionHeader('Noticias de inscripciones'),
+          const _SeccionHeader('Noticias'),
           ..._avisos.map(_cardAviso),
         ],
         if (notificaciones.isNotEmpty) ...[
